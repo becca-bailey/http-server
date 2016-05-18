@@ -1,4 +1,5 @@
 package com.rnelson.server;
 
-public class HTTPServer {
+public class Server {
+
 }
