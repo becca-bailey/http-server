@@ -20,7 +20,6 @@ public class Steps {
     @And("^the client connects to the server on port (\\d+)$")
     public void theClientConnectsToTheServerOnPort(int port) throws Throwable {
         Client.main(new String[] {"localhost", Integer.toString(port)});
-
     }
 
     @When("^the user inputs \"([^\"]*)\"$")
