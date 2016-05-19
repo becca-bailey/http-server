@@ -8,18 +8,19 @@ import cucumber.api.java.*;
 import cucumber.api.java.en.*;
 import static org.junit.Assert.assertEquals;
 
-
 public class Steps {
     private ByteArrayOutputStream outputFromServer = new ByteArrayOutputStream();
 
     @Given("^the server is running on port (\\d+)$")
     public void theServerIsRunningOnPort(int port) throws Throwable {
-        Server.main(new String[] {"-p", Integer.toString(port)});
+        Thread server = new Thread(new Server());
+        server.start();
     }
 
     @And("^the client connects to the server on port (\\d+)$")
     public void theClientConnectsToTheServerOnPort(int port) throws Throwable {
-        Client.main(new String[] {"localhost", Integer.toString(port)});
+        Client client = new Client();
+        Client.connect("localhost", 5000);
     }
 
     @When("^the user inputs \"([^\"]*)\"$")

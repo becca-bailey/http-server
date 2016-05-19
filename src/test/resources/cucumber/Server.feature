@@ -8,4 +8,3 @@ Feature: Echo Server
     Examples:
       | text              |
       | hello             |
-      | this is some text |
