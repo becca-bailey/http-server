@@ -10,10 +10,14 @@ public class ServerRunner implements Runnable {
         this.serverPort = port;
     }
 
+    public String echoResponse(String request) {
+        return ("Echo: " + request);
+    }
+
     private void echo (PrintWriter out, BufferedReader in) throws IOException {
         String request;
         while((request = in.readLine()) != null) {
-            out.println("Echo: " + request);
+            out.println(echoResponse(request));
         }
     }
 
