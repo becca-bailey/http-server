@@ -1,4 +1,4 @@
-package com.rnelson.server;
+package com.rnelson.client;
 
 public class Client {
 
@@ -7,4 +7,3 @@ public class Client {
         runner.run();
     }
 }
-

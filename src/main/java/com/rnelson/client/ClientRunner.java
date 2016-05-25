@@ -1,4 +1,4 @@
-package com.rnelson.server;
+package com.rnelson.client;
 
 import java.io.*;
 import java.net.Socket;
