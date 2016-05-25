@@ -23,6 +23,7 @@ public class ServerRunner implements Runnable {
 
     @Override
     public void run() {
+        System.out.println("Listening on port " + serverPort + "...");
         try (
                 ServerSocket serverSocket = new ServerSocket(serverPort);
                 Socket clientSocket = serverSocket.accept();

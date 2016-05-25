@@ -8,7 +8,7 @@ import java.net.UnknownHostException;
 
 import static org.junit.Assert.assertEquals;
 
-public class Steps {
+public class EchoServerSteps {
     public Socket clientSocket;
     public String hostName;
     public PrintWriter out;
