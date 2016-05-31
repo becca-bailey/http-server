@@ -1,47 +1,61 @@
 package com.rnelson.server;
 
+import cucumber.api.PendingException;
+import cucumber.api.java.After;
 import cucumber.api.java.en.*;
 
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.Buffer;
 
 import static org.junit.Assert.assertEquals;
 
 public class EchoServerSteps {
-    public Socket clientSocket;
-    public String hostName;
-    public PrintWriter out;
-    public BufferedReader in;
+    private Socket clientSocket;
+    private OutputStream out;
+    private BufferedReader in;
+    private String request;
+    private String actualResponse;
 
     @Given("^the server is running on port (\\d+)$")
     public void theServerIsRunningOnPort(int port) throws Throwable {
-        Thread server = new Thread(new ServerRunner(port));
+        Thread server = new Thread(new ServerRunner(5000));
         server.start();
     }
 
-    @And("^the client connects on port (\\d+)$")
-    public void theClientConnectsOnPort(int port) throws Throwable {
-        hostName = "localhost";
-        try {
-            clientSocket = new Socket(hostName, port);
-        }
-        catch (UnknownHostException e) {
-            System.exit(1);
-        }
+    @When("^I \"([^\"]*)\"$")
+    public void i(String request) throws Throwable {
+        this.request = request;
+        clientSocket = new Socket("localhost", 5000);
+        out = clientSocket.getOutputStream();
+        out.write(request.getBytes());
     }
 
-    @When("^the user inputs \"([^\"]*)\"$")
-    public void theUserInputs(String userInput) throws Throwable {
-        out = new PrintWriter(clientSocket.getOutputStream(), true);
-        in = new BufferedReader(
-                        new InputStreamReader(clientSocket.getInputStream()));
-        out.println(userInput);
+    @Then("^the response status should be \"([^\"]*)\"$")
+    public void theResponseStatusShouldBe(String status) throws Throwable {
+        String okayStatus = "HTTP/1.1 200 OK";
+        String expectedResponse = (okayStatus + "\r\n\r\n" + request);
+
+        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        String inputLine;
+        while ((inputLine = in.readLine()) != null)
+            actualResponse += inputLine;
+
+        assertEquals(expectedResponse, actualResponse);
     }
 
-    @Then("^the response is \"([^\"]*)\"$")
-    public void theResponseIs(String expectedResponse) throws Throwable {
-        String response = in.readLine();
-        assertEquals(expectedResponse, response);
+//    @After
+//    public void closeAllSockets() throws IOException {
+//        in.close();
+//        out.close();
+//        clientSocket.close();
+//    }
+
+
+    @And("^the response body should be empty$")
+    public void theResponseBodyShouldBeEmpty() throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        throw new PendingException();
     }
 }

@@ -14,10 +14,11 @@ public class ServerRunner implements Runnable {
         return ("Echo: " + request);
     }
 
-    private void echo (PrintWriter out, BufferedReader in) throws IOException {
+    private void echo (OutputStreamWriter out, BufferedReader in) throws IOException {
         String request;
-        request = in.readLine();
-        out.println(echoResponse(request));
+//        request = in.readLine();
+        request = "GET /echo";
+        out.write(echoResponse(request));
     }
 
     @Override
@@ -28,8 +29,8 @@ public class ServerRunner implements Runnable {
                     ServerSocket serverSocket = new ServerSocket(serverPort);
                     Socket clientSocket = serverSocket.accept();
 
-                    PrintWriter out =
-                            new PrintWriter(clientSocket.getOutputStream(), true);
+                    OutputStreamWriter out =
+                            new OutputStreamWriter(clientSocket.getOutputStream());
                     BufferedReader in =
                             new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
             ) {
