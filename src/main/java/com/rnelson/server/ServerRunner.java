@@ -1,7 +1,7 @@
 package com.rnelson.server;
+
 import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
 
 public class ServerRunner implements Runnable {
     int serverPort;
@@ -10,14 +10,12 @@ public class ServerRunner implements Runnable {
         this.serverPort = port;
     }
 
-    public String echoResponse(String request) {
-        return ("Echo: " + request);
-    }
-
-    private void echo (PrintWriter out, BufferedReader in) throws IOException {
-        String request;
-        request = in.readLine();
-        out.println(echoResponse(request));
+    private void echo (OutputStreamWriter out, BufferedReader in) throws IOException {
+        String request = in.readLine();
+        if (request.equals("GET /echo HTTP/1.1")) {
+            out.write("HTTP/1.1 200 OK\r\n\r\n" + request + "\r\n");
+        }
+        out.close();
     }
 
     @Override
@@ -28,8 +26,8 @@ public class ServerRunner implements Runnable {
                     ServerSocket serverSocket = new ServerSocket(serverPort);
                     Socket clientSocket = serverSocket.accept();
 
-                    PrintWriter out =
-                            new PrintWriter(clientSocket.getOutputStream(), true);
+                    OutputStreamWriter out =
+                            new OutputStreamWriter(clientSocket.getOutputStream());
                     BufferedReader in =
                             new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
             ) {

@@ -1,47 +1,53 @@
 package com.rnelson.server;
 
+import cucumber.api.PendingException;
+import cucumber.api.java.After;
 import cucumber.api.java.en.*;
 
 import java.io.*;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.net.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class EchoServerSteps {
-    public Socket clientSocket;
-    public String hostName;
-    public PrintWriter out;
-    public BufferedReader in;
+    private HttpURLConnection connection;
 
     @Given("^the server is running on port (\\d+)$")
     public void theServerIsRunningOnPort(int port) throws Throwable {
-        Thread server = new Thread(new ServerRunner(port));
+        Thread server = new Thread(new ServerRunner(5000));
         server.start();
     }
 
-    @And("^the client connects on port (\\d+)$")
-    public void theClientConnectsOnPort(int port) throws Throwable {
-        hostName = "localhost";
-        try {
-            clientSocket = new Socket(hostName, port);
-        }
-        catch (UnknownHostException e) {
-            System.exit(1);
-        }
+    @When("^I request \"([^\"]*)\" \"([^\"]*)\"$")
+    public void iRequest(String method, String uri) throws Throwable {
+        URL url = new URL("http://localhost:5000" + uri);
+        connection = (HttpURLConnection)url.openConnection();
+        connection.setDoOutput(true);
+        connection.setRequestMethod(method);
+        connection.connect();
     }
 
-    @When("^the user inputs \"([^\"]*)\"$")
-    public void theUserInputs(String userInput) throws Throwable {
-        out = new PrintWriter(clientSocket.getOutputStream(), true);
-        in = new BufferedReader(
-                        new InputStreamReader(clientSocket.getInputStream()));
-        out.println(userInput);
+    @Then("^the response status should be (\\d+)$")
+    public void theResponseStatusShouldBe(Integer status) throws Throwable {
+        Integer responseStatus = connection.getResponseCode();
+        assertEquals(status, responseStatus);
     }
 
-    @Then("^the response is \"([^\"]*)\"$")
-    public void theResponseIs(String expectedResponse) throws Throwable {
-        String response = in.readLine();
-        assertEquals(expectedResponse, response);
+    public String getFullResponse(BufferedReader in) throws Throwable {
+        StringBuilder response = new StringBuilder();
+        String line;
+        while ((line = in.readLine()) != null) {
+            response.append(line);
+        }
+        return response.toString();
+    }
+
+    @And("^the response body should be empty$")
+    public void theResponseBodyShouldBeEmpty() throws Throwable {
+        BufferedReader in =
+                new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        String response = getFullResponse(in);
+        assertFalse(response.contains("<body>"));
     }
 }
