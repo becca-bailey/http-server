@@ -1,1 +1,0 @@
-mvn exec:java -Dexec.mainClass="com.rnelson.client.Client" -Dexec.args="localhost 8000"
