@@ -8,7 +8,7 @@ import java.net.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-public class EchoServerSteps {
+public class HTTPRequestsSteps {
     private HttpURLConnection connection;
 
     @Given("^the server is running on port (\\d+)$")

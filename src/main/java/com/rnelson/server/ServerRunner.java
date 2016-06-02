@@ -19,6 +19,9 @@ public class ServerRunner implements Runnable {
         if (request.equals("HEAD / HTTP/1.1")) {
             response = okayResponse;
         }
+        if (request.equals("GET / HTTP/1.1")) {
+            response = okayResponse;
+        }
         return response;
     }
 
