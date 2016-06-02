@@ -3,10 +3,8 @@ package com.rnelson.server;
 import cucumber.api.PendingException;
 import cucumber.api.java.After;
 import cucumber.api.java.en.*;
-
 import java.io.*;
 import java.net.*;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 

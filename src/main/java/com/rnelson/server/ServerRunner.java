@@ -10,11 +10,22 @@ public class ServerRunner implements Runnable {
         this.serverPort = port;
     }
 
+    public String getResponse(String request) {
+        String response = null;
+        String okayResponse = "HTTP/1.1 200 OK\r\n\r\n";
+        if (request.equals("GET /echo HTTP/1.1")) {
+            response = okayResponse + request;
+        }
+        if (request.equals("HEAD / HTTP/1.1")) {
+            response = okayResponse;
+        }
+        return response;
+    }
+
     private void echo (OutputStreamWriter out, BufferedReader in) throws IOException {
         String request = in.readLine();
-        if (request.equals("GET /echo HTTP/1.1")) {
-            out.write("HTTP/1.1 200 OK\r\n\r\n" + request + "\r\n");
-        }
+        String response = getResponse(request);
+        out.write(response);
         out.close();
     }
 
