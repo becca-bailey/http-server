@@ -1,7 +1,5 @@
 package com.rnelson.server;
 
-import cucumber.api.PendingException;
-import cucumber.api.java.After;
 import cucumber.api.java.en.*;
 import java.io.*;
 import java.net.*;
@@ -32,7 +30,7 @@ public class HTTPRequestsSteps {
         assertEquals(status, responseStatus);
     }
 
-    public String getFullResponse(BufferedReader in) throws Throwable {
+    private String getFullResponse(BufferedReader in) throws Throwable {
         StringBuilder response = new StringBuilder();
         String line;
         while ((line = in.readLine()) != null) {
@@ -43,9 +41,14 @@ public class HTTPRequestsSteps {
 
     @And("^the response body should be empty$")
     public void theResponseBodyShouldBeEmpty() throws Throwable {
-        BufferedReader in =
-                new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        String response = getFullResponse(in);
-        assertFalse(response.contains("<body>"));
+        try {
+            BufferedReader in =
+                    new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String response = getFullResponse(in);
+            assertFalse(response.contains("<body>"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
     }
 }
