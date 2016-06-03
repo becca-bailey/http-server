@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RequestHandler {
-    String request;
+    private String request;
     private List<String> routes = Arrays.asList("/", "/echo");
 
     public RequestHandler(String request) {

@@ -6,7 +6,7 @@ public class Server {
         return (parameter.equals("-p"));
     }
 
-    public static void validateArgs(String[] args) {
+    private static void validateArgs(String[] args) {
         if (args.length > 0) {
             if (!isPortParameter(args[0])) {
                 System.err.println("Usage: java -jar package/http-server-0.0.1.jar -p <port number>");
