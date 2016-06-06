@@ -33,8 +33,12 @@ public class Server {
 
     public static void main(String[] args) throws Exception {
         int portNumber = getPortNumber(args);
-        ServerRunner runner = new ServerRunner(portNumber);
-        runner.run();
+        try {
+            ServerRunner runner = new ServerRunner(portNumber);
+            runner.run();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 }
 
