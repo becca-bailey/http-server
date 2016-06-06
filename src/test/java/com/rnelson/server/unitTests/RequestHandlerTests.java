@@ -10,6 +10,7 @@ public class RequestHandlerTests {
     private RequestHandler echoHandler = new RequestHandler("GET /echo HTTP/1.1");
     private RequestHandler headHandler = new RequestHandler("HEAD / HTTP/1.1");
     private RequestHandler getHandler = new RequestHandler("GET / HTTP/1.1");
+    private RequestHandler postEchoHandler = new RequestHandler("POST /echo?parameter=hello HTTP/1.1");
 
     @Test
     public void getResponseReturnsEcho() throws Throwable {
@@ -33,8 +34,20 @@ public class RequestHandlerTests {
     }
 
     @Test
-    public void parameterReturnsRequestParameter() throws Throwable {
-        assertEquals("/", getHandler.parameter());
-        assertEquals("/echo", echoHandler.parameter());
+    public void uriReturnsRequestURI() throws Throwable {
+        assertEquals("/", getHandler.uri());
+        assertEquals("/echo", echoHandler.uri());
+        assertEquals("/echo", postEchoHandler.uri());
+    }
+
+    @Test
+    public void queryStringsReturnsURLParameters() throws Throwable {
+        assertEquals("hello", postEchoHandler.queryString());
+    }
+
+    @Test
+    public void echoResponseEchoesGetRequest() throws Throwable {
+        assertEquals("GET /echo HTTP/1.1", echoHandler.getEchoResponse());
+        assertEquals("hello", postEchoHandler.getEchoResponse());
     }
 }

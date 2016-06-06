@@ -67,7 +67,7 @@ public class HTTPRequestsSteps {
         return match;
     }
 
-    private String getFullResponse(BufferedReader in) throws IOException {
+    private String getResponseBody(BufferedReader in) throws IOException {
         StringBuilder response = new StringBuilder();
         String line;
         while ((line = in.readLine()) != null) {
@@ -76,19 +76,14 @@ public class HTTPRequestsSteps {
         return response.toString();
     }
 
-    public static String getResponseBody(String response) throws IOException {
-        return findMatch("\r\n\r\n.*", response);
-    }
-
     @And("^the response body should be empty$")
     public void theResponseBodyShouldBeEmpty() throws Throwable {
         try {
             InputStream connectionInput = connection.getInputStream();
             BufferedReader in =
                     new BufferedReader(new InputStreamReader(connectionInput));
-            String response = getFullResponse(in);
-            String responseBody = getResponseBody(response);
-            assertEquals(null, responseBody);
+            String response = getResponseBody(in);
+            assertEquals("", response);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -100,9 +95,8 @@ public class HTTPRequestsSteps {
             InputStream connectionInput = connection.getInputStream();
             BufferedReader in =
                     new BufferedReader(new InputStreamReader(connectionInput));
-            String response = getFullResponse(in);
-            String responseBody = getResponseBody(response);
-            assertEquals(body, responseBody);
+            String response = getResponseBody(in);
+            assertEquals(body, response);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
