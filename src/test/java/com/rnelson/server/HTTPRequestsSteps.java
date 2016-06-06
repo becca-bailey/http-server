@@ -1,11 +1,14 @@
 package com.rnelson.server;
 
+import cucumber.api.PendingException;
 import cucumber.api.java.After;
 import cucumber.api.java.en.*;
 import java.io.*;
 import java.net.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static org.junit.Assert.*;
 
 public class HTTPRequestsSteps {
     private HttpURLConnection connection;
@@ -31,6 +34,19 @@ public class HTTPRequestsSteps {
         }
     }
 
+    @When("^I POST \"([^\"]*)\" to \"([^\"]*)\"$")
+    public void iPOSTTo(String parameter, String uri) throws Throwable {
+        try {
+            URL url = new URL("http://localhost:" + port + uri + "?parameter=" + parameter);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setDoOutput(true);
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content type", "application/x-www-form-urlencoded");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Then("^the response status should be (\\d+)$")
     public void theResponseStatusShouldBe(Integer status) throws Throwable {
         try {
@@ -41,14 +57,27 @@ public class HTTPRequestsSteps {
         }
     }
 
-    private String getFullResponse(BufferedReader in) throws Throwable {
+    private static String findMatch(String regex, String request) {
+        String match = null;
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(request);
+        if (matcher.find()) {
+            match = matcher.group().trim();
+        }
+        return match;
+    }
+
+    private String getFullResponse(BufferedReader in) throws IOException {
         StringBuilder response = new StringBuilder();
         String line;
         while ((line = in.readLine()) != null) {
             response.append(line);
         }
-        System.out.println(response.toString());
         return response.toString();
+    }
+
+    public static String getResponseBody(String response) throws IOException {
+        return findMatch("\r\n\r\n.*", response);
     }
 
     @And("^the response body should be empty$")
@@ -58,11 +87,22 @@ public class HTTPRequestsSteps {
             BufferedReader in =
                     new BufferedReader(new InputStreamReader(connectionInput));
             String response = getFullResponse(in);
-            assertFalse(response.contains("<body>"));
+            String responseBody = getResponseBody(response);
+            assertEquals(null, responseBody);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
-//            in.close();
-//            connectionInput.close();
-//            connection.disconnect();
+    @And("^the response body should be \"([^\"]*)\"$")
+    public void theResponseBodyShouldBe(String body) throws Throwable {
+        try {
+            InputStream connectionInput = connection.getInputStream();
+            BufferedReader in =
+                    new BufferedReader(new InputStreamReader(connectionInput));
+            String response = getFullResponse(in);
+            String responseBody = getResponseBody(response);
+            assertEquals(body, responseBody);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
