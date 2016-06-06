@@ -43,19 +43,26 @@ public class HTTPRequestsSteps {
         while ((line = in.readLine()) != null) {
             response.append(line);
         }
+        System.out.println(response.toString());
         return response.toString();
     }
 
     @And("^the response body should be empty$")
     public void theResponseBodyShouldBeEmpty() throws Throwable {
-        InputStream connectionInput = connection.getInputStream();
-        BufferedReader in =
-                new BufferedReader(new InputStreamReader(connectionInput));
-        String response = getFullResponse(in);
-        assertFalse(response.contains("<body>"));
 
-        in.close();
-        connectionInput.close();
-        connection.disconnect();
+        try {
+            InputStream connectionInput = connection.getInputStream();
+            BufferedReader in =
+                    new BufferedReader(new InputStreamReader(connectionInput));
+            String response = getFullResponse(in);
+            assertFalse(response.contains("<body>"));
+
+            in.close();
+            connectionInput.close();
+            connection.disconnect();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
     }
 }
