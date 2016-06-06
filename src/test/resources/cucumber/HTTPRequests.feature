@@ -22,3 +22,9 @@ Feature: HTTP Requests
     When I request "HEAD" "/foobar"
     Then the response status should be 404
     And the response body should be empty
+
+  Scenario: Server responds to POST /echo with echo
+    Given the server is running on port 9000
+    When I POST "hello" to "/echo"
+    Then the response status should be 200
+    And the response body should be "hello"
