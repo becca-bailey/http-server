@@ -11,7 +11,7 @@ public class HTTPRequestsSteps {
 
     @Given("^the server is running on port (\\d+)$")
     public void theServerIsRunningOnPort(int port) throws Throwable {
-        Thread server = new Thread(new ServerRunner(5000));
+        Thread server = new Thread(new ServerRunner(port));
         server.start();
     }
 
@@ -41,14 +41,9 @@ public class HTTPRequestsSteps {
 
     @And("^the response body should be empty$")
     public void theResponseBodyShouldBeEmpty() throws Throwable {
-        try {
-            BufferedReader in =
-                    new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String response = getFullResponse(in);
-            assertFalse(response.contains("<body>"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
+        BufferedReader in =
+                new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        String response = getFullResponse(in);
+    assertFalse(response.contains("<body>"));
     }
 }
