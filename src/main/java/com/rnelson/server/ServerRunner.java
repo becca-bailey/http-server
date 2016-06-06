@@ -31,7 +31,8 @@ class ServerRunner implements Runnable {
                             new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
             ) {
                 respondToRequest(out, in);
-            } catch (IOException e) {
+                serverSocket.close();
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
