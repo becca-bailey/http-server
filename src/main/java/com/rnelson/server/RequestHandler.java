@@ -8,8 +8,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RequestHandler {
-    private String request;
-    private List<String> routes = Arrays.asList("/", "/echo");
+    private final String request;
+    private final List<String> routes = Arrays.asList("/", "/echo");
 
     public RequestHandler(String request) {
         this.request = request;
