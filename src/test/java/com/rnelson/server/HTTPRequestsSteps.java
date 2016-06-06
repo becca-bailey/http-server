@@ -1,12 +1,9 @@
 package com.rnelson.server;
 
-import cucumber.api.PendingException;
-import cucumber.api.java.After;
 import cucumber.api.java.en.*;
 import java.io.*;
 import java.net.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.regex.*;
 
 import static org.junit.Assert.*;
 
@@ -55,16 +52,6 @@ public class HTTPRequestsSteps {
         } catch (ConnectException e) {
             e.printStackTrace();
         }
-    }
-
-    private static String findMatch(String regex, String request) {
-        String match = null;
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(request);
-        if (matcher.find()) {
-            match = matcher.group().trim();
-        }
-        return match;
     }
 
     private String getResponseBody(BufferedReader in) throws IOException {

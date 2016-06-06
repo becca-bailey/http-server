@@ -10,7 +10,6 @@ import java.io.PrintStream;
 
 public class ServerSteps {
     private int portNumber;
-    private String errorMessage;
 
     @When("^the server is called with no parameters$")
     public void theServerIsCalledWithNoParameters() throws Throwable {
@@ -29,7 +28,7 @@ public class ServerSteps {
         try {
             portNumber = Server.getPortNumber(args);
         } catch(Exception e){
-            errorMessage = e.getMessage();
+            String errorMessage = e.getMessage();
         }
     }
 
