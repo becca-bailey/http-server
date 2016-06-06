@@ -7,12 +7,18 @@ Feature: HTTP Requests
     And the response body should be empty
 
   Scenario: Server responds to simple GET with 200
-    Given the server is running on port 5000
+    Given the server is running on port 6000
     When I request "GET" "/"
     Then the response status should be 200
 
   Scenario: Server responds to HEAD request with 200
-    Given the server is running on port 5000
+    Given the server is running on port 7000
     When I request "HEAD" "/"
     Then the response status should be 200
+    And the response body should be empty
+
+  Scenario: Server responds to HEAD /foobar with 404
+    Given the server is running on port 8000
+    When I request "HEAD" "/foobar"
+    Then the response status should be 404
     And the response body should be empty

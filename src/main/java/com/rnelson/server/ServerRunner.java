@@ -3,11 +3,11 @@ package com.rnelson.server;
 import java.io.*;
 import java.net.*;
 
-public class ServerRunner implements Runnable {
-    int serverPort;
-    Boolean running = true;
+class ServerRunner implements Runnable {
+    private int serverPort;
+    private Boolean running = true;
 
-    public ServerRunner(int port) {
+    ServerRunner(int port) {
         this.serverPort = port;
     }
 

@@ -7,11 +7,10 @@ import org.junit.Assert;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.net.Socket;
 
 public class ServerSteps {
-    int portNumber;
-    String errorMessage;
+    private int portNumber;
+    private String errorMessage;
 
     @When("^the server is called with no parameters$")
     public void theServerIsCalledWithNoParameters() throws Throwable {

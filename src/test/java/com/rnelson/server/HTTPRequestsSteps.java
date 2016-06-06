@@ -1,7 +1,5 @@
 package com.rnelson.server;
 
-import cucumber.api.PendingException;
-import cucumber.api.java.After;
 import cucumber.api.java.en.*;
 import java.io.*;
 import java.net.*;
@@ -13,7 +11,7 @@ public class HTTPRequestsSteps {
 
     @Given("^the server is running on port (\\d+)$")
     public void theServerIsRunningOnPort(int port) throws Throwable {
-        Thread server = new Thread(new ServerRunner(5000));
+        Thread server = new Thread(new ServerRunner(port));
         server.start();
     }
 
@@ -32,7 +30,7 @@ public class HTTPRequestsSteps {
         assertEquals(status, responseStatus);
     }
 
-    public String getFullResponse(BufferedReader in) throws Throwable {
+    private String getFullResponse(BufferedReader in) throws Throwable {
         StringBuilder response = new StringBuilder();
         String line;
         while ((line = in.readLine()) != null) {
@@ -46,6 +44,6 @@ public class HTTPRequestsSteps {
         BufferedReader in =
                 new BufferedReader(new InputStreamReader(connection.getInputStream()));
         String response = getFullResponse(in);
-        assertFalse(response.contains("<body>"));
+    assertFalse(response.contains("<body>"));
     }
 }
