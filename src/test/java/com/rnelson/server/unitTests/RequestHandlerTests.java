@@ -11,6 +11,8 @@ public class RequestHandlerTests {
     private final RequestHandler headHandler = new RequestHandler("HEAD / HTTP/1.1");
     private final RequestHandler getHandler = new RequestHandler("GET / HTTP/1.1");
     private final RequestHandler postEchoHandler = new RequestHandler("POST /echo?parameter=hello HTTP/1.1");
+    private final RequestHandler simplePostHandler = new RequestHandler("POST /form?my=data HTTP/1.1");
+    private final RequestHandler notFoundHandler = new RequestHandler("GET /foobar HTTP/1.1");
 
     @Test
     public void getResponseReturnsEcho() throws Throwable {
@@ -25,6 +27,16 @@ public class RequestHandlerTests {
     @Test
     public void getResponseReturnsSimpleGet() throws Throwable {
         assertEquals(okayResponse, getHandler.getResponse());
+    }
+
+    @Test
+    public void getResponseReturns404() throws Throwable {
+        assertEquals("HTTP/1.1 404 NOT FOUND", notFoundHandler.getResponse());
+    }
+
+    @Test
+    public void getResponseReturns201ForPOST() throws Throwable {
+        assertEquals("HTTP/1.1 201 CREATED", simplePostHandler.getResponse());
     }
 
     @Test
@@ -46,7 +58,7 @@ public class RequestHandlerTests {
     }
 
     @Test
-    public void echoResponseEchoesGetRequest() throws Throwable {
-        assertEquals("hello", postEchoHandler.getEchoResponse());
+    public void postResponseReturns201() throws Throwable {
+        assertEquals("HTTP/1.1 201 CREATED", simplePostHandler.POSTResponse());
     }
 }

@@ -9,7 +9,11 @@ import java.util.regex.Pattern;
 
 public class RequestHandler {
     private final String request;
-    private final List<String> routes = Arrays.asList("/", "/echo");
+    private final String okayStatus = "HTTP/1.1 200 OK\r\n\r\n";
+    private final String notFound = "HTTP/1.1 404 Not Found\r\n\r\n";
+    private final String created = "HTTP/1.1 201 CREATED\r\n\r\n";
+
+    private final List<String> routes = Arrays.asList("/", "/echo", "/form");
 
     public RequestHandler(String request) {
         this.request = request;
@@ -35,7 +39,8 @@ public class RequestHandler {
     }
 
     public String uri() throws MalformedURLException {
-        return fullURL().getPath();
+        URL sampleURL = fullURL();
+        return sampleURL.getPath();
     }
 
     public String queryString() throws MalformedURLException {
@@ -43,16 +48,32 @@ public class RequestHandler {
         return findMatch("[a-z]*$", queryString);
     }
 
-    public String getEchoResponse() throws MalformedURLException {
-        return (method().equals("POST")) ? queryString() : "";
+    public String POSTResponse() throws MalformedURLException {
+        String uri = uri();
+        if (uri.equals("/echo")) {
+            return okayStatus + queryString();
+        } else {
+            return created;
+        }
     }
 
     public String getResponse() throws MalformedURLException {
-        String okayStatus = "HTTP/1.1 200 OK\r\n\r\n";
-        String notFound = "HTTP/1.1 404 Not Found\r\n\r\n";
-        String response = routes.contains(uri()) ? okayStatus : notFound;
-        if (method().equals("POST")) {
-            response += getEchoResponse();
+        String response;
+        if (routes.contains(uri())) {
+            response = getResponseForValidRoute();
+        } else {
+            response = notFound;
+        }
+        return response;
+    }
+
+    private String getResponseForValidRoute() throws MalformedURLException {
+        String method = method();
+        String response;
+        if (method.equals("POST")) {
+            response = POSTResponse();
+        } else {
+            response = okayStatus;
         }
         return response;
     }

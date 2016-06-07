@@ -44,7 +44,7 @@ public class HTTPRequestsSteps {
     @When("^I POST \"([^\"]*)\" to \"([^\"]*)\"$")
     public void iPOSTTo(String parameter, String uri) throws Throwable {
         try {
-            URL url = new URL("http://localhost:" + port + uri + "?parameter=" + parameter);
+            URL url = new URL("http://localhost:" + port + uri + "?" + parameter);
             connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
             connection.setRequestMethod("POST");
