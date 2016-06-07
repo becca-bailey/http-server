@@ -4,8 +4,8 @@ import java.io.*;
 import java.net.*;
 
 class ServerRunner implements Runnable {
-    private int serverPort;
-    private Boolean running = true;
+    private final int serverPort;
+    private final Boolean running = true;
 
     ServerRunner(int port) {
         this.serverPort = port;
@@ -32,6 +32,7 @@ class ServerRunner implements Runnable {
             ) {
                 respondToRequest(out, in);
                 serverSocket.close();
+                clientSocket.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }

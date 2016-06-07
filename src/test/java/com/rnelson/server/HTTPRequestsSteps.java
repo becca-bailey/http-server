@@ -1,11 +1,11 @@
 package com.rnelson.server;
 
-import cucumber.api.java.After;
 import cucumber.api.java.en.*;
 import java.io.*;
 import java.net.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import java.util.regex.*;
+
+import static org.junit.Assert.*;
 
 public class HTTPRequestsSteps {
     private HttpURLConnection connection;
@@ -31,6 +31,19 @@ public class HTTPRequestsSteps {
         }
     }
 
+    @When("^I POST \"([^\"]*)\" to \"([^\"]*)\"$")
+    public void iPOSTTo(String parameter, String uri) throws Throwable {
+        try {
+            URL url = new URL("http://localhost:" + port + uri + "?parameter=" + parameter);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setDoOutput(true);
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content type", "application/x-www-form-urlencoded");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Then("^the response status should be (\\d+)$")
     public void theResponseStatusShouldBe(Integer status) throws Throwable {
         try {
@@ -41,13 +54,12 @@ public class HTTPRequestsSteps {
         }
     }
 
-    private String getFullResponse(BufferedReader in) throws Throwable {
+    private String getResponseBody(BufferedReader in) throws IOException {
         StringBuilder response = new StringBuilder();
         String line;
         while ((line = in.readLine()) != null) {
             response.append(line);
         }
-        System.out.println(response.toString());
         return response.toString();
     }
 
@@ -57,12 +69,21 @@ public class HTTPRequestsSteps {
             InputStream connectionInput = connection.getInputStream();
             BufferedReader in =
                     new BufferedReader(new InputStreamReader(connectionInput));
-            String response = getFullResponse(in);
-            assertFalse(response.contains("<body>"));
+            String response = getResponseBody(in);
+            assertEquals("", response);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
-//            in.close();
-//            connectionInput.close();
-//            connection.disconnect();
+    @And("^the response body should be \"([^\"]*)\"$")
+    public void theResponseBodyShouldBe(String body) throws Throwable {
+        try {
+            InputStream connectionInput = connection.getInputStream();
+            BufferedReader in =
+                    new BufferedReader(new InputStreamReader(connectionInput));
+            String response = getResponseBody(in);
+            assertEquals(body, response);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
