@@ -23,8 +23,9 @@ public class HTTPRequestsSteps {
             serverRunner = new ServerRunner(port);
             Thread server = new Thread(serverRunner);
             server.start();
+        } finally {
+            assertTrue(serverRunner.isRunning());
         }
-        assertTrue(serverRunner.isRunning());
     }
 
     @When("^I request \"([^\"]*)\" \"([^\"]*)\"$")
@@ -55,12 +56,8 @@ public class HTTPRequestsSteps {
 
     @Then("^the response status should be (\\d+)$")
     public void theResponseStatusShouldBe(Integer status) throws Throwable {
-        try {
-            Integer responseStatus = connection.getResponseCode();
-            assertEquals(status, responseStatus);
-        } catch (ConnectException e) {
-            e.printStackTrace();
-        }
+        Integer responseStatus = connection.getResponseCode();
+        assertEquals(status, responseStatus);
     }
 
     private String getResponseBody(BufferedReader in) throws IOException {
@@ -74,15 +71,17 @@ public class HTTPRequestsSteps {
 
     @And("^the response body should be \"([^\"]*)\"$")
     public void theResponseBodyShouldBe(String body) throws Throwable {
+        String response = null;
         try (
                 InputStream connectionInput = connection.getInputStream();
                 BufferedReader in =
                         new BufferedReader(new InputStreamReader(connectionInput));
         ){
-            String response = getResponseBody(in);
-            assertEquals(body, response);
+            response = getResponseBody(in);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            response = "";
+        } finally {
+            assertEquals(body, response);
         }
     }
 
