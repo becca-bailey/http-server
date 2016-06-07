@@ -41,7 +41,8 @@ class ServerRunner implements Runnable {
                 respondToRequest(out, in);
                 serverSocket.close();
                 clientSocket.close();
-            } catch (Exception e) {
+            } catch (BindException ignored) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }

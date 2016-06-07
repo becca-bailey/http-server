@@ -23,8 +23,9 @@ public class HTTPRequestsSteps {
             serverRunner = new ServerRunner(port);
             Thread server = new Thread(serverRunner);
             server.start();
+        } finally {
+            assertTrue(serverRunner.isRunning());
         }
-        assertTrue(serverRunner.isRunning());
     }
 
     @When("^I request \"([^\"]*)\" \"([^\"]*)\"$")
@@ -58,8 +59,7 @@ public class HTTPRequestsSteps {
         try {
             Integer responseStatus = connection.getResponseCode();
             assertEquals(status, responseStatus);
-        } catch (ConnectException e) {
-            e.printStackTrace();
+        } catch (FileNotFoundException ignored) {
         }
     }
 
@@ -81,8 +81,7 @@ public class HTTPRequestsSteps {
         ){
             String response = getResponseBody(in);
             assertEquals(body, response);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        } catch (FileNotFoundException ignored) {
         }
     }
 
