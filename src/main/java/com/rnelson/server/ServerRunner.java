@@ -5,7 +5,7 @@ import java.net.*;
 
 class ServerRunner implements Runnable {
     private final int serverPort;
-    private final Boolean running = true;
+    private Boolean running = true;
 
     ServerRunner(int port) {
         this.serverPort = port;
@@ -16,6 +16,10 @@ class ServerRunner implements Runnable {
         RequestHandler handler = new RequestHandler(request);
         out.write(handler.getResponse());
         out.close();
+    }
+
+    public void stop() {
+        this.running = false;
     }
 
     @Override

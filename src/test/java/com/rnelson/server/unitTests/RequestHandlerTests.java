@@ -14,7 +14,7 @@ public class RequestHandlerTests {
 
     @Test
     public void getResponseReturnsEcho() throws Throwable {
-        assertEquals(okayResponse + "GET /echo HTTP/1.1", echoHandler.getResponse());
+        assertEquals(okayResponse, echoHandler.getResponse());
     }
 
     @Test
@@ -47,7 +47,6 @@ public class RequestHandlerTests {
 
     @Test
     public void echoResponseEchoesGetRequest() throws Throwable {
-        assertEquals("GET /echo HTTP/1.1", echoHandler.getEchoResponse());
         assertEquals("hello", postEchoHandler.getEchoResponse());
     }
 }
