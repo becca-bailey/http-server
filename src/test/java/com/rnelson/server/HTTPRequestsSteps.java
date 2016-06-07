@@ -1,5 +1,6 @@
 package com.rnelson.server;
 
+import cucumber.api.java.After;
 import cucumber.api.java.en.*;
 import java.io.*;
 import java.net.*;
@@ -10,11 +11,13 @@ import static org.junit.Assert.*;
 public class HTTPRequestsSteps {
     private HttpURLConnection connection;
     private Integer port;
+    private ServerRunner serverRunner;
 
     @Given("^the server is running on port (\\d+)$")
     public void theServerIsRunningOnPort(final int port) throws Throwable {
         this.port = port;
-        Thread server = new Thread(new ServerRunner(port));
+        serverRunner = new ServerRunner(port);
+        Thread server = new Thread(serverRunner);
         server.start();
     }
 
@@ -87,5 +90,10 @@ public class HTTPRequestsSteps {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    @After
+    public void stopServerRunner() {
+        serverRunner.stop();
     }
 }
