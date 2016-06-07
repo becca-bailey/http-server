@@ -74,6 +74,8 @@ public class HTTPRequestsSteps {
                     new BufferedReader(new InputStreamReader(connectionInput));
             String response = getResponseBody(in);
             assertEquals("", response);
+
+            in.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -93,7 +95,8 @@ public class HTTPRequestsSteps {
     }
 
     @After
-    public void stopServerRunner() {
+    public void stopRunnerAndConnections() {
+        connection.disconnect();
         serverRunner.stop();
     }
 }
