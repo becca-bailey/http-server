@@ -22,6 +22,10 @@ class ServerRunner implements Runnable {
         this.running = false;
     }
 
+    public Boolean isRunning() {
+        return running;
+    }
+
     @Override
     public void run() {
         while (running) {
@@ -32,7 +36,7 @@ class ServerRunner implements Runnable {
                     OutputStreamWriter out =
                             new OutputStreamWriter(clientSocket.getOutputStream());
                     BufferedReader in =
-                            new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
+                            new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             ) {
                 respondToRequest(out, in);
                 serverSocket.close();

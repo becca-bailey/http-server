@@ -1,6 +1,7 @@
 package com.rnelson.server;
 
 import cucumber.api.java.After;
+import cucumber.api.java.Before;
 import cucumber.api.java.en.*;
 import java.io.*;
 import java.net.*;
@@ -16,9 +17,14 @@ public class HTTPRequestsSteps {
     @Given("^the server is running on port (\\d+)$")
     public void theServerIsRunningOnPort(final int port) throws Throwable {
         this.port = port;
-        serverRunner = new ServerRunner(port);
-        Thread server = new Thread(serverRunner);
-        server.start();
+        try {
+            serverRunner.isRunning();
+        } catch(NullPointerException e) {
+            serverRunner = new ServerRunner(port);
+            Thread server = new Thread(serverRunner);
+            server.start();
+        }
+        assertTrue(serverRunner.isRunning());
     }
 
     @When("^I request \"([^\"]*)\" \"([^\"]*)\"$")
@@ -66,27 +72,13 @@ public class HTTPRequestsSteps {
         return response.toString();
     }
 
-    @And("^the response body should be empty$")
-    public void theResponseBodyShouldBeEmpty() throws Throwable {
-        try {
-            InputStream connectionInput = connection.getInputStream();
-            BufferedReader in =
-                    new BufferedReader(new InputStreamReader(connectionInput));
-            String response = getResponseBody(in);
-            assertEquals("", response);
-
-            in.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
     @And("^the response body should be \"([^\"]*)\"$")
     public void theResponseBodyShouldBe(String body) throws Throwable {
-        try {
-            InputStream connectionInput = connection.getInputStream();
-            BufferedReader in =
-                    new BufferedReader(new InputStreamReader(connectionInput));
+        try (
+                InputStream connectionInput = connection.getInputStream();
+                BufferedReader in =
+                        new BufferedReader(new InputStreamReader(connectionInput));
+        ){
             String response = getResponseBody(in);
             assertEquals(body, response);
         } catch (FileNotFoundException e) {
@@ -97,6 +89,8 @@ public class HTTPRequestsSteps {
     @After
     public void stopRunnerAndConnections() {
         connection.disconnect();
-        serverRunner.stop();
+        if (serverRunner.isRunning()) {
+            serverRunner.stop();
+        }
     }
 }
