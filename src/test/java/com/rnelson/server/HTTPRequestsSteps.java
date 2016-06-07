@@ -49,6 +49,7 @@ public class HTTPRequestsSteps {
             connection.setDoOutput(true);
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content type", "application/x-www-form-urlencoded");
+            connection.connect();
         } catch (IOException e) {
             e.printStackTrace();
         }
