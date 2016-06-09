@@ -13,22 +13,20 @@ class ServerRunner implements Runnable {
     }
 
     private String getFullRequest(BufferedReader in) throws IOException {
-        return in.readLine();
-//        StringBuilder request = new StringBuilder();
-//        String line;
-//        System.out.println(in.ready());
-//        request.append(in.readLine());
-//        while(in.ready()) {
-//            line = in.readLine();
-//            request.append(line);
-//            request.append("\n");
-//        }
-//        return request.toString();
+        StringBuilder request = new StringBuilder();
+        String line;
+        System.out.println(in.ready());
+        request.append(in.readLine());
+        while(in.ready()) {
+            line = in.readLine();
+            request.append(line);
+            request.append("\n");
+        }
+        return request.toString();
     }
 
     private void respondToRequest (OutputStreamWriter out, BufferedReader in) throws IOException {
-        String request = getFullRequest(in);
-        System.out.println(request);
+        String request = in.readLine();
         RequestHandler handler = new RequestHandler(request);
         out.write(handler.getResponse());
         out.close();

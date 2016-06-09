@@ -31,7 +31,6 @@ public class HTTPRequestsSteps {
     @When("^I request \"([^\"]*)\" \"([^\"]*)\"$")
     public void iRequest(String method, String uri) throws Throwable {
         try {
-            Socket clientSocket = new Socket("localhost", port);
             URL url = new URL("http://localhost:" + port + uri);
             connection = (HttpURLConnection)url.openConnection();
             connection.setDoOutput(true);
