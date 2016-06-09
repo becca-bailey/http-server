@@ -3,11 +3,14 @@ package com.rnelson.server.unitTests;
 import com.rnelson.server.RequestHandler;
 import org.junit.Test;
 
+import java.util.Arrays;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class RequestHandlerTests {
     private final String okayResponse = "HTTP/1.1 200 OK\r\n\r\n";
-    private final RequestHandler echoHandler = new RequestHandler("GET /echo HTTP/1.1");
+    private final RequestHandler echoHandler = new RequestHandler("GET /echo HTTP/1.1\nHost: localhost:8000\n\n");
     private final RequestHandler headHandler = new RequestHandler("HEAD / HTTP/1.1");
     private final RequestHandler getHandler = new RequestHandler("GET / HTTP/1.1");
     private final RequestHandler postEchoHandler = new RequestHandler("POST /echo?parameter=hello HTTP/1.1");

@@ -31,6 +31,7 @@ public class HTTPRequestsSteps {
     @When("^I request \"([^\"]*)\" \"([^\"]*)\"$")
     public void iRequest(String method, String uri) throws Throwable {
         try {
+            Socket clientSocket = new Socket("localhost", port);
             URL url = new URL("http://localhost:" + port + uri);
             connection = (HttpURLConnection)url.openConnection();
             connection.setDoOutput(true);
@@ -41,15 +42,21 @@ public class HTTPRequestsSteps {
         }
     }
 
+
+
     @When("^I POST \"([^\"]*)\" to \"([^\"]*)\"$")
     public void iPOSTTo(String parameter, String uri) throws Throwable {
         try {
-            URL url = new URL("http://localhost:" + port + uri + "?" + parameter);
+            URL url = new URL("http://localhost:" + port + uri);
             connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content type", "application/x-www-form-urlencoded");
             connection.connect();
+
+            OutputStream out = connection.getOutputStream();
+            out.write(parameter.getBytes());
+            out.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

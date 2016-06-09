@@ -10,13 +10,17 @@ import java.util.regex.Pattern;
 public class RequestHandler {
     private final String request;
     private final String okayStatus = "HTTP/1.1 200 OK\r\n\r\n";
-    private final String notFound = "HTTP/1.1 404 Not Found\r\n\r\n";
+    private final String notFound = "HTTP/1.1 404 NOT FOUND\r\n\r\n";
     private final String created = "HTTP/1.1 201 CREATED\r\n\r\n";
 
     private final List<String> routes = Arrays.asList("/", "/echo", "/form");
 
     public RequestHandler(String request) {
         this.request = request;
+    }
+
+    public String[] splitRequest() {
+        return request.split("\n");
     }
 
     private String findMatch(String regex, String request) {
@@ -51,7 +55,7 @@ public class RequestHandler {
     public String POSTResponse() throws MalformedURLException {
         String uri = uri();
         if (uri.equals("/echo")) {
-            return okayStatus + queryString();
+            return okayStatus + "hello";
         } else {
             return created;
         }
