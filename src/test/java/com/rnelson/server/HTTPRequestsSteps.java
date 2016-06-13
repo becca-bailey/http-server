@@ -44,17 +44,21 @@ public class HTTPRequestsSteps {
 
 
     @When("^I POST \"([^\"]*)\" to \"([^\"]*)\"$")
-    public void iPOSTTo(String parameter, String uri) throws Throwable {
+    public void iPOSTTo(String postBody, String uri) throws Throwable {
         try {
             URL url = new URL("http://localhost:" + port + uri);
             connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content type", "application/x-www-form-urlencoded");
+            connection.setRequestProperty("charset", "utf-8");
+            connection.setRequestProperty("Content-Length", Integer.toString(postBody.length()));
+            connection.setConnectTimeout(1000);
+            connection.setReadTimeout(1000);
             connection.connect();
 
             OutputStream out = connection.getOutputStream();
-            out.write(parameter.getBytes());
+            out.write(postBody.getBytes());
             out.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -69,11 +73,12 @@ public class HTTPRequestsSteps {
 
     private String getResponseBody(BufferedReader in) throws IOException {
         StringBuilder response = new StringBuilder();
-        String line;
-        while ((line = in.readLine()) != null) {
-            response.append(line);
+        response.append(in.readLine());
+        while(in.ready()) {
+            response.append("\n");
+            response.append((char) in.read());
         }
-        return response.toString();
+        return response.toString().trim();
     }
 
     @And("^the response body should be \"([^\"]*)\"$")

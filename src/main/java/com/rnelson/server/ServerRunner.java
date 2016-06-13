@@ -2,7 +2,6 @@ package com.rnelson.server;
 
 import java.io.*;
 import java.net.*;
-import java.sql.Time;
 
 class ServerRunner implements Runnable {
     private final int serverPort;
@@ -14,21 +13,19 @@ class ServerRunner implements Runnable {
 
     private String getFullRequest(BufferedReader in) throws IOException {
         StringBuilder request = new StringBuilder();
-        String line;
-        System.out.println(in.ready());
         request.append(in.readLine());
+        request.append("\n");
         while(in.ready()) {
-            line = in.readLine();
-            request.append(line);
-            request.append("\n");
+            request.append((char) in.read());
         }
         return request.toString();
     }
 
     private void respondToRequest (OutputStreamWriter out, BufferedReader in) throws IOException {
-        String request = in.readLine();
+        String request = getFullRequest(in);
         RequestHandler handler = new RequestHandler(request);
-        out.write(handler.getResponse());
+        String response = handler.getResponse();
+        out.write(response);
         out.close();
     }
 

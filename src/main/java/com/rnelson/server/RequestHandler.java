@@ -8,19 +8,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RequestHandler {
-    private final String request;
-    private final String okayStatus = "HTTP/1.1 200 OK\r\n\r\n";
-    private final String notFound = "HTTP/1.1 404 NOT FOUND\r\n\r\n";
-    private final String created = "HTTP/1.1 201 CREATED\r\n\r\n";
+    private final String[] request;
+    private final String okayStatus = "HTTP/1.1 200 OK\r\n";
+    private final String notFound = "HTTP/1.1 404 NOT FOUND\r\n";
+    private final String created = "HTTP/1.1 201 CREATED\r\n";
 
     private final List<String> routes = Arrays.asList("/", "/echo", "/form");
 
     public RequestHandler(String request) {
-        this.request = request;
-    }
-
-    public String[] splitRequest() {
-        return request.split("\n");
+        this.request = request.split("\n");
     }
 
     private String findMatch(String regex, String request) {
@@ -33,13 +29,30 @@ public class RequestHandler {
         return match;
     }
 
+    public String getRequestBody() {
+        StringBuilder requestBody = new StringBuilder();
+        Integer firstLineOfBody;
+        try {
+            firstLineOfBody = request.length + Arrays.asList(request).indexOf("\n");
+        } catch (Exception e) {
+            firstLineOfBody = 10000;
+        }
+        for (int i = 0; i < request.length; i++) {
+            if (i >= firstLineOfBody) {
+                requestBody.append(request[i]);
+                requestBody.append("\n");
+            }
+        }
+        return requestBody.toString();
+    }
+
     private URL fullURL() throws MalformedURLException {
-        String uriAndParameters = findMatch("\\/.*\\s", request);
+        String uriAndParameters = findMatch("\\/.*\\s", request[0]);
         return new URL("http://example.com" + uriAndParameters);
     }
 
     public String method() {
-        return findMatch("^\\S+", request);
+        return findMatch("^\\S+", request[0]);
     }
 
     public String uri() throws MalformedURLException {
@@ -52,15 +65,6 @@ public class RequestHandler {
         return findMatch("[a-z]*$", queryString);
     }
 
-    public String POSTResponse() throws MalformedURLException {
-        String uri = uri();
-        if (uri.equals("/echo")) {
-            return okayStatus + "hello";
-        } else {
-            return created;
-        }
-    }
-
     public String getResponse() throws MalformedURLException {
         String response;
         if (routes.contains(uri())) {
@@ -68,7 +72,7 @@ public class RequestHandler {
         } else {
             response = notFound;
         }
-        return response;
+        return response + "\r\n";
     }
 
     private String getResponseForValidRoute() throws MalformedURLException {
@@ -78,6 +82,23 @@ public class RequestHandler {
             response = POSTResponse();
         } else {
             response = okayStatus;
+        }
+        return response;
+    }
+
+    public String POSTResponse() throws MalformedURLException {
+        String response;
+        String body = getRequestBody();
+        String location = "Location: http://localhost:8000/echo";
+        String contentLength = "Content-Length: " + Integer.toString(body.length());
+        String uri = uri();
+        if (uri.equals("/echo")) {
+            response = created +
+                    location + "\r\n" +
+                    contentLength + "\r\n\r\n" +
+                    body;
+        } else {
+            response = created;
         }
         return response;
     }
