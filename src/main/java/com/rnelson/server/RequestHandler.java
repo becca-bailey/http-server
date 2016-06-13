@@ -43,7 +43,7 @@ public class RequestHandler {
                 requestBody.append("\n");
             }
         }
-        return requestBody.toString();
+        return requestBody.toString().trim();
     }
 
     private URL fullURL() throws MalformedURLException {
@@ -60,11 +60,6 @@ public class RequestHandler {
         return sampleURL.getPath();
     }
 
-    public String queryString() throws MalformedURLException {
-        String queryString = fullURL().getQuery();
-        return findMatch("[a-z]*$", queryString);
-    }
-
     public String getResponse() throws MalformedURLException {
         String response;
         if (routes.contains(uri())) {
@@ -72,7 +67,7 @@ public class RequestHandler {
         } else {
             response = notFound;
         }
-        return response + "\r\n";
+        return response;
     }
 
     private String getResponseForValidRoute() throws MalformedURLException {
