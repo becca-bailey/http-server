@@ -70,7 +70,7 @@ public class HTTPRequestsSteps {
             connectionInput.close();
             in.close();
         } catch (FileNotFoundException ignored) {
-        } catch (Exception e) {
+        } catch (SocketException e) {
             e.printStackTrace();
         }
         return response;

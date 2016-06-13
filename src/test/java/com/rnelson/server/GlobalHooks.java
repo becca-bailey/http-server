@@ -6,15 +6,19 @@ import cucumber.api.java.Before;
 public class GlobalHooks {
     private static boolean serverIsRunning = false;
     static ServerRunner serverRunner;
-    static boolean afterAll = false;
 
     @Before
     public void startServer() {
         if (!serverIsRunning) {
+            Runtime.getRuntime().addShutdownHook(new Thread() {
+                public void run() {
+                    serverRunner.stop();
+                    serverIsRunning = false;
+                }
+            });
             try {
                 serverRunner = new ServerRunner(5000);
                 Thread server = new Thread(serverRunner);
-                Thread.sleep(5000);
                 server.start();
                 serverIsRunning = true;
             }
