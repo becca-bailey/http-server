@@ -11,10 +11,16 @@ public class GlobalHooks {
     @Before
     public void startServer() {
         if (!serverIsRunning) {
-            serverRunner = new ServerRunner(5000);
-            Thread server = new Thread(serverRunner);
-            server.start();
-            serverIsRunning = true;
+            try {
+                serverRunner = new ServerRunner(5000);
+                Thread server = new Thread(serverRunner);
+                Thread.sleep(5000);
+                server.start();
+                serverIsRunning = true;
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

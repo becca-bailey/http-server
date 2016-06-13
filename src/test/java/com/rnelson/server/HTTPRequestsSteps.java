@@ -13,6 +13,7 @@ import static org.junit.Assert.*;
 public class HTTPRequestsSteps {
     private HttpURLConnection connection;
     private Integer port;
+    private OutputStream out;
 
     @Given("^the server is running on port (\\d+)$")
     public void theServerIsRunningOnPort(final int port) throws Throwable {
@@ -42,9 +43,7 @@ public class HTTPRequestsSteps {
             connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
             connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content type", "application/x-www-form-urlencoded");
-            connection.setRequestProperty("charset", "utf-8");
-            connection.setRequestProperty("Content-Length", Integer.toString(postBody.length()));
+            connection.setUseCaches(false);
             connection.connect();
 
             OutputStream out = connection.getOutputStream();
@@ -63,13 +62,16 @@ public class HTTPRequestsSteps {
 
     private String getResponseBody() throws IOException {
         String response = null;
-        try (
-                InputStream connectionInput = connection.getInputStream();
-                BufferedReader in =
-                        new BufferedReader(new InputStreamReader(connectionInput));
-        ){
+        try {
+            InputStream connectionInput = connection.getInputStream();
+            BufferedReader in =
+                    new BufferedReader(new InputStreamReader(connectionInput));
             response = in.readLine();
+            connectionInput.close();
+            in.close();
         } catch (FileNotFoundException ignored) {
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return response;
     }
@@ -84,5 +86,10 @@ public class HTTPRequestsSteps {
     public void theResponseBodyShouldBeEmpty() throws Throwable {
         String response = getResponseBody();
         assertEquals(null, response);
+    }
+
+    @After
+    public void closeConnection() throws Throwable {
+        connection.disconnect();
     }
 }
