@@ -89,12 +89,10 @@ public class RequestHandler {
     public String POSTResponse() throws MalformedURLException {
         String response;
         String body = getRequestBody();
-        String location = "Location: http://localhost:8000/echo";
         String contentLength = "Content-Length: " + Integer.toString(body.length());
         String uri = uri();
         if (uri.equals("/echo")) {
             response = created +
-                    location + "\r\n" +
                     contentLength + "\r\n\r\n" +
                     body;
         } else {

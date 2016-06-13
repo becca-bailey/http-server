@@ -7,25 +7,17 @@ import java.io.*;
 import java.net.*;
 import java.util.regex.*;
 
+import static com.rnelson.server.GlobalHooks.serverRunner;
 import static org.junit.Assert.*;
 
 public class HTTPRequestsSteps {
     private HttpURLConnection connection;
     private Integer port;
-    private ServerRunner serverRunner;
 
     @Given("^the server is running on port (\\d+)$")
     public void theServerIsRunningOnPort(final int port) throws Throwable {
         this.port = port;
-        try {
-            serverRunner.isRunning();
-        } catch(NullPointerException e) {
-            serverRunner = new ServerRunner(port);
-            Thread server = new Thread(serverRunner);
-            server.start();
-        } finally {
-            assertTrue(serverRunner.isRunning());
-        }
+        assertTrue(serverRunner.isRunning());
     }
 
     @When("^I request \"([^\"]*)\" \"([^\"]*)\"$")
@@ -53,8 +45,6 @@ public class HTTPRequestsSteps {
             connection.setRequestProperty("Content type", "application/x-www-form-urlencoded");
             connection.setRequestProperty("charset", "utf-8");
             connection.setRequestProperty("Content-Length", Integer.toString(postBody.length()));
-            connection.setConnectTimeout(1000);
-            connection.setReadTimeout(1000);
             connection.connect();
 
             OutputStream out = connection.getOutputStream();
@@ -71,37 +61,28 @@ public class HTTPRequestsSteps {
         assertEquals(status, responseStatus);
     }
 
-    private String getResponseBody(BufferedReader in) throws IOException {
-        StringBuilder response = new StringBuilder();
-        response.append(in.readLine());
-        while(in.ready()) {
-            response.append("\n");
-            response.append((char) in.read());
-        }
-        return response.toString().trim();
-    }
-
-    @And("^the response body should be \"([^\"]*)\"$")
-    public void theResponseBodyShouldBe(String body) throws Throwable {
+    private String getResponseBody() throws IOException {
         String response = null;
         try (
                 InputStream connectionInput = connection.getInputStream();
                 BufferedReader in =
                         new BufferedReader(new InputStreamReader(connectionInput));
         ){
-            response = getResponseBody(in);
-        } catch (FileNotFoundException e) {
-            response = "";
-        } finally {
-            assertEquals(body, response);
+            response = in.readLine();
+        } catch (FileNotFoundException ignored) {
         }
+        return response;
     }
 
-    @After
-    public void stopRunnerAndConnections() {
-        connection.disconnect();
-        if (serverRunner.isRunning()) {
-            serverRunner.stop();
-        }
+    @And("^the response body should be \"([^\"]*)\"$")
+    public void theResponseBodyShouldBe(String body) throws Throwable {
+        String response = getResponseBody();
+        assertEquals(body, response);
+    }
+
+    @And("^the response body should be empty$")
+    public void theResponseBodyShouldBeEmpty() throws Throwable {
+        String response = getResponseBody();
+        assertEquals(null, response);
     }
 }

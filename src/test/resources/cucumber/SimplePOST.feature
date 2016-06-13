@@ -3,4 +3,4 @@ Feature: POST to /form
     Given the server is running on port 5000
     When I POST "my=data" to "/form"
     Then the response status should be 201
-    And the response body should be ""
+    And the response body should be empty
