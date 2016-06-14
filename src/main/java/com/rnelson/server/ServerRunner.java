@@ -25,7 +25,7 @@ class ServerRunner implements Runnable {
     private void respondToRequest (OutputStreamWriter out, BufferedReader in) throws IOException {
         String request = getFullRequest(in);
         RequestHandler handler = new RequestHandler(request);
-        String response = handler.getResponse();
+        String response = handler.processRequest();
         out.write(response);
         out.close();
     }

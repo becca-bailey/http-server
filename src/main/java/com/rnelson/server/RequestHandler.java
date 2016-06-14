@@ -9,6 +9,12 @@ import java.util.regex.Pattern;
 
 public class RequestHandler {
     private final String[] request;
+
+    private final String OK = "HTTP/1.1 200 OK";
+    private final String NOT_FOUND = "HTTP/1.1 404 NOT FOUND";
+    private final String CREATED = "HTTP/1.1 201 CREATED";
+
+
     private final String okayStatus = "HTTP/1.1 200 OK\r\n";
     private final String notFound = "HTTP/1.1 404 NOT FOUND\r\n";
     private final String created = "HTTP/1.1 201 CREATED\r\n";
@@ -60,14 +66,18 @@ public class RequestHandler {
         return sampleURL.getPath();
     }
 
-    public String getResponse() throws MalformedURLException {
-        String response;
-        if (routes.contains(uri())) {
-            response = getResponseForValidRoute();
-        } else {
-            response = notFound;
-        }
-        return response;
+    public String processRequest() throws MalformedURLException {
+        String method = method();
+        String uri = uri();
+        Request request = new Request(method, uri);
+        return request.getResponse();
+//        String response;
+//        if (routes.contains(uri())) {
+//            response = getResponseForValidRoute();
+//        } else {
+//            response = notFound;
+//        }
+//        return response;
     }
 
     private String getResponseForValidRoute() throws MalformedURLException {

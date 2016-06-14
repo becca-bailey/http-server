@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class RequestHandlerTests {
-    private final String okayResponse = "HTTP/1.1 200 OK\r\n";
+//    private final String okayResponse = "HTTP/1.1 200 OK\r\n";
     private final RequestHandler echoHandler = new RequestHandler("GET /echo HTTP/1.1\nHost: localhost:8000\n\n");
     private final RequestHandler headHandler = new RequestHandler("HEAD / HTTP/1.1");
     private final RequestHandler getHandler = new RequestHandler("GET / HTTP/1.1");
@@ -17,30 +17,30 @@ public class RequestHandlerTests {
     private final RequestHandler simplePostHandler = new RequestHandler("POST /form?my=data HTTP/1.1");
     private final RequestHandler notFoundHandler = new RequestHandler("GET /foobar HTTP/1.1");
 
-    @Test
-    public void getResponseReturnsEcho() throws Throwable {
-        assertEquals(okayResponse, echoHandler.getResponse());
-    }
-
-    @Test
-    public void getResponseReturnsHeadRequest() throws Throwable {
-        assertEquals(okayResponse, headHandler.getResponse());
-    }
-
-    @Test
-    public void getResponseReturnsSimpleGet() throws Throwable {
-        assertEquals(okayResponse, getHandler.getResponse());
-    }
-
-    @Test
-    public void getResponseReturns404() throws Throwable {
-        assertEquals("HTTP/1.1 404 NOT FOUND\r\n", notFoundHandler.getResponse());
-    }
-
-    @Test
-    public void getResponseReturns201ForPOST() throws Throwable {
-        assertEquals("HTTP/1.1 201 CREATED\r\n", simplePostHandler.getResponse());
-    }
+//    @Test
+//    public void getResponseReturnsEcho() throws Throwable {
+//        assertEquals(okayResponse, echoHandler.getResponse());
+//    }
+//
+//    @Test
+//    public void getResponseReturnsHeadRequest() throws Throwable {
+//        assertEquals(okayResponse, headHandler.getResponse());
+//    }
+//
+//    @Test
+//    public void getResponseReturnsSimpleGet() throws Throwable {
+//        assertEquals(okayResponse, getHandler.getResponse());
+//    }
+//
+//    @Test
+//    public void getResponseReturns404() throws Throwable {
+//        assertEquals("HTTP/1.1 404 NOT FOUND\r\n", notFoundHandler.getResponse());
+//    }
+//
+//    @Test
+//    public void getResponseReturns201ForPOST() throws Throwable {
+//        assertEquals("HTTP/1.1 201 CREATED\r\n", simplePostHandler.getResponse());
+//    }
 
     @Test
     public void methodReturnsRequestMethod() throws Throwable {
@@ -55,10 +55,10 @@ public class RequestHandlerTests {
         assertEquals("/echo", postEchoHandler.uri());
     }
 
-    @Test
-    public void postResponseReturns201() throws Throwable {
-        assertEquals("HTTP/1.1 201 CREATED\r\n", simplePostHandler.POSTResponse());
-    }
+//    @Test
+//    public void postResponseReturns201() throws Throwable {
+//        assertEquals("HTTP/1.1 201 CREATED\r\n", simplePostHandler.POSTResponse());
+//    }
 
     @Test
     public void responseBodyReturnsResponseBodyAsString() throws Throwable {
