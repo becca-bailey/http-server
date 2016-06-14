@@ -18,6 +18,7 @@ class ServerRunner implements Runnable {
         while(in.ready()) {
             request.append((char) in.read());
         }
+        System.out.println(request.toString());
         return request.toString();
     }
 
@@ -50,8 +51,8 @@ class ServerRunner implements Runnable {
                             new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             ) {
                 respondToRequest(out, in);
-                serverSocket.close();
                 clientSocket.close();
+                serverSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }

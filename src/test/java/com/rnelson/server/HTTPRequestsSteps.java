@@ -7,6 +7,7 @@ import java.io.*;
 import java.net.*;
 import java.util.regex.*;
 
+import static com.rnelson.server.GlobalHooks.counter;
 import static com.rnelson.server.GlobalHooks.serverRunner;
 import static org.junit.Assert.*;
 
@@ -42,14 +43,17 @@ public class HTTPRequestsSteps {
             connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
             connection.setRequestMethod("POST");
-            connection.setUseCaches(false);
-            connection.connect();
 
-            Thread.sleep(1000);
+
+//            Thread.sleep(1000);
+            // ^ this solves the problem locally, but not on Travis
             OutputStream out = connection.getOutputStream();
             out.write(postBody.getBytes());
             out.flush();
             out.close();
+            connection.connect();
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
