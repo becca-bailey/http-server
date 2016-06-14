@@ -8,21 +8,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RequestHandler {
-    private final String[] request;
-
-    private final String OK = "HTTP/1.1 200 OK";
-    private final String NOT_FOUND = "HTTP/1.1 404 NOT FOUND";
-    private final String CREATED = "HTTP/1.1 201 CREATED";
-
-
-    private final String okayStatus = "HTTP/1.1 200 OK\r\n";
-    private final String notFound = "HTTP/1.1 404 NOT FOUND\r\n";
-    private final String created = "HTTP/1.1 201 CREATED\r\n";
+    private final String[] requestLines;
 
     private final List<String> routes = Arrays.asList("/", "/echo", "/form");
 
     public RequestHandler(String request) {
-        this.request = request.split("\n");
+        this.requestLines = request.split("\n");
     }
 
     private String findMatch(String regex, String request) {
@@ -39,13 +30,13 @@ public class RequestHandler {
         StringBuilder requestBody = new StringBuilder();
         Integer firstLineOfBody;
         try {
-            firstLineOfBody = request.length + Arrays.asList(request).indexOf("\n");
+            firstLineOfBody = requestLines.length + Arrays.asList(requestLines).indexOf("\n");
         } catch (Exception e) {
             firstLineOfBody = 10000;
         }
-        for (int i = 0; i < request.length; i++) {
+        for (int i = 0; i < requestLines.length; i++) {
             if (i >= firstLineOfBody) {
-                requestBody.append(request[i]);
+                requestBody.append(requestLines[i]);
                 requestBody.append("\n");
             }
         }
@@ -53,12 +44,12 @@ public class RequestHandler {
     }
 
     private URL fullURL() throws MalformedURLException {
-        String uriAndParameters = findMatch("\\/.*\\s", request[0]);
+        String uriAndParameters = findMatch("\\/.*\\s", requestLines[0]);
         return new URL("http://example.com" + uriAndParameters);
     }
 
     public String method() {
-        return findMatch("^\\S+", request[0]);
+        return findMatch("^\\S+", requestLines[0]);
     }
 
     public String uri() throws MalformedURLException {
@@ -70,39 +61,7 @@ public class RequestHandler {
         String method = method();
         String uri = uri();
         Request request = new Request(method, uri);
+        request.sendBody(getRequestBody());
         return request.getResponse();
-//        String response;
-//        if (routes.contains(uri())) {
-//            response = getResponseForValidRoute();
-//        } else {
-//            response = notFound;
-//        }
-//        return response;
-    }
-
-    private String getResponseForValidRoute() throws MalformedURLException {
-        String method = method();
-        String response;
-        if (method.equals("POST")) {
-            response = POSTResponse();
-        } else {
-            response = okayStatus;
-        }
-        return response;
-    }
-
-    public String POSTResponse() throws MalformedURLException {
-        String response;
-        String body = getRequestBody();
-        String contentLength = "Content-Length: " + Integer.toString(body.length());
-        String uri = uri();
-        if (uri.equals("/echo")) {
-            response = created +
-                    contentLength + "\r\n\r\n" +
-                    body;
-        } else {
-            response = created;
-        }
-        return response;
     }
 }
