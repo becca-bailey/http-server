@@ -46,10 +46,12 @@ public class HTTPRequestsSteps {
             connection.setUseCaches(false);
             connection.connect();
 
+            Thread.sleep(1000);
             OutputStream out = connection.getOutputStream();
             out.write(postBody.getBytes());
+            out.flush();
             out.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -70,7 +72,7 @@ public class HTTPRequestsSteps {
             connectionInput.close();
             in.close();
         } catch (FileNotFoundException ignored) {
-        } catch (SocketException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return response;
