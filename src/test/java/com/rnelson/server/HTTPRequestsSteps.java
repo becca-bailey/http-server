@@ -1,5 +1,6 @@
 package com.rnelson.server;
 
+import cucumber.api.PendingException;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.*;
@@ -64,6 +65,12 @@ public class HTTPRequestsSteps {
         Integer responseStatus = connection.getResponseCode();
         assertEquals(status, responseStatus);
     }
+
+    @And("^the response header should include \"([^\"]*)\" \"([^\"]*)\"$")
+    public void theResponseHeaderShouldInclude(String fieldName, String property) throws Throwable {
+        assertEquals(connection.getHeaderField(fieldName), property);
+    }
+
 
     private String getResponseBody() throws IOException {
         String response = null;
