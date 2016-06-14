@@ -46,7 +46,7 @@ public class HTTPRequestsSteps {
             connection.setUseCaches(false);
             connection.connect();
 
-            Thread.sleep(1000);
+            Thread.sleep(2000);
             OutputStream out = connection.getOutputStream();
             out.write(postBody.getBytes());
             out.flush();
