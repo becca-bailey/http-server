@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class RequestHandlerTests {
-    private final String okayResponse = "HTTP/1.1 200 OK\r\n\r\n";
+    private final String okayResponse = "HTTP/1.1 200 OK\r\n";
     private final RequestHandler echoHandler = new RequestHandler("GET /echo HTTP/1.1\nHost: localhost:8000\n\n");
     private final RequestHandler headHandler = new RequestHandler("HEAD / HTTP/1.1");
     private final RequestHandler getHandler = new RequestHandler("GET / HTTP/1.1");
@@ -34,12 +34,12 @@ public class RequestHandlerTests {
 
     @Test
     public void getResponseReturns404() throws Throwable {
-        assertEquals("HTTP/1.1 404 NOT FOUND\r\n\r\n", notFoundHandler.getResponse());
+        assertEquals("HTTP/1.1 404 NOT FOUND\r\n", notFoundHandler.getResponse());
     }
 
     @Test
     public void getResponseReturns201ForPOST() throws Throwable {
-        assertEquals("HTTP/1.1 201 CREATED\r\n\r\n", simplePostHandler.getResponse());
+        assertEquals("HTTP/1.1 201 CREATED\r\n", simplePostHandler.getResponse());
     }
 
     @Test
@@ -62,6 +62,6 @@ public class RequestHandlerTests {
 
     @Test
     public void responseBodyReturnsResponseBodyAsString() throws Throwable {
-        assertEquals("hello\n", postEchoHandler.getRequestBody());
+        assertEquals("hello", postEchoHandler.getRequestBody());
     }
 }

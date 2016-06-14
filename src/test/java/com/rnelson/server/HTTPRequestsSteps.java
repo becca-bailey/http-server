@@ -11,13 +11,12 @@ import static com.rnelson.server.GlobalHooks.serverRunner;
 import static org.junit.Assert.*;
 
 public class HTTPRequestsSteps {
+    private Integer port = 5000;
     private HttpURLConnection connection;
-    private Integer port;
     private OutputStream out;
 
-    @Given("^the server is running on port (\\d+)$")
-    public void theServerIsRunningOnPort(final int port) throws Throwable {
-        this.port = port;
+    @Given("^the server is running")
+    public void theServerIsRunning() throws Throwable {
         assertTrue(serverRunner.isRunning());
     }
 
@@ -46,7 +45,7 @@ public class HTTPRequestsSteps {
             connection.setUseCaches(false);
             connection.connect();
 
-            Thread.sleep(2000);
+            Thread.sleep(1000);
             OutputStream out = connection.getOutputStream();
             out.write(postBody.getBytes());
             out.flush();
