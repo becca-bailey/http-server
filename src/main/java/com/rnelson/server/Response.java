@@ -15,6 +15,7 @@ public class Response {
 
     private String contentType = "Content-Type: text/plain";
     private String contentLength = "Content-Length: " + body.length();
+    private String connection = "Connection: Keep-Alive";
 
     public Response(String method, String route) {
         this.method = method;
@@ -58,9 +59,9 @@ public class Response {
     }
 
     private void populateRequiredHeaders() {
-        List<String> standardRows = Arrays.asList(contentType);
-        List<String> optionsRows = Arrays.asList(contentType, options, contentLength);
-        List<String> postRows = Arrays.asList(contentType, contentLength);
+        List<String> standardRows = Arrays.asList(contentType, connection);
+        List<String> optionsRows = Arrays.asList(contentType, options, connection, contentLength);
+        List<String> postRows = Arrays.asList(contentType, connection, contentLength);
 
         requiredHeaderRows.put("GET", standardRows);
         requiredHeaderRows.put("HEAD", standardRows);
