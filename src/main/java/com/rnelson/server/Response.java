@@ -13,7 +13,7 @@ public class Response {
     private static Map<String, List<String>> routeOptions = new HashMap<String, List<String>>();
     private static Map<String, String> statusCodesForRoutes = new HashMap<String, String>();
 
-    private String contentType = "Content-Type: text/html";
+    private String contentType = "Content-Type: text/plain";
     private String contentLength = "Content-Length: " + body.length();
 
     public Response(String method, String route) {
@@ -59,7 +59,7 @@ public class Response {
 
     private void populateRequiredHeaders() {
         List<String> standardRows = Arrays.asList(contentType);
-        List<String> optionsRows = Arrays.asList(options, contentType);
+        List<String> optionsRows = Arrays.asList(contentType, options, contentLength);
         List<String> postRows = Arrays.asList(contentType, contentLength);
 
         requiredHeaderRows.put("GET", standardRows);
