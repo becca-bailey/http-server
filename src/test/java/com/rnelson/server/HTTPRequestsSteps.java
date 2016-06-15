@@ -80,8 +80,12 @@ public class HTTPRequestsSteps {
             connectionInput.close();
             in.close();
         } catch (FileNotFoundException ignored) {
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            if (e.getMessage().contains("418")) {
+                response = connection.getResponseMessage();
+            } else {
+                e.printStackTrace();
+            }
         }
         return response;
     }

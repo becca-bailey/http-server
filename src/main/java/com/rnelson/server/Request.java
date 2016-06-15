@@ -22,7 +22,7 @@ public class Request {
     public String getResponse() {
         Response response = new Response(method, route);
         if (responseHasBody()) {
-            response.returnBody(body);
+            response.sendBody(body);
         }
         return response.getHeaderAndBody();
     }

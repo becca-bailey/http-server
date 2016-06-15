@@ -36,4 +36,14 @@ public class ResponseTest {
         Response response = new Response("GET", "/");
         assertTrue(response.getHeaderAndBody().contains(Response.status(200)));
     }
+
+    @Test
+    public void imATeapot() throws Throwable {
+        Response response = new Response("GET", "/coffee");
+        assertTrue(response.getHeaderAndBody().contains(Response.status(418)));
+        assertTrue(response.getHeaderAndBody().contains("I'm a teapot"));
+
+        Response tea = new Response("GET", "/tea");
+        assertTrue(tea.getHeaderAndBody().contains(Response.status(200)));
+    }
 }

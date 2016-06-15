@@ -2,6 +2,7 @@ package com.rnelson.server;
 
 import java.util.*;
 
+import static com.rnelson.server.Router.pageContent;
 import static com.rnelson.server.Router.routeOptions;
 import static com.rnelson.server.Router.statusCodesForRoutes;
 
@@ -25,7 +26,7 @@ public class Response {
         Router router = new Router();
     }
 
-    public void returnBody(String data) {
+    public void sendBody(String data) {
         this.body = data;
     }
 
@@ -33,6 +34,7 @@ public class Response {
         statusCodes.put(200, "HTTP/1.1 200 OK");
         statusCodes.put(404, "HTTP/1.1 404 NOT FOUND");
         statusCodes.put(201, "HTTP/1.1 201 CREATED");
+        statusCodes.put(418, "HTTP/1.1 418 I'm a teapot");
 
         return statusCodes.get(status);
     }
@@ -47,7 +49,11 @@ public class Response {
     }
 
     public String getResponseStatus() {
-        return statusCodesForRoutes.get(method);
+        String status = statusCodesForRoutes.get(method + " " + route);
+        if (status == null) {
+            status = statusCodesForRoutes.get(method + " *");
+        }
+        return status;
     }
 
     private void populateRequiredHeaders() {
@@ -63,21 +69,26 @@ public class Response {
     }
 
     public String getHeaderAndBody() {
-        StringBuilder header = new StringBuilder();
+        StringBuilder response = new StringBuilder();
         if (isValidRoute()) {
             this.options = getOptions();
             populateRequiredHeaders();
 
-            header.append(getResponseStatus());
-            header.append("\r\n");
-            header.append(String.join("\r\n", requiredHeaderRows.get(method)));
-            header.append("\r\n\r\n");
-            header.append(body);
+            response.append(getResponseStatus());
+            response.append("\r\n");
+            response.append(String.join("\r\n", requiredHeaderRows.get(method)));
+            response.append("\r\n\r\n");
+            response.append(body);
+
+            String content = pageContent.get(route);
+            if (content != null) {
+                response.append(content);
+            }
         } else {
-            header.append(status(404));
-            header.append("\r\n\r\n");
+            response.append(status(404));
+            response.append("\r\n\r\n");
         }
 
-        return header.toString();
+        return response.toString();
     }
 }
