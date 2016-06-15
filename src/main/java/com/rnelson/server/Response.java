@@ -23,7 +23,7 @@ public class Response {
 
         routeOptions.put("/", Arrays.asList("GET", "HEAD"));
         routeOptions.put("/echo", Arrays.asList("GET", "POST"));
-        routeOptions.put("/form", Arrays.asList("POST"));
+        routeOptions.put("/form", Arrays.asList("POST", "PUT"));
         routeOptions.put("/method_options", Arrays.asList("GET", "HEAD", "POST", "OPTIONS", "PUT"));
         routeOptions.put("/method_options2", Arrays.asList("GET", "OPTIONS"));
 
@@ -31,6 +31,7 @@ public class Response {
         statusCodesForRoutes.put("HEAD", status(200));
         statusCodesForRoutes.put("POST", status(200));
         statusCodesForRoutes.put("OPTIONS", status(200));
+        statusCodesForRoutes.put("PUT", status(200));
     }
 
     public void returnBody(String data) {
