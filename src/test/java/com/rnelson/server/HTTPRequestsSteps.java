@@ -1,5 +1,6 @@
 package com.rnelson.server;
 
+import cucumber.api.PendingException;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.*;
@@ -7,25 +8,18 @@ import java.io.*;
 import java.net.*;
 import java.util.regex.*;
 
+import static com.rnelson.server.GlobalHooks.counter;
+import static com.rnelson.server.GlobalHooks.serverRunner;
 import static org.junit.Assert.*;
 
 public class HTTPRequestsSteps {
+    private Integer port = 5000;
     private HttpURLConnection connection;
-    private Integer port;
-    private ServerRunner serverRunner;
+    private OutputStream out;
 
-    @Given("^the server is running on port (\\d+)$")
-    public void theServerIsRunningOnPort(final int port) throws Throwable {
-        this.port = port;
-        try {
-            serverRunner.isRunning();
-        } catch(NullPointerException e) {
-            serverRunner = new ServerRunner(port);
-            Thread server = new Thread(serverRunner);
-            server.start();
-        } finally {
-            assertTrue(serverRunner.isRunning());
-        }
+    @Given("^the server is running")
+    public void theServerIsRunning() throws Throwable {
+        assertTrue(serverRunner.isRunning());
     }
 
     @When("^I request \"([^\"]*)\" \"([^\"]*)\"$")
@@ -41,16 +35,25 @@ public class HTTPRequestsSteps {
         }
     }
 
-    @When("^I POST \"([^\"]*)\" to \"([^\"]*)\"$")
-    public void iPOSTTo(String parameter, String uri) throws Throwable {
+    @When("^I \"([^\"]*)\" \"([^\"]*)\" to \"([^\"]*)\"$")
+    public void iTo(String method, String postBody, String uri) throws Throwable {
         try {
-            URL url = new URL("http://localhost:" + port + uri + "?parameter=" + parameter);
+            URL url = new URL("http://localhost:" + port + uri);
             connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content type", "application/x-www-form-urlencoded");
+            connection.setRequestMethod(method);
+
+
+            Thread.sleep(1000);
+            // ^ this solves the problem locally, but not on Travis
+            OutputStream out = connection.getOutputStream();
+            out.write(postBody.getBytes());
+            out.flush();
+            out.close();
             connection.connect();
-        } catch (IOException e) {
+
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -61,36 +64,46 @@ public class HTTPRequestsSteps {
         assertEquals(status, responseStatus);
     }
 
-    private String getResponseBody(BufferedReader in) throws IOException {
-        StringBuilder response = new StringBuilder();
-        String line;
-        while ((line = in.readLine()) != null) {
-            response.append(line);
+    @And("^the response header should include \"([^\"]*)\" \"([^\"]*)\"$")
+    public void theResponseHeaderShouldInclude(String fieldName, String property) throws Throwable {
+        assertEquals(connection.getHeaderField(fieldName), property);
+    }
+
+
+    private String getResponseBody() throws IOException {
+        String response = null;
+        try {
+            InputStream connectionInput = connection.getInputStream();
+            BufferedReader in =
+                    new BufferedReader(new InputStreamReader(connectionInput));
+            response = in.readLine();
+            connectionInput.close();
+            in.close();
+        } catch (FileNotFoundException ignored) {
+        } catch (IOException e) {
+            if (e.getMessage().contains("418")) {
+                response = connection.getResponseMessage();
+            } else {
+                e.printStackTrace();
+            }
         }
-        return response.toString();
+        return response;
     }
 
     @And("^the response body should be \"([^\"]*)\"$")
     public void theResponseBodyShouldBe(String body) throws Throwable {
-        String response = null;
-        try (
-                InputStream connectionInput = connection.getInputStream();
-                BufferedReader in =
-                        new BufferedReader(new InputStreamReader(connectionInput));
-        ){
-            response = getResponseBody(in);
-        } catch (FileNotFoundException e) {
-            response = "";
-        } finally {
-            assertEquals(body, response);
-        }
+        String response = getResponseBody();
+        assertEquals(body, response);
+    }
+
+    @And("^the response body should be empty$")
+    public void theResponseBodyShouldBeEmpty() throws Throwable {
+        String response = getResponseBody();
+        assertEquals(null, response);
     }
 
     @After
-    public void stopRunnerAndConnections() {
+    public void closeConnection() throws Throwable {
         connection.disconnect();
-        if (serverRunner.isRunning()) {
-            serverRunner.stop();
-        }
     }
 }

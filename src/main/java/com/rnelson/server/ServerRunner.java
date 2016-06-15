@@ -11,10 +11,22 @@ class ServerRunner implements Runnable {
         this.serverPort = port;
     }
 
+    private String getFullRequest(BufferedReader in) throws IOException {
+        StringBuilder request = new StringBuilder();
+        request.append(in.readLine());
+        request.append("\n");
+        while(in.ready()) {
+            request.append((char) in.read());
+        }
+        System.out.println(request.toString());
+        return request.toString();
+    }
+
     private void respondToRequest (OutputStreamWriter out, BufferedReader in) throws IOException {
-        String request = in.readLine();
+        String request = getFullRequest(in);
         RequestHandler handler = new RequestHandler(request);
-        out.write(handler.getResponse());
+        String response = handler.processRequest();
+        out.write(response);
         out.close();
     }
 
@@ -39,9 +51,8 @@ class ServerRunner implements Runnable {
                             new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             ) {
                 respondToRequest(out, in);
-                serverSocket.close();
                 clientSocket.close();
-            } catch (BindException ignored) {
+                serverSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }

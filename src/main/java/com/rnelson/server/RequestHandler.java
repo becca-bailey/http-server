@@ -8,11 +8,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RequestHandler {
-    private final String request;
-    private final List<String> routes = Arrays.asList("/", "/echo");
+    private final String[] requestLines;
+
+    private final List<String> routes = Arrays.asList("/", "/echo", "/form");
 
     public RequestHandler(String request) {
-        this.request = request;
+        this.requestLines = request.split("\n");
     }
 
     private String findMatch(String regex, String request) {
@@ -25,35 +26,42 @@ public class RequestHandler {
         return match;
     }
 
+    public String getRequestBody() {
+        StringBuilder requestBody = new StringBuilder();
+        Integer firstLineOfBody;
+        try {
+            firstLineOfBody = requestLines.length + Arrays.asList(requestLines).indexOf("\n");
+        } catch (Exception e) {
+            firstLineOfBody = 10000;
+        }
+        for (int i = 0; i < requestLines.length; i++) {
+            if (i >= firstLineOfBody) {
+                requestBody.append(requestLines[i]);
+                requestBody.append("\n");
+            }
+        }
+        return requestBody.toString().trim();
+    }
+
     private URL fullURL() throws MalformedURLException {
-        String uriAndParameters = findMatch("\\/.*\\s", request);
+        String uriAndParameters = findMatch("\\/.*\\s", requestLines[0]);
         return new URL("http://example.com" + uriAndParameters);
     }
 
     public String method() {
-        return findMatch("^\\S+", request);
+        return findMatch("^\\S+", requestLines[0]);
     }
 
-    public String uri() throws MalformedURLException {
-        return fullURL().getPath();
+    public String route() throws MalformedURLException {
+        URL sampleURL = fullURL();
+        return sampleURL.getPath();
     }
 
-    public String queryString() throws MalformedURLException {
-        String queryString = fullURL().getQuery();
-        return findMatch("[a-z]*$", queryString);
-    }
-
-    public String getEchoResponse() throws MalformedURLException {
-        return (method().equals("POST")) ? queryString() : "";
-    }
-
-    public String getResponse() throws MalformedURLException {
-        String okayStatus = "HTTP/1.1 200 OK\r\n\r\n";
-        String notFound = "HTTP/1.1 404 Not Found\r\n\r\n";
-        String response = routes.contains(uri()) ? okayStatus : notFound;
-        if (method().equals("POST")) {
-            response += getEchoResponse();
-        }
-        return response;
+    public String processRequest() throws MalformedURLException {
+        String method = method();
+        String route = route();
+        Request request = new Request(method, route);
+        request.sendBody(getRequestBody());
+        return request.getResponse();
     }
 }
