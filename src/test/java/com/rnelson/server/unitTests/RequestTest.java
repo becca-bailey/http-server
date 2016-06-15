@@ -7,7 +7,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
-public class RequestTests {
+public class RequestTest {
     private String getResponseBody(String response) {
         try {
             String[] headerAndBody = response.split("\r\n\r\n");

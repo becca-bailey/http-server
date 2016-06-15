@@ -7,7 +7,7 @@ import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class ServerTests {
+public class ServerTest {
 
     @Test
     public void isPortParameterReturnsTrueOrFalse() throws Throwable {

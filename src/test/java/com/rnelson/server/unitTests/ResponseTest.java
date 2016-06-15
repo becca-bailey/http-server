@@ -6,7 +6,7 @@ import org.junit.Test;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 
-public class ResponseTests {
+public class ResponseTest {
     @Test
     public void statusCanBeAccessedFromStaticContext() throws Throwable {
         assertEquals(Response.status(200), "HTTP/1.1 200 OK");
