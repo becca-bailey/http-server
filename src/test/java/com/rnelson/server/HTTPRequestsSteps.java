@@ -34,14 +34,14 @@ public class HTTPRequestsSteps {
             e.printStackTrace();
         }
     }
-    
-    @When("^I POST \"([^\"]*)\" to \"([^\"]*)\"$")
-    public void iPOSTTo(String postBody, String uri) throws Throwable {
+
+    @When("^I \"([^\"]*)\" \"([^\"]*)\" to \"([^\"]*)\"$")
+    public void iTo(String method, String postBody, String uri) throws Throwable {
         try {
             URL url = new URL("http://localhost:" + port + uri);
             connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
-            connection.setRequestMethod("POST");
+            connection.setRequestMethod(method);
 
 
             Thread.sleep(1000);

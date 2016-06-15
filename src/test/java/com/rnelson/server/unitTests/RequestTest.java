@@ -2,6 +2,7 @@ package com.rnelson.server.unitTests;
 
 import com.rnelson.server.Request;
 import com.rnelson.server.Response;
+import gherkin.lexer.Th;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -80,5 +81,13 @@ public class RequestTest {
         String response2 = request2.getResponse();
         assertTrue(response2.contains(Response.status(200)));
         assertTrue(response2.contains("Allow: GET,OPTIONS"));
+    }
+
+    @Test
+    public void simplePUT() throws Throwable {
+        Request request = new Request("PUT", "/form");
+        request.sendBody("my=data");
+        String response = request.getResponse();
+        assertTrue(response.contains(Response.status(200)));
     }
 }
