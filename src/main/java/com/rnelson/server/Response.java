@@ -2,6 +2,9 @@ package com.rnelson.server;
 
 import java.util.*;
 
+import static com.rnelson.server.Router.routeOptions;
+import static com.rnelson.server.Router.statusCodesForRoutes;
+
 public class Response {
     private String method;
     private String route;
@@ -10,8 +13,6 @@ public class Response {
 
     private static Map<Integer, String> statusCodes = new HashMap<Integer, String>();
     private static Map<String, List> requiredHeaderRows = new HashMap<String, List>();
-    private static Map<String, List<String>> routeOptions = new HashMap<String, List<String>>();
-    private static Map<String, String> statusCodesForRoutes = new HashMap<String, String>();
 
     private String contentType = "Content-Type: text/plain";
     private String contentLength = "Content-Length: " + body.length();
@@ -21,16 +22,7 @@ public class Response {
         this.method = method;
         this.route = route;
 
-        routeOptions.put("/", Arrays.asList("GET", "HEAD"));
-        routeOptions.put("/echo", Arrays.asList("GET", "POST"));
-        routeOptions.put("/form", Arrays.asList("POST"));
-        routeOptions.put("/method_options", Arrays.asList("GET", "HEAD", "POST", "OPTIONS", "PUT"));
-        routeOptions.put("/method_options2", Arrays.asList("GET", "OPTIONS"));
-
-        statusCodesForRoutes.put("GET", status(200));
-        statusCodesForRoutes.put("HEAD", status(200));
-        statusCodesForRoutes.put("POST", status(200));
-        statusCodesForRoutes.put("OPTIONS", status(200));
+        Router router = new Router();
     }
 
     public void returnBody(String data) {
