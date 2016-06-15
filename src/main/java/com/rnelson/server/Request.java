@@ -7,44 +7,24 @@ import java.util.Map;
 
 public class Request {
     private String method;
-    private String uri;
+    private String route;
     private String body;
-    private static Map<String, List> routes = new HashMap<String, List>();
-    private static Map<String, String> statusCodes = new HashMap<String, String>();
 
-    public Request(String method, String uri) {
+    public Request(String method, String route) {
         this.method = method;
-        this.uri = uri;
-
-        routes.put("/", Arrays.asList("GET", "HEAD"));
-        routes.put("/echo", Arrays.asList("GET", "POST"));
-        routes.put("/form", Arrays.asList("POST"));
-
-        statusCodes.put("GET", Response.status(200));
-        statusCodes.put("HEAD", Response.status(200));
-        statusCodes.put("POST", Response.status(201));
+        this.route = route;
     }
 
-    private Boolean isValid() {
-        return routes.containsKey(uri) && routes.get(uri).contains(method);
-    }
-
-    private String getStatusCode() {
-        if (isValid()) {
-            return statusCodes.get(method);
-        } else {
-            return Response.status(404);
-        }
+    private Boolean responseHasBody() {
+        return method.equals("POST") && route.equals("/echo");
     }
 
     public String getResponse() {
-        StringBuilder response = new StringBuilder();
-        response.append(getStatusCode());
-        response.append("\r\n\r\n");
-        if (uri.equals("/echo")) {
-            response.append(body);
+        Response response = new Response(method, route);
+        if (responseHasBody()) {
+            response.returnBody(body);
         }
-        return response.toString();
+        return response.getHeaderAndBody();
     }
 
     public void sendBody(String data) {

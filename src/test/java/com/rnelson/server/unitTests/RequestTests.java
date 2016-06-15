@@ -68,4 +68,17 @@ public class RequestTests {
         assertTrue(response.contains(Response.status(200)));
         assertTrue(bodyIsEmpty(response));
     }
+
+    @Test
+    public void simpleOPTIONS() throws Throwable {
+        Request request = new Request("OPTIONS", "/method_options");
+        String response = request.getResponse();
+        assertTrue(response.contains(Response.status(200)));
+        assertTrue(response.contains("Allow: GET,HEAD,POST,OPTIONS,PUT"));
+
+        Request request2 = new Request("OPTIONS", "/method_options2");
+        String response2 = request2.getResponse();
+        assertTrue(response2.contains(Response.status(200)));
+        assertTrue(response2.contains("Allow: GET,OPTIONS"));
+    }
 }

@@ -52,15 +52,15 @@ public class RequestHandler {
         return findMatch("^\\S+", requestLines[0]);
     }
 
-    public String uri() throws MalformedURLException {
+    public String route() throws MalformedURLException {
         URL sampleURL = fullURL();
         return sampleURL.getPath();
     }
 
     public String processRequest() throws MalformedURLException {
         String method = method();
-        String uri = uri();
-        Request request = new Request(method, uri);
+        String route = route();
+        Request request = new Request(method, route);
         request.sendBody(getRequestBody());
         return request.getResponse();
     }

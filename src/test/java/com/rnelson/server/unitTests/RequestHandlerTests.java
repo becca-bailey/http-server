@@ -24,9 +24,9 @@ public class RequestHandlerTests {
 
     @Test
     public void uriReturnsRequestURI() throws Throwable {
-        assertEquals("/", getHandler.uri());
-        assertEquals("/echo", echoHandler.uri());
-        assertEquals("/echo", postEchoHandler.uri());
+        assertEquals("/", getHandler.route());
+        assertEquals("/echo", echoHandler.route());
+        assertEquals("/echo", postEchoHandler.route());
     }
 
     @Test

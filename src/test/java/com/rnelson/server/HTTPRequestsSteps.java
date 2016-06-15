@@ -1,5 +1,6 @@
 package com.rnelson.server;
 
+import cucumber.api.PendingException;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.*;
@@ -33,9 +34,7 @@ public class HTTPRequestsSteps {
             e.printStackTrace();
         }
     }
-
-
-
+    
     @When("^I POST \"([^\"]*)\" to \"([^\"]*)\"$")
     public void iPOSTTo(String postBody, String uri) throws Throwable {
         try {
@@ -45,7 +44,7 @@ public class HTTPRequestsSteps {
             connection.setRequestMethod("POST");
 
 
-//            Thread.sleep(1000);
+            Thread.sleep(1000);
             // ^ this solves the problem locally, but not on Travis
             OutputStream out = connection.getOutputStream();
             out.write(postBody.getBytes());
@@ -64,6 +63,12 @@ public class HTTPRequestsSteps {
         Integer responseStatus = connection.getResponseCode();
         assertEquals(status, responseStatus);
     }
+
+    @And("^the response header should include \"([^\"]*)\" \"([^\"]*)\"$")
+    public void theResponseHeaderShouldInclude(String fieldName, String property) throws Throwable {
+        assertEquals(connection.getHeaderField(fieldName), property);
+    }
+
 
     private String getResponseBody() throws IOException {
         String response = null;
