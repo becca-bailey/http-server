@@ -65,7 +65,7 @@ public class RequestTests {
         Request request = new Request("POST", "/form");
         request.sendBody("my=data");
         String response = request.getResponse();
-        assertTrue(response.contains(Response.status(201)));
+        assertTrue(response.contains(Response.status(200)));
         assertTrue(bodyIsEmpty(response));
     }
 

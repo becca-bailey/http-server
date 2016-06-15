@@ -34,9 +34,7 @@ public class HTTPRequestsSteps {
             e.printStackTrace();
         }
     }
-
-
-
+    
     @When("^I POST \"([^\"]*)\" to \"([^\"]*)\"$")
     public void iPOSTTo(String postBody, String uri) throws Throwable {
         try {
@@ -46,7 +44,7 @@ public class HTTPRequestsSteps {
             connection.setRequestMethod("POST");
 
 
-//            Thread.sleep(1000);
+            Thread.sleep(1000);
             // ^ this solves the problem locally, but not on Travis
             OutputStream out = connection.getOutputStream();
             out.write(postBody.getBytes());
