@@ -6,6 +6,8 @@ import cucumber.api.java.Before;
 import cucumber.api.java.en.*;
 import java.io.*;
 import java.net.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.regex.*;
 
 import static com.rnelson.server.GlobalHooks.serverRunner;
@@ -116,9 +118,21 @@ public class HTTPRequestsSteps {
     }
 
     @And("^the response body has directory link \"([^\"]*)\"$")
-    public void theResponseBodyHasDirectoryLink(String filename) throws Throwable {
+    public void theResponseBodyHasDirectoryLink(String filePath) throws Throwable {
         String response = getResponseBody();
         assertTrue(response.contains("a href="));
-        assertTrue(response.contains(filename));
+        assertTrue(response.contains(filePath));
+    }
+
+    @Then("^the response body has file contents \"([^\"]*)\"$")
+    public void theResponseBodyHasFileContents(String filePath) throws Throwable {
+        try {
+            byte[] fileContent = Files.readAllBytes(Paths.get("public" + filePath));
+            String content = new String(fileContent, "UTF-8");
+            String response = getResponseBody();
+            assertTrue(content.contains(response));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

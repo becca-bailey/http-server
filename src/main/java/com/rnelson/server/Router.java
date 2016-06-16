@@ -1,7 +1,8 @@
 package com.rnelson.server;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,7 @@ public class Router {
     public static Map<String, List<String>> routeOptions = new HashMap<String, List<String>>();
     public static Map<String, String> statusCodesForRoutes = new HashMap<String, String>();
     public static Map<String, String> pageContent = new HashMap<String, String>();
+    private String publicDirectory = "public";
 
 
     public Router() {
@@ -34,18 +36,50 @@ public class Router {
         statusCodesForRoutes.put("GET /form", Response.status(200));
 
         pageContent.put("/coffee", "I'm a teapot");
-        pageContent.put("/", getDirectoryContents());
+        pageContent.put("/", getDirectoryLinks());
+
+        addFilesToRoutes();
+    }
+
+    private void addFilesToRoutes() {
+        for (File file : getDirectoryListing(publicDirectory)) {
+            statusCodesForRoutes.put("GET /" + file.getName(), Response.status(200));
+            routeOptions.put("/" + file.getName(), Arrays.asList("GET"));
+            try {
+                pageContent.put("/" + file.getName(), getFileContents(file));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private String getFileContents(File file) throws FileNotFoundException {
+        byte[] fileContent = null;
+        String content = "";
+        try {
+            fileContent = Files.readAllBytes(Paths.get("public/" + file.getName()));
+            content = new String(fileContent, "UTF-8");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return content;
     }
 
     private String generateFileLink(File file) {
         return "<a href=\"/" + file.getName() + "\">" + file.getName() + "</a>";
     }
 
-    private String getDirectoryContents() {
+    private File[] getDirectoryListing(String fileName) {
+        File directory = new File(fileName);
+        return directory.listFiles();
+    }
+
+    private String getDirectoryLinks() {
+        File[] directoryListing = getDirectoryListing(publicDirectory);
+
         StringBuilder directoryContents = new StringBuilder();
-        directoryContents.append("public");
-        File directory = new File("public");
-        File[] directoryListing = directory.listFiles();
+        directoryContents.append(publicDirectory);
+
         for (File file : directoryListing) {
             directoryContents.append(generateFileLink(file));
         }
