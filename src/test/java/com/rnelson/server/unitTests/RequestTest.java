@@ -90,4 +90,13 @@ public class RequestTest {
         String response = request.getResponse();
         assertTrue(response.contains(Response.status(200)));
     }
+
+    @Test
+    public void redirectPath() throws Throwable {
+        Request request = new Request("GET", "/redirect");
+        String response = request.getResponse();
+        assertTrue(response.contains(Response.status(302)));
+        assertTrue(response.contains("Location: http://localhost:5000"));
+
+    }
 }

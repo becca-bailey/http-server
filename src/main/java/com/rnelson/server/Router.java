@@ -14,11 +14,12 @@ public class Router {
     public Router() {
         routeOptions.put("/", Arrays.asList("GET", "HEAD"));
         routeOptions.put("/echo", Arrays.asList("GET", "POST"));
-        routeOptions.put("/form", Arrays.asList("POST", "PUT"));
+        routeOptions.put("/form", Arrays.asList("POST", "PUT", "GET"));
         routeOptions.put("/method_options", Arrays.asList("GET", "HEAD", "POST", "OPTIONS", "PUT"));
         routeOptions.put("/method_options2", Arrays.asList("GET", "OPTIONS"));
         routeOptions.put("/coffee", Arrays.asList("GET"));
         routeOptions.put("/tea", Arrays.asList("GET"));
+        routeOptions.put("/redirect", Arrays.asList("GET"));
 
         statusCodesForRoutes.put("GET *", Response.status(200));
         statusCodesForRoutes.put("HEAD *", Response.status(200));
@@ -26,6 +27,8 @@ public class Router {
         statusCodesForRoutes.put("OPTIONS *", Response.status(200));
         statusCodesForRoutes.put("PUT *", Response.status(200));
         statusCodesForRoutes.put("GET /coffee", Response.status(418));
+        statusCodesForRoutes.put("GET /redirect", Response.status(302));
+        statusCodesForRoutes.put("GET /form", Response.status(200));
 
         pageContent.put("/coffee", "I'm a teapot");
     }
