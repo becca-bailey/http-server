@@ -50,8 +50,6 @@ public class HTTPRequestsSteps {
             out.flush();
             out.close();
             connection.connect();
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -65,7 +63,7 @@ public class HTTPRequestsSteps {
 
     @And("^the response header should include \"([^\"]*)\" \"([^\"]*)\"$")
     public void theResponseHeaderShouldInclude(String fieldName, String property) throws Throwable {
-        assertEquals(connection.getHeaderField(fieldName), property);
+        assertEquals(property, connection.getHeaderField(fieldName));
     }
 
 
