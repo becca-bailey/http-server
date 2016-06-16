@@ -18,7 +18,6 @@ class ServerRunner implements Runnable {
         while(in.ready()) {
             request.append((char) in.read());
         }
-        System.out.println(request.toString());
         return request.toString();
     }
 
