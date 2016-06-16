@@ -103,4 +103,9 @@ public class HTTPRequestsSteps {
     public void closeConnection() throws Throwable {
         connection.disconnect();
     }
+
+    @Given("^the page content is empty$")
+    public void thePageContentIsEmpty() throws Throwable {
+        Router.pageContent.put("/form", "");
+    }
 }
