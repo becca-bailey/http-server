@@ -108,4 +108,17 @@ public class HTTPRequestsSteps {
     public void thePageContentIsEmpty() throws Throwable {
         Router.pageContent.put("/form", "");
     }
+
+    @And("^the response body has directory contents \"([^\"]*)\"$")
+    public void theResponseBodyHasDirectoryContents(String directory) throws Throwable {
+        String response = getResponseBody();
+        assertTrue(response.contains(directory));
+    }
+
+    @And("^the response body has directory link \"([^\"]*)\"$")
+    public void theResponseBodyHasDirectoryLink(String filename) throws Throwable {
+        String response = getResponseBody();
+        assertTrue(response.contains("a href="));
+        assertTrue(response.contains(filename));
+    }
 }

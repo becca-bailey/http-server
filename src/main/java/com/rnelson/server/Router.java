@@ -1,5 +1,7 @@
 package com.rnelson.server;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -32,5 +34,21 @@ public class Router {
         statusCodesForRoutes.put("GET /form", Response.status(200));
 
         pageContent.put("/coffee", "I'm a teapot");
+        pageContent.put("/", getDirectoryContents());
+    }
+
+    private String generateFileLink(File file) {
+        return "<a href=\"/" + file.getName() + "\">" + file.getName() + "</a>";
+    }
+
+    private String getDirectoryContents() {
+        StringBuilder directoryContents = new StringBuilder();
+        directoryContents.append("public");
+        File directory = new File("public");
+        File[] directoryListing = directory.listFiles();
+        for (File file : directoryListing) {
+            directoryContents.append(generateFileLink(file));
+        }
+        return directoryContents.toString();
     }
 }
