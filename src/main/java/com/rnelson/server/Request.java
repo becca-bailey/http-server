@@ -15,13 +15,9 @@ public class Request {
         this.route = route;
     }
 
-    private Boolean responseHasBody() {
-        return method.equals("POST") && route.equals("/echo");
-    }
-
     public String getResponse() {
         Response response = new Response(method, route);
-        if (responseHasBody()) {
+        if (method.equals("POST") || method.equals("PUT")) {
             response.sendBody(body);
         }
         return response.getHeaderAndBody();

@@ -20,15 +20,26 @@ public class Response {
     private String connection = "Connection: Keep-Alive";
     private String location = "Location: http://localhost:5000/";
 
+    private Router router;
+
     public Response(String method, String route) {
         this.method = method;
         this.route = route;
 
-        Router router = new Router();
+        router = new Router();
+
+        if (method.equals("DELETE")) {
+            deletePageContent();
+        }
+    }
+
+    private void deletePageContent() {
+        pageContent.put(route, "");
     }
 
     public void sendBody(String data) {
         this.body = data;
+        pageContent.put(route, body);
     }
 
     public static String status(Integer status) {
@@ -69,6 +80,7 @@ public class Response {
         requiredHeaderRows.put("OPTIONS *", optionsRows);
         requiredHeaderRows.put("POST *", standardRows);
         requiredHeaderRows.put("PUT *", standardRows);
+        requiredHeaderRows.put("DELETE *", standardRows);
         requiredHeaderRows.put("GET /redirect", redirectRows);
     }
 
@@ -91,10 +103,13 @@ public class Response {
             response.append("\r\n");
             response.append(String.join("\r\n", getRequiredHeaderRows()));
             response.append("\r\n\r\n");
-            response.append(body);
+
+            if (route.equals("/echo")) {
+                response.append(body);
+            }
 
             String content = pageContent.get(route);
-            if (content != null) {
+            if (content != null && method.equals("GET")) {
                 response.append(content);
             }
         } else {
