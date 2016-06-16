@@ -1,4 +1,4 @@
-# Becca's HTTP Server ![travis](https://travis-ci.org/beccanelson/http-server.svg?branch=fix-null-pointer)
+# Becca's HTTP Server ![travis](https://travis-ci.org/beccanelson/http-server.svg)
 
 This is a simple HTTP server written in Java and tested with [Cucumber](http://cucumber.io). 
 

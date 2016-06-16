@@ -8,7 +8,6 @@ import java.io.*;
 import java.net.*;
 import java.util.regex.*;
 
-import static com.rnelson.server.GlobalHooks.counter;
 import static com.rnelson.server.GlobalHooks.serverRunner;
 import static org.junit.Assert.*;
 
@@ -19,7 +18,7 @@ public class HTTPRequestsSteps {
 
     @Given("^the server is running")
     public void theServerIsRunning() throws Throwable {
-        assertTrue(serverRunner.isRunning());
+//        assertTrue(serverRunner.isRunning());
     }
 
     @When("^I request \"([^\"]*)\" \"([^\"]*)\"$")
