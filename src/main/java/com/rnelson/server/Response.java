@@ -13,9 +13,10 @@ public class Response {
     private String options = "";
 
     private static Map<Integer, String> statusCodes = new HashMap<Integer, String>();
-    private static Map<String, List> requiredHeaderRows = new HashMap<String, List>();
+    public static Map<String, List> requiredHeaderRows = new HashMap<String, List>();
+    private static Map<String, String>contentTypes = new HashMap<String, String>();
 
-    private String contentType = "Content-Type: text/plain";
+    private String contentType = "Content-Type: text/html";
     private String contentLength = "Content-Length: " + body.length();
     private String connection = "Connection: Keep-Alive";
     private String location = "Location: http://localhost:5000/";

@@ -2,6 +2,7 @@ package com.rnelson.server;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -38,51 +39,39 @@ public class Router {
         pageContent.put("/coffee", "I'm a teapot");
         pageContent.put("/", getDirectoryLinks());
 
-        addFilesToRoutes();
+        handleAllFiles();
     }
 
-    private void addFilesToRoutes() {
-        for (File file : getDirectoryListing(publicDirectory)) {
-            statusCodesForRoutes.put("GET /" + file.getName(), Response.status(200));
-            routeOptions.put("/" + file.getName(), Arrays.asList("GET"));
+    private void handleAllFiles() {
+        for (File file : getDirectoryListing()) {
+            Router.statusCodesForRoutes.put("GET /" + file.getName(), Response.status(200));
+            Router.routeOptions.put("/" + file.getName(), Arrays.asList("GET"));
+
+            FileHandler handler = new FileHandler(file);
             try {
-                pageContent.put("/" + file.getName(), getFileContents(file));
-            } catch (FileNotFoundException e) {
+                Router.pageContent.put("/" + file.getName(), handler.getFileContents());
+                Response.requiredHeaderRows.put("GET /" + file.getName(), Arrays.asList(handler.fileContentTypeHeader()));
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private String getFileContents(File file) throws FileNotFoundException {
-        byte[] fileContent = null;
-        String content = "";
-        try {
-            fileContent = Files.readAllBytes(Paths.get("public/" + file.getName()));
-            content = new String(fileContent, "UTF-8");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return content;
-    }
-
-    private String generateFileLink(File file) {
-        return "<a href=\"/" + file.getName() + "\">" + file.getName() + "</a>";
-    }
-
-    private File[] getDirectoryListing(String fileName) {
-        File directory = new File(fileName);
-        return directory.listFiles();
-    }
-
-    private String getDirectoryLinks() {
-        File[] directoryListing = getDirectoryListing(publicDirectory);
+    String getDirectoryLinks() {
+        File[] directoryListing = getDirectoryListing();
 
         StringBuilder directoryContents = new StringBuilder();
         directoryContents.append(publicDirectory);
 
         for (File file : directoryListing) {
-            directoryContents.append(generateFileLink(file));
+            FileHandler fileHandler = new FileHandler(file);
+            directoryContents.append(fileHandler.generateFileLink());
         }
         return directoryContents.toString();
+    }
+
+    private File[] getDirectoryListing() {
+        File directory = new File(publicDirectory);
+        return directory.listFiles();
     }
 }

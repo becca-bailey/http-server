@@ -16,16 +16,6 @@ public class RequestHandler {
         this.requestLines = request.split("\n");
     }
 
-    private String findMatch(String regex, String request) {
-        String match = null;
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(request);
-        if (matcher.find()) {
-            match = matcher.group().trim();
-        }
-        return match;
-    }
-
     public String getRequestBody() {
         StringBuilder requestBody = new StringBuilder();
         Integer firstLineOfBody;
@@ -44,12 +34,12 @@ public class RequestHandler {
     }
 
     private URL fullURL() throws MalformedURLException {
-        String uriAndParameters = findMatch("\\/.*\\s", requestLines[0]);
+        String uriAndParameters = SharedUtilities.findMatch("\\/.*\\s", requestLines[0], 0);
         return new URL("http://example.com" + uriAndParameters);
     }
 
     public String method() {
-        return findMatch("^\\S+", requestLines[0]);
+        return SharedUtilities.findMatch("^\\S+", requestLines[0], 0);
     }
 
     public String route() throws MalformedURLException {
