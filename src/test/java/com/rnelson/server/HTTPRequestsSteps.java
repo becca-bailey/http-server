@@ -20,7 +20,7 @@ public class HTTPRequestsSteps {
 
     @Given("^the server is running")
     public void theServerIsRunning() throws Throwable {
-//        assertTrue(serverRunner.isRunning());
+        assertTrue(serverRunner.isRunning());
     }
 
     @When("^I request \"([^\"]*)\" \"([^\"]*)\"$")
