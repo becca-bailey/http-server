@@ -1,6 +1,7 @@
 package com.rnelson.server.unitTests;
 
 import com.rnelson.server.response.Response;
+import com.rnelson.server.utilities.SharedUtilities;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;
@@ -53,5 +54,13 @@ public class ResponseTest {
         byte[] teaBytes = tea.getHeader();
         String teaResponse = new String(teaBytes, "UTF-8");
         assertTrue(teaResponse.contains(Response.status(200)));
+    }
+
+    @Test
+    public void MethodNotAllowed() throws Throwable {
+        Response response = new Response("SOMETHING", "/file1");
+        byte[] headerBytes = response.getHeader();
+        String header = SharedUtilities.convertByteArrayToString(headerBytes);
+        assertTrue(header.contains(Response.status(405)));
     }
 }
