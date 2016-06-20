@@ -47,11 +47,11 @@ public class RequestHandler {
         return sampleURL.getPath();
     }
 
-    public String processRequest() throws MalformedURLException {
+    public byte[] processRequest() throws MalformedURLException {
         String method = method();
         String route = route();
         Request request = new Request(method, route);
         request.sendBody(getRequestBody());
-        return request.getResponse();
+        return request.getResponse().getBytes();
     }
 }
