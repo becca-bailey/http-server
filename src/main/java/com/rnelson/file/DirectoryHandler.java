@@ -1,4 +1,7 @@
-package com.rnelson.server;
+package com.rnelson.file;
+
+import com.rnelson.response.Response;
+import com.rnelson.utilities.Router;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +37,7 @@ public class DirectoryHandler {
         return "<p>" + content + "</p>";
     }
 
-    String getDirectoryLinks() {
+    public String getDirectoryLinks() {
         File[] directoryListing = getDirectoryListing();
 
         StringBuilder directoryContents = new StringBuilder();

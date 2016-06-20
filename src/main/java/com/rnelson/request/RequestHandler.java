@@ -1,11 +1,11 @@
-package com.rnelson.server;
+package com.rnelson.request;
+
+import com.rnelson.utilities.SharedUtilities;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class RequestHandler {
     private final String[] requestLines;

@@ -1,9 +1,6 @@
-package com.rnelson.server;
+package com.rnelson.request;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.rnelson.response.Response;
 
 public class Request {
     private String method;

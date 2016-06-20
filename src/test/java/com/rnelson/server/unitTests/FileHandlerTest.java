@@ -1,7 +1,6 @@
 package com.rnelson.server.unitTests;
 
-import com.rnelson.server.FileHandler;
-import com.rnelson.server.Router;
+import com.rnelson.file.FileHandler;
 import org.junit.Test;
 
 import java.io.File;

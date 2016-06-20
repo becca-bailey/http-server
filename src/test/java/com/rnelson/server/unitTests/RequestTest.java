@@ -1,8 +1,7 @@
 package com.rnelson.server.unitTests;
 
-import com.rnelson.server.Request;
-import com.rnelson.server.Response;
-import gherkin.lexer.Th;
+import com.rnelson.request.Request;
+import com.rnelson.response.Response;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;

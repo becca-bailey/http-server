@@ -1,4 +1,8 @@
-package com.rnelson.server;
+package com.rnelson.file;
+
+import com.rnelson.response.Response;
+import com.rnelson.utilities.Router;
+import com.rnelson.utilities.SharedUtilities;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class FileHandler {

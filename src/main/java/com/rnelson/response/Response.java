@@ -1,10 +1,12 @@
-package com.rnelson.server;
+package com.rnelson.response;
+
+import com.rnelson.utilities.Router;
 
 import java.util.*;
 
-import static com.rnelson.server.Router.pageContent;
-import static com.rnelson.server.Router.routeOptions;
-import static com.rnelson.server.Router.statusCodesForRoutes;
+import static com.rnelson.utilities.Router.pageContent;
+import static com.rnelson.utilities.Router.routeOptions;
+import static com.rnelson.utilities.Router.statusCodesForRoutes;
 
 public class Response {
     private String method;

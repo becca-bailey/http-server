@@ -1,4 +1,4 @@
-package com.rnelson.server;
+package com.rnelson.utilities;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
