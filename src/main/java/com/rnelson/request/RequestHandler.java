@@ -1,29 +1,33 @@
-package com.rnelson.server;
+package com.rnelson.request;
+
+import com.rnelson.utilities.SharedUtilities;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class RequestHandler {
     private final String[] requestLines;
+    private String method;
+    private String route;
 
     private final List<String> routes = Arrays.asList("/", "/echo", "/form");
 
     public RequestHandler(String request) {
         this.requestLines = request.split("\n");
+        method = method();
+        try {
+            route = route();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
     }
 
-    private String findMatch(String regex, String request) {
-        String match = null;
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(request);
-        if (matcher.find()) {
-            match = matcher.group().trim();
-        }
-        return match;
+    public byte[] processRequest() throws MalformedURLException {
+        Request request = new Request(method, route);
+        request.sendBody(getRequestBody());
+        return request.getResponse();
     }
 
     public String getRequestBody() {
@@ -44,12 +48,12 @@ public class RequestHandler {
     }
 
     private URL fullURL() throws MalformedURLException {
-        String uriAndParameters = findMatch("\\/.*\\s", requestLines[0]);
+        String uriAndParameters = SharedUtilities.findMatch("\\/.*\\s", requestLines[0], 0);
         return new URL("http://example.com" + uriAndParameters);
     }
 
     public String method() {
-        return findMatch("^\\S+", requestLines[0]);
+        return SharedUtilities.findMatch("^\\S+", requestLines[0], 0);
     }
 
     public String route() throws MalformedURLException {
@@ -57,11 +61,12 @@ public class RequestHandler {
         return sampleURL.getPath();
     }
 
-    public String processRequest() throws MalformedURLException {
-        String method = method();
-        String route = route();
-        Request request = new Request(method, route);
-        request.sendBody(getRequestBody());
-        return request.getResponse();
+    public Boolean requestIsImage() {
+        for (String extension : SharedUtilities.imageExtensions) {
+            if (route.contains(extension)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -1,5 +1,10 @@
 package com.rnelson.server;
 
+import com.rnelson.request.ImageRequestHandler;
+import com.rnelson.request.RequestHandler;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
 
@@ -21,10 +26,10 @@ class ServerRunner implements Runnable {
         return request.toString();
     }
 
-    private void respondToRequest (OutputStreamWriter out, BufferedReader in) throws IOException {
+    private void respondToRequest (DataOutputStream out, BufferedReader in) throws IOException {
         String request = getFullRequest(in);
         RequestHandler handler = new RequestHandler(request);
-        String response = handler.processRequest();
+        byte[] response = handler.processRequest();
         out.write(response);
         out.close();
     }
@@ -40,18 +45,16 @@ class ServerRunner implements Runnable {
     @Override
     public void run() {
         while (running) {
-            try (
+            try {
                     ServerSocket serverSocket = new ServerSocket(serverPort);
                     Socket clientSocket = serverSocket.accept();
-
-                    OutputStreamWriter out =
-                            new OutputStreamWriter(clientSocket.getOutputStream());
+                    DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
                     BufferedReader in =
                             new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            ) {
-                respondToRequest(out, in);
-                clientSocket.close();
-                serverSocket.close();
+
+                    respondToRequest(out, in);
+                    clientSocket.close();
+                    serverSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }

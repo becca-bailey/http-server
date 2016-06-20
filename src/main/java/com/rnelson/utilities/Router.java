@@ -1,7 +1,8 @@
-package com.rnelson.server;
+package com.rnelson.utilities;
 
-import java.io.File;
-import java.io.IOException;
+import com.rnelson.file.DirectoryHandler;
+import com.rnelson.response.Response;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +11,8 @@ import java.util.Map;
 public class Router {
     public static Map<String, List<String>> routeOptions = new HashMap<String, List<String>>();
     public static Map<String, String> statusCodesForRoutes = new HashMap<String, String>();
-    public static Map<String, String> pageContent = new HashMap<String, String>();
+    public static Map<String, byte[]> pageContent = new HashMap<String, byte[]>();
+    private String publicDirectory = "public";
 
 
     public Router() {
@@ -33,22 +35,11 @@ public class Router {
         statusCodesForRoutes.put("GET /redirect", Response.status(302));
         statusCodesForRoutes.put("GET /form", Response.status(200));
 
-        pageContent.put("/coffee", "I'm a teapot");
-        pageContent.put("/", getDirectoryContents());
-    }
+        pageContent.put("/coffee", ("I'm a teapot").getBytes());
 
-    private String generateFileLink(File file) {
-        return "<a href=\"/" + file.getName() + "\">" + file.getName() + "</a>";
-    }
+        DirectoryHandler directoryHandler = new DirectoryHandler(publicDirectory);
+        pageContent.put("/", (directoryHandler.getDirectoryLinks()).getBytes());
 
-    private String getDirectoryContents() {
-        StringBuilder directoryContents = new StringBuilder();
-        directoryContents.append("public");
-        File directory = new File("public");
-        File[] directoryListing = directory.listFiles();
-        for (File file : directoryListing) {
-            directoryContents.append(generateFileLink(file));
-        }
-        return directoryContents.toString();
+        directoryHandler.handleAllFiles();
     }
 }

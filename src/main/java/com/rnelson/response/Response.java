@@ -1,10 +1,13 @@
-package com.rnelson.server;
+package com.rnelson.response;
+
+import com.rnelson.utilities.Router;
+import com.rnelson.utilities.SharedUtilities;
 
 import java.util.*;
 
-import static com.rnelson.server.Router.pageContent;
-import static com.rnelson.server.Router.routeOptions;
-import static com.rnelson.server.Router.statusCodesForRoutes;
+import static com.rnelson.utilities.Router.pageContent;
+import static com.rnelson.utilities.Router.routeOptions;
+import static com.rnelson.utilities.Router.statusCodesForRoutes;
 
 public class Response {
     private String method;
@@ -13,12 +16,15 @@ public class Response {
     private String options = "";
 
     private static Map<Integer, String> statusCodes = new HashMap<Integer, String>();
-    private static Map<String, List> requiredHeaderRows = new HashMap<String, List>();
+    public static Map<String, List> requiredHeaderRows = new HashMap<String, List>();
+    private static Map<String, String> contentTypes = new HashMap<String, String>();
 
-    private String contentType = "Content-Type: text/plain";
+    private String contentType = "Content-Type: text/html";
     private String contentLength = "Content-Length: " + body.length();
     private String connection = "Connection: Keep-Alive";
     private String location = "Location: http://localhost:5000/";
+    private byte[] emptyContent = new byte[0];
+
 
     private Router router;
 
@@ -34,12 +40,16 @@ public class Response {
     }
 
     private void deletePageContent() {
-        pageContent.put(route, "");
+        pageContent.put(route, emptyContent);
     }
 
-    public void sendBody(String data) {
+    public Boolean echoesBody() {
+        return (method.equals("POST") || method.equals("PUT"));
+    }
+
+    public void sendRequestBody(String data) {
         this.body = data;
-        pageContent.put(route, body);
+        pageContent.put(route, body.getBytes());
     }
 
     public static String status(Integer status) {
@@ -61,7 +71,7 @@ public class Response {
         return "Allow: " + allowedOptions;
     }
 
-    public String getResponseStatus() {
+    public String responseStatus() {
         String status = statusCodesForRoutes.get(method + " " + route);
         if (status == null) {
             status = statusCodesForRoutes.get(method + " *");
@@ -70,9 +80,9 @@ public class Response {
     }
 
     private void populateRequiredHeaders() {
-        List<String> standardRows = Arrays.asList(contentType, connection);
-        List<String> optionsRows = Arrays.asList(contentType, options, connection, contentLength);
-        List<String> postRows = Arrays.asList(contentType, connection, contentLength);
+        List<String> standardRows = Arrays.asList(contentType);
+        List<String> optionsRows = Arrays.asList(contentType, options, contentLength);
+        List<String> typeAndLength = Arrays.asList(contentType, contentLength);
         List<String> redirectRows = Arrays.asList(location);
 
         requiredHeaderRows.put("GET *", standardRows);
@@ -93,29 +103,42 @@ public class Response {
         return rows;
     }
 
-    public String getHeaderAndBody() {
-        StringBuilder response = new StringBuilder();
+    public byte[] getHeader() {
+        StringBuilder header = new StringBuilder();
         if (isValidRoute()) {
             this.options = getOptions();
             populateRequiredHeaders();
 
-            response.append(getResponseStatus());
-            response.append("\r\n");
-            response.append(String.join("\r\n", getRequiredHeaderRows()));
-            response.append("\r\n\r\n");
-
-            if (route.equals("/echo")) {
-                response.append(body);
-            }
-
-            String content = pageContent.get(route);
-            if (content != null && method.equals("GET")) {
-                response.append(content);
-            }
+            header.append(responseStatus());
+            header.append("\r\n");
+            header.append(String.join("\r\n", getRequiredHeaderRows()));
+            header.append("\r\n\r\n");
         } else {
-            response.append(status(404));
-            response.append("\r\n\r\n");
+            header.append(status(404));
+            header.append("\r\n\r\n");
         }
-        return response.toString();
+        return header.toString().getBytes();
+    }
+
+    public byte[] getPageContent() {
+        byte[] content = emptyContent;
+        if (isValidRoute() && pageContent.get(route) != null) {
+            content = pageContent.get(route);
+        }
+        return content;
+    }
+
+    public byte[] getBody() {
+        byte[] echoContentBytes = emptyContent;
+        byte[] bodyContent = emptyContent;
+        if (route.equals("/echo")) {
+            echoContentBytes = body.getBytes();
+        }
+        if (method.equals("GET")) {
+            bodyContent = SharedUtilities.addByteArrays(echoContentBytes, getPageContent());
+        } else {
+            bodyContent = echoContentBytes;
+        }
+        return bodyContent;
     }
 }

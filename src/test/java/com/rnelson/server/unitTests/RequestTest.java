@@ -1,8 +1,7 @@
 package com.rnelson.server.unitTests;
 
-import com.rnelson.server.Request;
-import com.rnelson.server.Response;
-import gherkin.lexer.Th;
+import com.rnelson.request.Request;
+import com.rnelson.response.Response;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -25,14 +24,16 @@ public class RequestTest {
     @Test
     public void simpleGET() throws Throwable {
         Request request = new Request("GET", "/");
-        String response = request.getResponse();
+        byte[] responseBytes = request.getResponse();
+        String response = new String(responseBytes, "UTF-8");
         assertTrue(response.contains(Response.status(200)));
     }
 
     @Test
     public void fourOhFour() throws Throwable {
         Request request = new Request("GET", "/foobar");
-        String response = request.getResponse();
+        byte[] responseBytes = request.getResponse();
+        String response = new String(responseBytes, "UTF-8");
         assertTrue(response.contains(Response.status(404)));
         assertTrue(bodyIsEmpty(response));
     }
@@ -40,7 +41,8 @@ public class RequestTest {
     @Test
     public void HEAD200() throws Throwable {
         Request request = new Request("HEAD", "/");
-        String response = request.getResponse();
+        byte[] responseBytes = request.getResponse();
+        String response = new String(responseBytes, "UTF-8");
         assertTrue(response.contains(Response.status(200)));
         assertTrue(bodyIsEmpty(response));
     }
@@ -48,7 +50,8 @@ public class RequestTest {
     @Test
     public void HEAD404() throws Throwable {
         Request request = new Request("HEAD", "/foobar");
-        String response = request.getResponse();
+        byte[] responseBytes = request.getResponse();
+        String response = new String(responseBytes, "UTF-8");
         assertTrue(response.contains(Response.status(404)));
         assertTrue(bodyIsEmpty(response));
     }
@@ -56,7 +59,8 @@ public class RequestTest {
     @Test
     public void GETecho() throws Throwable {
         Request request = new Request("GET", "/echo");
-        String response = request.getResponse();
+        byte[] responseBytes = request.getResponse();
+        String response = new String(responseBytes, "UTF-8");
         assertTrue(response.contains(Response.status(200)));
         assertTrue(bodyIsEmpty(response));
     }
@@ -65,7 +69,8 @@ public class RequestTest {
     public void simplePOST() throws Throwable {
         Request request = new Request("POST", "/form");
         request.sendBody("my=data");
-        String response = request.getResponse();
+        byte[] responseBytes = request.getResponse();
+        String response = new String(responseBytes, "UTF-8");
         assertTrue(response.contains(Response.status(200)));
         assertTrue(bodyIsEmpty(response));
     }
@@ -73,12 +78,14 @@ public class RequestTest {
     @Test
     public void simpleOPTIONS() throws Throwable {
         Request request = new Request("OPTIONS", "/method_options");
-        String response = request.getResponse();
+        byte[] responseBytes = request.getResponse();
+        String response = new String(responseBytes, "UTF-8");
         assertTrue(response.contains(Response.status(200)));
         assertTrue(response.contains("Allow: GET,HEAD,POST,OPTIONS,PUT"));
 
         Request request2 = new Request("OPTIONS", "/method_options2");
-        String response2 = request2.getResponse();
+        byte[] responseBytes2 = request2.getResponse();
+        String response2 = new String(responseBytes2, "UTF-8");
         assertTrue(response2.contains(Response.status(200)));
         assertTrue(response2.contains("Allow: GET,OPTIONS"));
     }
@@ -87,16 +94,17 @@ public class RequestTest {
     public void simplePUT() throws Throwable {
         Request request = new Request("PUT", "/form");
         request.sendBody("my=data");
-        String response = request.getResponse();
+        byte[] responseBytes = request.getResponse();
+        String response = new String(responseBytes, "UTF-8");
         assertTrue(response.contains(Response.status(200)));
     }
 
     @Test
     public void redirectPath() throws Throwable {
         Request request = new Request("GET", "/redirect");
-        String response = request.getResponse();
+        byte[] responseBytes = request.getResponse();
+        String response = new String(responseBytes, "UTF-8");
         assertTrue(response.contains(Response.status(302)));
         assertTrue(response.contains("Location: http://localhost:5000"));
-
     }
 }

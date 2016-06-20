@@ -1,12 +1,12 @@
 package com.rnelson.server;
 
-import cucumber.api.PendingException;
+import com.rnelson.utilities.Router;
 import cucumber.api.java.After;
-import cucumber.api.java.Before;
 import cucumber.api.java.en.*;
 import java.io.*;
 import java.net.*;
-import java.util.regex.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import static com.rnelson.server.GlobalHooks.serverRunner;
 import static org.junit.Assert.*;
@@ -18,7 +18,7 @@ public class HTTPRequestsSteps {
 
     @Given("^the server is running")
     public void theServerIsRunning() throws Throwable {
-//        assertTrue(serverRunner.isRunning());
+        assertTrue(serverRunner.isRunning());
     }
 
     @When("^I request \"([^\"]*)\" \"([^\"]*)\"$")
@@ -106,7 +106,8 @@ public class HTTPRequestsSteps {
 
     @Given("^the page content is empty$")
     public void thePageContentIsEmpty() throws Throwable {
-        Router.pageContent.put("/form", "");
+        byte[] emptyContent = new byte[0];
+        Router.pageContent.put("/form", emptyContent);
     }
 
     @And("^the response body has directory contents \"([^\"]*)\"$")
@@ -116,9 +117,21 @@ public class HTTPRequestsSteps {
     }
 
     @And("^the response body has directory link \"([^\"]*)\"$")
-    public void theResponseBodyHasDirectoryLink(String filename) throws Throwable {
+    public void theResponseBodyHasDirectoryLink(String filePath) throws Throwable {
         String response = getResponseBody();
         assertTrue(response.contains("a href="));
-        assertTrue(response.contains(filename));
+        assertTrue(response.contains(filePath));
+    }
+
+    @Then("^the response body has file contents \"([^\"]*)\"$")
+    public void theResponseBodyHasFileContents(String filePath) throws Throwable {
+        try {
+            byte[] fileContent = Files.readAllBytes(Paths.get("public" + filePath));
+            String content = new String(fileContent, "UTF-8");
+            String response = getResponseBody();
+            assertTrue(content.contains(response));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
