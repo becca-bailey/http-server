@@ -37,41 +37,10 @@ public class Router {
         statusCodesForRoutes.put("GET /form", Response.status(200));
 
         pageContent.put("/coffee", "I'm a teapot");
-        pageContent.put("/", getDirectoryLinks());
 
-        handleAllFiles();
-    }
+        DirectoryHandler directoryHandler = new DirectoryHandler(publicDirectory);
+        pageContent.put("/", directoryHandler.getDirectoryLinks());
 
-    private void handleAllFiles() {
-        for (File file : getDirectoryListing()) {
-            Router.statusCodesForRoutes.put("GET /" + file.getName(), Response.status(200));
-            Router.routeOptions.put("/" + file.getName(), Arrays.asList("GET"));
-
-            FileHandler handler = new FileHandler(file);
-            try {
-                Router.pageContent.put("/" + file.getName(), handler.getFileContents());
-                Response.requiredHeaderRows.put("GET /" + file.getName(), Arrays.asList(handler.fileContentTypeHeader()));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    String getDirectoryLinks() {
-        File[] directoryListing = getDirectoryListing();
-
-        StringBuilder directoryContents = new StringBuilder();
-        directoryContents.append(publicDirectory);
-
-        for (File file : directoryListing) {
-            FileHandler fileHandler = new FileHandler(file);
-            directoryContents.append(fileHandler.generateFileLink());
-        }
-        return directoryContents.toString();
-    }
-
-    private File[] getDirectoryListing() {
-        File directory = new File(publicDirectory);
-        return directory.listFiles();
+        directoryHandler.handleAllFiles();
     }
 }

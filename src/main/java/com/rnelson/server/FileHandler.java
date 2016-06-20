@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class FileHandler {
@@ -23,6 +24,15 @@ public class FileHandler {
         byte[] fileContent = Files.readAllBytes(Paths.get(filePath));
         return new String(fileContent, "UTF-8");
     }
+
+//    private Boolean fileIsImage() {
+//        List<String> imageExtensions = Arrays.asList("jpg, jpeg, png, svg, gif, bmp");
+//        if (imageExtensions.contains(fileExtension())) {
+//            return true;
+//        } else {
+//            return false;
+//        }
+//    }
 
     public String getFileContents() throws IOException {
         return fileContentsAsString();
@@ -45,5 +55,13 @@ public class FileHandler {
         fileTypesToContentTypes.put("txt", "text/plain");
 
         return "Content-Type: " + fileTypesToContentTypes.get(fileExtension());
+    }
+
+    public void addFileContentToPageContent() throws IOException {
+        Router.pageContent.put("/" + fileName, getFileContents());
+    }
+
+    public void addRequiredHeaderRowsForFile() {
+        Response.requiredHeaderRows.put("GET /" + fileName, Arrays.asList(fileContentTypeHeader()));
     }
 }

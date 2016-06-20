@@ -29,13 +29,13 @@ public class FileHandlerTest {
         assertEquals("Content-Type: text/plain", text.fileContentTypeHeader());
     }
 
-    @Test
-    public void fileContentTypeReturnsFileExtension() throws Throwable {
-        assertEquals("jpeg", jpeg.fileExtension());
-        assertEquals("gif", gif.fileExtension());
-        assertEquals("png", png.fileExtension());
-        assertEquals(null, file1.fileExtension());
-    }
+//    @Test
+//    public void fileContentTypeReturnsFileExtension() throws Throwable {
+//        assertEquals("jpeg", jpeg.fileExtension());
+//        assertEquals("gif", gif.fileExtension());
+//        assertEquals("png", png.fileExtension());
+//        assertEquals(null, file1.fileExtension());
+//    }
 
 //    @Test
 //    public void isImageFileReturnsTrueForImageFileElseFalse() throws Throwable {

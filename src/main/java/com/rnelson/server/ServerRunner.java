@@ -1,5 +1,6 @@
 package com.rnelson.server;
 
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
 
@@ -24,6 +25,7 @@ class ServerRunner implements Runnable {
     private void respondToRequest (OutputStreamWriter out, BufferedReader in) throws IOException {
         String request = getFullRequest(in);
         RequestHandler handler = new RequestHandler(request);
+
         String response = handler.processRequest();
         out.write(response);
         out.close();
