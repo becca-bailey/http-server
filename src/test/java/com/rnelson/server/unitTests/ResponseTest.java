@@ -1,6 +1,6 @@
 package com.rnelson.server.unitTests;
 
-import com.rnelson.response.Response;
+import com.rnelson.server.response.Response;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;

@@ -1,8 +1,8 @@
-package com.rnelson.file;
+package com.rnelson.server.file;
 
-import com.rnelson.response.Response;
-import com.rnelson.utilities.Router;
-import com.rnelson.utilities.SharedUtilities;
+import com.rnelson.server.response.Response;
+import com.rnelson.server.utilities.Router;
+import com.rnelson.server.utilities.SharedUtilities;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class FileHandler {
@@ -25,15 +24,17 @@ public class FileHandler {
     }
 
     public Boolean fileIsImage() {
-        if (SharedUtilities.imageExtensions.contains(fileExtension())) {
-            return true;
-        } else {
-            return false;
-        }
+        return SharedUtilities.imageExtensions.contains(fileExtension());
     }
 
-    public byte[] getFileContents() throws IOException {
-        return Files.readAllBytes(Paths.get(filePath));
+    public byte[] getFileContents() {
+        byte[] fileContents = new byte[0];
+        try {
+            fileContents = Files.readAllBytes(Paths.get(filePath));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return fileContents;
     }
 
     public String generateFileLink() {
@@ -55,11 +56,11 @@ public class FileHandler {
         return "Content-Type: " + fileTypesToContentTypes.get(fileExtension());
     }
 
-    private String contentLengthHeader() {
+    public String contentLengthHeader() {
         return "Content-Length: " + ((int)file.length());
     }
 
-    public void addFileContentToPageContent() throws IOException {
+    public void addFileContentToPageContent() {
         Router.pageContent.put("/" + fileName, getFileContents());
     }
 

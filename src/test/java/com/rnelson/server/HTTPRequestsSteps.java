@@ -1,6 +1,6 @@
 package com.rnelson.server;
 
-import com.rnelson.utilities.Router;
+import com.rnelson.server.utilities.Router;
 import cucumber.api.java.After;
 import cucumber.api.java.en.*;
 import java.io.*;

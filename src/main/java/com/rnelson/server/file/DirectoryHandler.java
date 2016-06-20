@@ -1,7 +1,7 @@
-package com.rnelson.file;
+package com.rnelson.server.file;
 
-import com.rnelson.response.Response;
-import com.rnelson.utilities.Router;
+import com.rnelson.server.response.Response;
+import com.rnelson.server.utilities.Router;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,12 +19,8 @@ public class DirectoryHandler {
             Router.statusCodesForRoutes.put("GET /" + file.getName(), Response.status(200));
             Router.routeOptions.put("/" + file.getName(), Arrays.asList("GET"));
             FileHandler handler = new FileHandler(file);
-            try {
-                handler.addFileContentToPageContent();
-                handler.addRequiredHeaderRowsForFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            handler.addFileContentToPageContent();
+            handler.addRequiredHeaderRowsForFile();
         }
     }
 

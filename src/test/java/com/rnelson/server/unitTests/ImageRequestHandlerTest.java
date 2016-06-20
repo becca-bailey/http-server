@@ -1,6 +1,6 @@
 package com.rnelson.server.unitTests;
 
-import com.rnelson.request.ImageRequestHandler;
+import com.rnelson.server.request.ImageRequestHandler;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;

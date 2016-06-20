@@ -1,6 +1,6 @@
-package com.rnelson.request;
+package com.rnelson.server.request;
 
-import com.rnelson.utilities.SharedUtilities;
+import com.rnelson.server.utilities.SharedUtilities;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -17,20 +17,17 @@ public class RequestHandler {
     public RequestHandler(String request) {
         this.requestLines = request.split("\n");
         method = method();
-        try {
-            route = route();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
+        route = route();
     }
 
-    public byte[] processRequest() throws MalformedURLException {
+    public byte[] processRequest() {
         Request request = new Request(method, route);
         request.sendBody(getRequestBody());
         return request.getResponse();
     }
 
     public String getRequestBody() {
+        //refactor this later
         StringBuilder requestBody = new StringBuilder();
         Integer firstLineOfBody;
         try {
@@ -47,16 +44,22 @@ public class RequestHandler {
         return requestBody.toString().trim();
     }
 
-    private URL fullURL() throws MalformedURLException {
+    private URL fullURL() {
         String uriAndParameters = SharedUtilities.findMatch("\\/.*\\s", requestLines[0], 0);
-        return new URL("http://example.com" + uriAndParameters);
+        URL fullURL = null;
+        try {
+            fullURL = new URL("http://example.com" + uriAndParameters);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return fullURL;
     }
 
     public String method() {
         return SharedUtilities.findMatch("^\\S+", requestLines[0], 0);
     }
 
-    public String route() throws MalformedURLException {
+    public String route() {
         URL sampleURL = fullURL();
         return sampleURL.getPath();
     }

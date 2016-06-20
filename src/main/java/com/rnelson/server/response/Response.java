@@ -1,13 +1,13 @@
-package com.rnelson.response;
+package com.rnelson.server.response;
 
-import com.rnelson.utilities.Router;
-import com.rnelson.utilities.SharedUtilities;
+import com.rnelson.server.utilities.Router;
+import com.rnelson.server.utilities.SharedUtilities;
 
 import java.util.*;
 
-import static com.rnelson.utilities.Router.pageContent;
-import static com.rnelson.utilities.Router.routeOptions;
-import static com.rnelson.utilities.Router.statusCodesForRoutes;
+import static com.rnelson.server.utilities.Router.pageContent;
+import static com.rnelson.server.utilities.Router.routeOptions;
+import static com.rnelson.server.utilities.Router.statusCodesForRoutes;
 
 public class Response {
     private String method;

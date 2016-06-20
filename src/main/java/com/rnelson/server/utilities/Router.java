@@ -1,7 +1,7 @@
-package com.rnelson.utilities;
+package com.rnelson.server.utilities;
 
-import com.rnelson.file.DirectoryHandler;
-import com.rnelson.response.Response;
+import com.rnelson.server.file.DirectoryHandler;
+import com.rnelson.server.response.Response;
 
 import java.util.Arrays;
 import java.util.HashMap;

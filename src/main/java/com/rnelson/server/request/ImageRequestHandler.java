@@ -1,7 +1,7 @@
-package com.rnelson.request;
+package com.rnelson.server.request;
 
-import com.rnelson.file.FileHandler;
-import com.rnelson.utilities.SharedUtilities;
+import com.rnelson.server.file.FileHandler;
+import com.rnelson.server.utilities.SharedUtilities;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -13,12 +13,7 @@ public class ImageRequestHandler extends RequestHandler {
 
     public ImageRequestHandler(String imageRequest) {
         super(imageRequest);
-        this.method = method();
-        try {
-            this.route = route();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
+        this.route = route();
         this.file = new File(route);
     }
 

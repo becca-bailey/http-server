@@ -1,7 +1,7 @@
-package com.rnelson.request;
+package com.rnelson.server.request;
 
-import com.rnelson.response.Response;
-import com.rnelson.utilities.SharedUtilities;
+import com.rnelson.server.response.Response;
+import com.rnelson.server.utilities.SharedUtilities;
 
 public class Request {
     private String method;

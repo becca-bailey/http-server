@@ -1,4 +1,4 @@
-package com.rnelson.utilities;
+package com.rnelson.server.utilities;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
@@ -26,7 +26,13 @@ public class SharedUtilities {
         return concatenatedArray;
     }
 
-    public static String convertByteArrayToString(byte[] bytes) throws UnsupportedEncodingException {
-        return new String(bytes, "UTF-8");
+    public static String convertByteArrayToString(byte[] bytes) {
+        String convertedString = "";
+        try {
+            convertedString = new String(bytes, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return convertedString;
     }
 }

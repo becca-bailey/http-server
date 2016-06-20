@@ -1,12 +1,14 @@
 package com.rnelson.server.unitTests;
 
-import com.rnelson.file.FileHandler;
-import com.rnelson.utilities.SharedUtilities;
+import com.rnelson.server.file.FileHandler;
+import com.rnelson.server.response.Response;
+import com.rnelson.server.utilities.Router;
+import com.rnelson.server.utilities.SharedUtilities;
 import org.junit.Test;
-
 import java.io.File;
+import java.util.List;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.*;
 
 public class FileHandlerTest {
     private FileHandler file1 = new FileHandler(new File("public/file1"));
@@ -32,10 +34,41 @@ public class FileHandlerTest {
     }
 
     @Test
-    public void fileContentTypeReturnsFileExtension() throws Throwable {
+    public void fileExtensionReturnsFileExtension() throws Throwable {
         assertEquals("jpeg", jpeg.fileExtension());
         assertEquals("gif", gif.fileExtension());
         assertEquals("png", png.fileExtension());
         assertEquals(null, file1.fileExtension());
+    }
+
+    @Test
+    public void fileIsImageReturnsTrueIfFileIsImage() throws Throwable {
+        assertTrue(jpeg.fileIsImage());
+        assertTrue(gif.fileIsImage());
+        assertFalse(text.fileIsImage());
+    }
+
+    @Test
+    public void generateFileLinkReturnsHTMLLink() throws Throwable {
+        assertEquals("<a href=\"/file1\">file1</a>", file1.generateFileLink());
+    }
+
+    @Test
+    public void contentLengthHeaderReturnsHeaderField() throws Throwable {
+        assertEquals("Content-Length: 14", text.contentLengthHeader());
+    }
+
+    @Test
+    public void addFileContentToPageContent() throws Throwable {
+        file1.addFileContentToPageContent();
+        String fileContent = SharedUtilities.convertByteArrayToString(Router.pageContent.get("/file1"));
+        assertEquals("file1 contents", fileContent);
+    }
+
+    @Test
+    public void addRequiredHeaderRowsForFileAddsHeaderRows() throws Throwable {
+        file1.addRequiredHeaderRowsForFile();
+        List<String> headerContents = Response.requiredHeaderRows.get("GET /file1");
+        assertTrue(headerContents.contains("Content-Length: 14"));
     }
 }

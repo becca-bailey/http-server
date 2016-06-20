@@ -1,6 +1,6 @@
 package com.rnelson.server.unitTests;
 
-import com.rnelson.request.RequestHandler;
+import com.rnelson.server.request.RequestHandler;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -30,8 +30,9 @@ public class RequestHandlerTest {
     }
 
     @Test
-    public void responseBodyReturnsResponseBodyAsString() throws Throwable {
+    public void responseBodyReturnsAllLinesAfterNewline() throws Throwable {
         assertEquals("hello", postEchoHandler.getRequestBody());
+//        assertEquals("", echoHandler.getRequestBody());
     }
 
     @Test
