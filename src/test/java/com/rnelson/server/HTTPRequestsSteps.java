@@ -7,6 +7,8 @@ import java.io.*;
 import java.net.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 
 import static com.rnelson.server.GlobalHooks.serverRunner;
 import static org.junit.Assert.*;
@@ -21,17 +23,18 @@ public class HTTPRequestsSteps {
         assertTrue(serverRunner.isRunning());
     }
 
+    private Boolean isValidMethod(String method) {
+        List<String> methods = Arrays.asList("GET", "POST", "PUT", "PATCH", "HEAD");
+        return methods.contains(method);
+    }
+
     @When("^I request \"([^\"]*)\" \"([^\"]*)\"$")
     public void iRequest(String method, String uri) throws Throwable {
-        try {
-            URL url = new URL("http://localhost:" + port + uri);
-            connection = (HttpURLConnection)url.openConnection();
-            connection.setDoOutput(true);
-            connection.setRequestMethod(method);
-            connection.connect();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        URL url = new URL("http://localhost:" + port + uri);
+        connection = (HttpURLConnection)url.openConnection();
+        connection.setDoOutput(true);
+        connection.setRequestMethod(method);
+        connection.connect();
     }
 
     @When("^I \"([^\"]*)\" \"([^\"]*)\" to \"([^\"]*)\"$")
@@ -40,9 +43,6 @@ public class HTTPRequestsSteps {
             URL url = new URL("http://localhost:" + port + uri);
             connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
-            connection.setRequestMethod(method);
-
-
             Thread.sleep(1000);
             // ^ this solves the problem locally, but not on Travis
             OutputStream out = connection.getOutputStream();

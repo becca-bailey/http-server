@@ -58,12 +58,17 @@ public class Response {
         statusCodes.put(201, "HTTP/1.1 201 CREATED");
         statusCodes.put(418, "HTTP/1.1 418 I'm a teapot");
         statusCodes.put(302, "HTTP/1.1 302 Found");
+        statusCodes.put(405, "HTTP/1.1 405 Method Not Allowed");
 
         return statusCodes.get(status);
     }
 
     private Boolean isValidRoute() {
         return routeOptions.containsKey(route) && routeOptions.get(route).contains(method);
+    }
+
+    private Boolean validRouteAndInvalidMethod() {
+        return routeOptions.containsKey(route) && !(routeOptions.get(route).contains(method));
     }
 
     public String getOptions() {
@@ -112,6 +117,9 @@ public class Response {
             header.append(responseStatus());
             header.append("\r\n");
             header.append(String.join("\r\n", getRequiredHeaderRows()));
+            header.append("\r\n\r\n");
+        } else if (validRouteAndInvalidMethod()) {
+            header.append(status(405));
             header.append("\r\n\r\n");
         } else {
             header.append(status(404));
