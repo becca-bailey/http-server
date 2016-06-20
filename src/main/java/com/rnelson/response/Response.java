@@ -16,7 +16,7 @@ public class Response {
 
     private static Map<Integer, String> statusCodes = new HashMap<Integer, String>();
     public static Map<String, List> requiredHeaderRows = new HashMap<String, List>();
-    private static Map<String, String>contentTypes = new HashMap<String, String>();
+    private static Map<String, String> contentTypes = new HashMap<String, String>();
 
     private String contentType = "Content-Type: text/html";
     private String contentLength = "Content-Length: " + body.length();
@@ -40,7 +40,11 @@ public class Response {
         pageContent.put(route, "");
     }
 
-    public void sendBody(String data) {
+    public Boolean echoesBody() {
+        return (method.equals("POST") || method.equals("PUT"));
+    }
+
+    public void sendRequestBody(String data) {
         this.body = data;
         pageContent.put(route, body);
     }
@@ -64,7 +68,7 @@ public class Response {
         return "Allow: " + allowedOptions;
     }
 
-    public String getResponseStatus() {
+    public String responseStatus() {
         String status = statusCodesForRoutes.get(method + " " + route);
         if (status == null) {
             status = statusCodesForRoutes.get(method + " *");
@@ -96,29 +100,33 @@ public class Response {
         return rows;
     }
 
-    public String getHeaderAndBody() {
-        StringBuilder response = new StringBuilder();
+    public byte[] getHeader() {
+        StringBuilder header = new StringBuilder();
         if (isValidRoute()) {
             this.options = getOptions();
             populateRequiredHeaders();
 
-            response.append(getResponseStatus());
-            response.append("\r\n");
-            response.append(String.join("\r\n", getRequiredHeaderRows()));
-            response.append("\r\n\r\n");
-
-            if (route.equals("/echo")) {
-                response.append(body);
-            }
-
-            String content = pageContent.get(route);
-            if (content != null && method.equals("GET")) {
-                response.append(content);
-            }
+            header.append(responseStatus());
+            header.append("\r\n");
+            header.append(String.join("\r\n", getRequiredHeaderRows()));
+            header.append("\r\n\r\n");
         } else {
-            response.append(status(404));
-            response.append("\r\n\r\n");
+            header.append(status(404));
+            header.append("\r\n\r\n");
         }
-        return response.toString();
+        return header.toString().getBytes();
+    }
+
+    public byte[] getBody() {
+        String bodyContent = "";
+        if (route.equals("/echo")) {
+            bodyContent += body;
+        }
+
+        String content = pageContent.get(route);
+        if (content != null && method.equals("GET")) {
+            bodyContent += content;
+        }
+        return bodyContent.getBytes();
     }
 }

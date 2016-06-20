@@ -52,6 +52,6 @@ public class RequestHandler {
         String route = route();
         Request request = new Request(method, route);
         request.sendBody(getRequestBody());
-        return request.getResponse().getBytes();
+        return request.getResponse();
     }
 }

@@ -20,7 +20,6 @@ class ServerRunner implements Runnable {
         while(in.ready()) {
             request.append((char) in.read());
         }
-        in.close();
         return request.toString();
     }
 

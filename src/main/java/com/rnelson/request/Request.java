@@ -12,12 +12,19 @@ public class Request {
         this.route = route;
     }
 
-    public String getResponse() {
+    public byte[] getResponse() {
         Response response = new Response(method, route);
-        if (method.equals("POST") || method.equals("PUT")) {
-            response.sendBody(body);
+        if (response.echoesBody()) {
+            response.sendRequestBody(body);
         }
-        return response.getHeaderAndBody();
+
+        byte[] header = response.getHeader();
+        byte[] body = response.getBody();
+        byte[] responseArray = new byte[header.length + body.length];
+        System.arraycopy(header, 0, responseArray, 0, header.length);
+        System.arraycopy(body, 0, responseArray, header.length, body.length);
+
+        return responseArray;
     }
 
     public void sendBody(String data) {

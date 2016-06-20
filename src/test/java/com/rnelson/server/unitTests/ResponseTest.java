@@ -16,7 +16,7 @@ public class ResponseTest {
     @Test
     public void getResponseStatusReturnsStatus() throws Throwable {
         Response response = new Response("GET", "/");
-        assertEquals(response.getResponseStatus(), Response.status(200));
+        assertEquals(response.responseStatus(), Response.status(200));
     }
 
     @Test
@@ -28,22 +28,30 @@ public class ResponseTest {
     @Test
     public void getHeaderReturns404ForInvalidRoute() throws Throwable {
         Response response = new Response("GET", "/foobar");
-        assertEquals(Response.status(404) + "\r\n\r\n", response.getHeaderAndBody());
+        byte[] headerBytes = response.getHeader();
+        String header = new String(headerBytes, "UTF-8");
+        assertEquals(Response.status(404) + "\r\n\r\n", header);
     }
 
     @Test
     public void getHeaderReturnsHeaderForValidRoute() throws Throwable {
         Response response = new Response("GET", "/");
-        assertTrue(response.getHeaderAndBody().contains(Response.status(200)));
+        byte[] headerBytes = response.getHeader();
+        String header = new String(headerBytes, "UTF-8");
+        assertTrue(header.contains(Response.status(200)));
     }
 
     @Test
     public void imATeapot() throws Throwable {
         Response response = new Response("GET", "/coffee");
-        assertTrue(response.getHeaderAndBody().contains(Response.status(418)));
-        assertTrue(response.getHeaderAndBody().contains("I'm a teapot"));
+        byte[] headerBytes = response.getHeader();
+        String header = new String(headerBytes, "UTF-8");
+        assertTrue(header.contains(Response.status(418)));
+        assertTrue(header.contains("I'm a teapot"));
 
         Response tea = new Response("GET", "/tea");
-        assertTrue(tea.getHeaderAndBody().contains(Response.status(200)));
+        byte[] teaBytes = tea.getHeader();
+        String teaResponse = new String(teaBytes, "UTF-8");
+        assertTrue(teaResponse.contains(Response.status(200)));
     }
 }
