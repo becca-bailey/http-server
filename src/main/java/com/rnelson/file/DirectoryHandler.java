@@ -18,7 +18,6 @@ public class DirectoryHandler {
         for (File file : getDirectoryListing()) {
             Router.statusCodesForRoutes.put("GET /" + file.getName(), Response.status(200));
             Router.routeOptions.put("/" + file.getName(), Arrays.asList("GET"));
-
             FileHandler handler = new FileHandler(file);
             try {
                 handler.addFileContentToPageContent();

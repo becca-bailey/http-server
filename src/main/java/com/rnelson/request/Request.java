@@ -1,6 +1,7 @@
 package com.rnelson.request;
 
 import com.rnelson.response.Response;
+import com.rnelson.utilities.SharedUtilities;
 
 public class Request {
     private String method;
@@ -20,11 +21,7 @@ public class Request {
 
         byte[] header = response.getHeader();
         byte[] body = response.getBody();
-        byte[] responseArray = new byte[header.length + body.length];
-        System.arraycopy(header, 0, responseArray, 0, header.length);
-        System.arraycopy(body, 0, responseArray, header.length, body.length);
-
-        return responseArray;
+        return SharedUtilities.addByteArrays(header, body);
     }
 
     public void sendBody(String data) {

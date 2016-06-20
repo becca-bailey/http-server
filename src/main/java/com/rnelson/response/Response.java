@@ -1,6 +1,7 @@
 package com.rnelson.response;
 
 import com.rnelson.utilities.Router;
+import com.rnelson.utilities.SharedUtilities;
 
 import java.util.*;
 
@@ -22,6 +23,8 @@ public class Response {
     private String contentLength = "Content-Length: " + body.length();
     private String connection = "Connection: Keep-Alive";
     private String location = "Location: http://localhost:5000/";
+    private byte[] emptyContent = new byte[0];
+
 
     private Router router;
 
@@ -37,7 +40,7 @@ public class Response {
     }
 
     private void deletePageContent() {
-        pageContent.put(route, "");
+        pageContent.put(route, emptyContent);
     }
 
     public Boolean echoesBody() {
@@ -46,7 +49,7 @@ public class Response {
 
     public void sendRequestBody(String data) {
         this.body = data;
-        pageContent.put(route, body);
+        pageContent.put(route, body.getBytes());
     }
 
     public static String status(Integer status) {
@@ -77,9 +80,9 @@ public class Response {
     }
 
     private void populateRequiredHeaders() {
-        List<String> standardRows = Arrays.asList(contentType, connection);
-        List<String> optionsRows = Arrays.asList(contentType, options, connection, contentLength);
-        List<String> postRows = Arrays.asList(contentType, connection, contentLength);
+        List<String> standardRows = Arrays.asList(contentType);
+        List<String> optionsRows = Arrays.asList(contentType, options, contentLength);
+        List<String> typeAndLength = Arrays.asList(contentType, contentLength);
         List<String> redirectRows = Arrays.asList(location);
 
         requiredHeaderRows.put("GET *", standardRows);
@@ -117,16 +120,25 @@ public class Response {
         return header.toString().getBytes();
     }
 
-    public byte[] getBody() {
-        String bodyContent = "";
-        if (route.equals("/echo")) {
-            bodyContent += body;
+    public byte[] getPageContent() {
+        byte[] content = emptyContent;
+        if (isValidRoute() && pageContent.get(route) != null) {
+            content = pageContent.get(route);
         }
+        return content;
+    }
 
-        String content = pageContent.get(route);
-        if (content != null && method.equals("GET")) {
-            bodyContent += content;
+    public byte[] getBody() {
+        byte[] echoContentBytes = emptyContent;
+        byte[] bodyContent = emptyContent;
+        if (route.equals("/echo")) {
+            echoContentBytes = body.getBytes();
         }
-        return bodyContent.getBytes();
+        if (method.equals("GET")) {
+            bodyContent = SharedUtilities.addByteArrays(echoContentBytes, getPageContent());
+        } else {
+            bodyContent = echoContentBytes;
+        }
+        return bodyContent;
     }
 }

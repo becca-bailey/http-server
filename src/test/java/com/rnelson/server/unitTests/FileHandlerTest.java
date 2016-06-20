@@ -1,6 +1,7 @@
 package com.rnelson.server.unitTests;
 
 import com.rnelson.file.FileHandler;
+import com.rnelson.utilities.SharedUtilities;
 import org.junit.Test;
 
 import java.io.File;
@@ -16,8 +17,10 @@ public class FileHandlerTest {
 
     @Test
     public void getFileContentsReturnsContentsOfFile() throws Throwable {
-        assertEquals("file1 contents", file1.getFileContents());
-        assertEquals("file1 contents", text.getFileContents());
+        String file1Contents = SharedUtilities.convertByteArrayToString(file1.getFileContents());
+        String textContents = SharedUtilities.convertByteArrayToString(text.getFileContents());
+        assertEquals("file1 contents", file1Contents);
+        assertEquals("file1 contents", textContents);
     }
 
     @Test
@@ -28,19 +31,11 @@ public class FileHandlerTest {
         assertEquals("Content-Type: text/plain", text.fileContentTypeHeader());
     }
 
-//    @Test
-//    public void fileContentTypeReturnsFileExtension() throws Throwable {
-//        assertEquals("jpeg", jpeg.fileExtension());
-//        assertEquals("gif", gif.fileExtension());
-//        assertEquals("png", png.fileExtension());
-//        assertEquals(null, file1.fileExtension());
-//    }
-
-//    @Test
-//    public void isImageFileReturnsTrueForImageFileElseFalse() throws Throwable {
-//        assertTrue(Router.fileIsImage(jpeg));
-//        assertTrue(Router.fileIsImage(gif));
-//        assertTrue(Router.fileIsImage(png));
-//        assertFalse(Router.fileIsImage(text));
-//    }
+    @Test
+    public void fileContentTypeReturnsFileExtension() throws Throwable {
+        assertEquals("jpeg", jpeg.fileExtension());
+        assertEquals("gif", gif.fileExtension());
+        assertEquals("png", png.fileExtension());
+        assertEquals(null, file1.fileExtension());
+    }
 }

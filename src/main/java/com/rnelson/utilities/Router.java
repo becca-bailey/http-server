@@ -11,7 +11,7 @@ import java.util.Map;
 public class Router {
     public static Map<String, List<String>> routeOptions = new HashMap<String, List<String>>();
     public static Map<String, String> statusCodesForRoutes = new HashMap<String, String>();
-    public static Map<String, String> pageContent = new HashMap<String, String>();
+    public static Map<String, byte[]> pageContent = new HashMap<String, byte[]>();
     private String publicDirectory = "public";
 
 
@@ -35,10 +35,10 @@ public class Router {
         statusCodesForRoutes.put("GET /redirect", Response.status(302));
         statusCodesForRoutes.put("GET /form", Response.status(200));
 
-        pageContent.put("/coffee", "I'm a teapot");
+        pageContent.put("/coffee", ("I'm a teapot").getBytes());
 
         DirectoryHandler directoryHandler = new DirectoryHandler(publicDirectory);
-        pageContent.put("/", directoryHandler.getDirectoryLinks());
+        pageContent.put("/", (directoryHandler.getDirectoryLinks()).getBytes());
 
         directoryHandler.handleAllFiles();
     }

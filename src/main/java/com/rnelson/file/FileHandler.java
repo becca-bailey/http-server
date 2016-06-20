@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class FileHandler {
@@ -23,22 +24,16 @@ public class FileHandler {
         this.filePath = file.getPath();
     }
 
-    private String fileContentsAsString() throws IOException {
-        byte[] fileContent = Files.readAllBytes(Paths.get(filePath));
-        return new String(fileContent, "UTF-8");
+    public Boolean fileIsImage() {
+        if (SharedUtilities.imageExtensions.contains(fileExtension())) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
-//    private Boolean fileIsImage() {
-//        List<String> imageExtensions = Arrays.asList("jpg, jpeg, png, svg, gif, bmp");
-//        if (imageExtensions.contains(fileExtension())) {
-//            return true;
-//        } else {
-//            return false;
-//        }
-//    }
-
-    public String getFileContents() throws IOException {
-        return fileContentsAsString();
+    public byte[] getFileContents() throws IOException {
+        return Files.readAllBytes(Paths.get(filePath));
     }
 
     public String generateFileLink() {
@@ -60,11 +55,15 @@ public class FileHandler {
         return "Content-Type: " + fileTypesToContentTypes.get(fileExtension());
     }
 
+    private String contentLengthHeader() {
+        return "Content-Length: " + ((int)file.length());
+    }
+
     public void addFileContentToPageContent() throws IOException {
         Router.pageContent.put("/" + fileName, getFileContents());
     }
 
     public void addRequiredHeaderRowsForFile() {
-        Response.requiredHeaderRows.put("GET /" + fileName, Arrays.asList(fileContentTypeHeader()));
+        Response.requiredHeaderRows.put("GET /" + fileName, Arrays.asList(fileContentTypeHeader(), contentLengthHeader()));
     }
 }

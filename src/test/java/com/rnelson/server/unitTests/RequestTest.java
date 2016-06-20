@@ -84,7 +84,7 @@ public class RequestTest {
         assertTrue(response.contains("Allow: GET,HEAD,POST,OPTIONS,PUT"));
 
         Request request2 = new Request("OPTIONS", "/method_options2");
-        byte[] responseBytes2 = request.getResponse();
+        byte[] responseBytes2 = request2.getResponse();
         String response2 = new String(responseBytes2, "UTF-8");
         assertTrue(response2.contains(Response.status(200)));
         assertTrue(response2.contains("Allow: GET,OPTIONS"));

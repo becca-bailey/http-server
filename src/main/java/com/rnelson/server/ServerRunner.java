@@ -1,7 +1,10 @@
 package com.rnelson.server;
 
+import com.rnelson.request.ImageRequestHandler;
 import com.rnelson.request.RequestHandler;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
 

@@ -106,7 +106,8 @@ public class HTTPRequestsSteps {
 
     @Given("^the page content is empty$")
     public void thePageContentIsEmpty() throws Throwable {
-        Router.pageContent.put("/form", "");
+        byte[] emptyContent = new byte[0];
+        Router.pageContent.put("/form", emptyContent);
     }
 
     @And("^the response body has directory contents \"([^\"]*)\"$")
