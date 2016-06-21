@@ -1,6 +1,7 @@
 package com.rnelson.server;
 
 import com.rnelson.server.utilities.Router;
+import cucumber.api.PendingException;
 import cucumber.api.java.After;
 import cucumber.api.java.en.*;
 import java.io.*;
@@ -133,5 +134,11 @@ public class HTTPRequestsSteps {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Then("^the response body should include \"([^\"]*)\"$")
+    public void theResponseBodyShouldIncludeEscapingQuotes(String arg0) throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        throw new PendingException();
     }
 }

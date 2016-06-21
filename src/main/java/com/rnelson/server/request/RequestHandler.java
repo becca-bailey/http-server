@@ -12,18 +12,18 @@ public class RequestHandler {
     private String method;
     private String route;
 
-    private final List<String> routes = Arrays.asList("/", "/echo", "/form");
-
     public RequestHandler(String request) {
         this.requestLines = request.split("\n");
-        method = method();
-        route = route();
+        this.method = method();
+        this.route = route();
     }
 
-    public byte[] processRequest() {
-        Request request = new Request(method, route);
-        request.sendBody(getRequestBody());
-        return request.getResponse();
+    public String method() {
+        return SharedUtilities.findMatch("^\\S+", requestLines[0], 0);
+    }
+
+    public String route() {
+        return SharedUtilities.findMatch("\\/([a-z]|[.|_|-]|\\d)*", requestLines[0], 0);
     }
 
     public String getRequestBody() {
@@ -44,32 +44,13 @@ public class RequestHandler {
         return requestBody.toString().trim();
     }
 
-    private URL fullURL() {
-        String uriAndParameters = SharedUtilities.findMatch("\\/.*\\s", requestLines[0], 0);
-        URL fullURL = null;
-        try {
-            fullURL = new URL("http://example.com" + uriAndParameters);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        return fullURL;
+    public String parameters() {
+        return SharedUtilities.findMatch("([?])(.*)", requestLines[0], 2);
     }
 
-    public String method() {
-        return SharedUtilities.findMatch("^\\S+", requestLines[0], 0);
-    }
-
-    public String route() {
-        URL sampleURL = fullURL();
-        return sampleURL.getPath();
-    }
-
-    public Boolean requestIsImage() {
-        for (String extension : SharedUtilities.imageExtensions) {
-            if (route.contains(extension)) {
-                return true;
-            }
-        }
-        return false;
+    public byte[] processRequest() {
+        Request request = new Request(method, route);
+        request.sendBody(getRequestBody());
+        return request.getResponse();
     }
 }
