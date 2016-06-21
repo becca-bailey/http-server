@@ -1,29 +1,35 @@
 package com.rnelson.server.request;
 
+import com.rnelson.server.response.Response;
 import com.rnelson.server.utilities.SharedUtilities;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RequestHandler {
     private final String[] requestLines;
     private String method;
     private String route;
-
-    private final List<String> routes = Arrays.asList("/", "/echo", "/form");
+    private String body;
+    private Map<String, String> decodedParameters;
 
     public RequestHandler(String request) {
         this.requestLines = request.split("\n");
-        method = method();
-        route = route();
+        this.method = method();
+        this.route = route();
+        this.body = getRequestBody();
     }
 
-    public byte[] processRequest() {
-        Request request = new Request(method, route);
-        request.sendBody(getRequestBody());
-        return request.getResponse();
+    public String method() {
+        return SharedUtilities.findMatch("^\\S+", requestLines[0], 0);
+    }
+
+    public String route() {
+        return SharedUtilities.findMatch("\\/([a-z]|[.|_|-]|\\d)*", requestLines[0], 0);
     }
 
     public String getRequestBody() {
@@ -44,32 +50,27 @@ public class RequestHandler {
         return requestBody.toString().trim();
     }
 
-    private URL fullURL() {
-        String uriAndParameters = SharedUtilities.findMatch("\\/.*\\s", requestLines[0], 0);
-        URL fullURL = null;
-        try {
-            fullURL = new URL("http://example.com" + uriAndParameters);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+    public String parameters() {
+        return SharedUtilities.findMatch("([?])(.*)", requestLines[0], 2);
+    }
+
+    public byte[] getResponse() {
+        // refactor this
+        Response response = new Response(method, route);
+        if (response.echoesBody()) {
+            response.sendRequestBody(body);
         }
-        return fullURL;
-    }
-
-    public String method() {
-        return SharedUtilities.findMatch("^\\S+", requestLines[0], 0);
-    }
-
-    public String route() {
-        URL sampleURL = fullURL();
-        return sampleURL.getPath();
-    }
-
-    public Boolean requestIsImage() {
-        for (String extension : SharedUtilities.imageExtensions) {
-            if (route.contains(extension)) {
-                return true;
-            }
+        if (parameters() != null) {
+            ParameterParser parameters = new ParameterParser(parameters());
+            body = parameters.convertToBodyText();
+            response.sendRequestBody(body);
         }
-        return false;
+        byte[] header = response.getHeader();
+        byte[] body = response.getBody();
+        return SharedUtilities.addByteArrays(header, body);
+    }
+
+    public byte[] processRequest() {
+        return getResponse();
     }
 }

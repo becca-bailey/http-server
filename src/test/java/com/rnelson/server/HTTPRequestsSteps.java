@@ -1,6 +1,7 @@
 package com.rnelson.server;
 
 import com.rnelson.server.utilities.Router;
+import cucumber.api.PendingException;
 import cucumber.api.java.After;
 import cucumber.api.java.en.*;
 import java.io.*;
@@ -133,5 +134,13 @@ public class HTTPRequestsSteps {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Then("^the response body should include \"([^\"]*)\"$")
+    public void theResponseBodyShouldInclude(String bodyText) throws Throwable {
+        // I need to refactor to get full response body before this test can pass
+        String response = getResponseBody();
+        System.out.println(response);
+        assertTrue(response.contains(bodyText));
     }
 }
