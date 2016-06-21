@@ -1,21 +1,18 @@
 package com.rnelson.server;
 
 import com.rnelson.server.response.BodyContent;
-import cucumber.api.java.After;
-import cucumber.api.java.Before;
-import cucumber.api.java.en.And;
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
+import com.rnelson.server.utilities.Router;
 import static com.rnelson.server.GlobalHooks.serverRunner;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+
+import cucumber.api.*;
+import cucumber.api.java.*;
+import cucumber.api.java.en.*;
+
+import java.io.*;
+import java.net.*;
+import java.nio.file.*;
+
+import static org.junit.Assert.*;
 
 public class HTTPRequestsSteps {
     private Integer port = 5000;

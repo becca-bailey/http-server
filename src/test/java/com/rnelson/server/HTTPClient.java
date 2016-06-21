@@ -2,18 +2,13 @@ package com.rnelson.server;
 
 import com.rnelson.server.utilities.SharedUtilities;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHeaders;
+import org.apache.http.*;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.*;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class HTTPClient {
     public String hostName;
@@ -194,6 +189,7 @@ public class HTTPClient {
     public void disconnect() throws IOException {
         httpclient.close();
         response.close();
+
     }
 }
 
