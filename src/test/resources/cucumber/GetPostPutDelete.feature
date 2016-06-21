@@ -1,6 +1,6 @@
 Feature: POST GET PUT GET DELETE GET
   Scenario: /form responds with 200
-    Given the page content is empty
+    Given the page content of "/form" is empty
     When I request "GET" "/form"
     Then the response status should be 200
     And the response body should be empty
