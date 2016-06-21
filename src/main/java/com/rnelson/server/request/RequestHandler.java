@@ -1,5 +1,6 @@
 package com.rnelson.server.request;
 
+import com.rnelson.server.response.Response;
 import com.rnelson.server.utilities.SharedUtilities;
 
 import java.net.MalformedURLException;
@@ -11,11 +12,13 @@ public class RequestHandler {
     private final String[] requestLines;
     private String method;
     private String route;
+    private String body;
 
     public RequestHandler(String request) {
         this.requestLines = request.split("\n");
         this.method = method();
         this.route = route();
+        this.body = getRequestBody();
     }
 
     public String method() {
@@ -48,9 +51,18 @@ public class RequestHandler {
         return SharedUtilities.findMatch("([?])(.*)", requestLines[0], 2);
     }
 
+    public byte[] getResponse() {
+        Response response = new Response(method, route);
+        if (response.echoesBody()) {
+            response.sendRequestBody(body);
+        }
+
+        byte[] header = response.getHeader();
+        byte[] body = response.getBody();
+        return SharedUtilities.addByteArrays(header, body);
+    }
+
     public byte[] processRequest() {
-        Request request = new Request(method, route);
-        request.sendBody(getRequestBody());
-        return request.getResponse();
+        return getResponse();
     }
 }
