@@ -137,8 +137,10 @@ public class HTTPRequestsSteps {
     }
 
     @Then("^the response body should include \"([^\"]*)\"$")
-    public void theResponseBodyShouldIncludeEscapingQuotes(String arg0) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+    public void theResponseBodyShouldInclude(String bodyText) throws Throwable {
+        // I need to refactor to get full response body before this test can pass
+        String response = getResponseBody();
+        System.out.println(response);
+        assertTrue(response.contains(bodyText));
     }
 }

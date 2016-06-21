@@ -2,21 +2,22 @@ package com.rnelson.server.request;
 
 import com.rnelson.server.utilities.SharedUtilities;
 
-import javax.xml.bind.DatatypeConverter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ParameterParser {
-    String originalString;
+    String originalParameters;
     String[] splitParameters;
 
     public ParameterParser(String parameters) {
-        this.originalString = parameters;
+        this.originalParameters = parameters;
         this.splitParameters = splitParameters();
     }
 
     public String[] splitParameters() {
-        return originalString.split("&");
+        return originalParameters.split("&");
     }
 
     public Integer numberOfParameters() {
@@ -46,5 +47,26 @@ public class ParameterParser {
             e.printStackTrace();
         }
         return decoded;
+    }
+
+    public Map getDecodedParameters() {
+        Map<String, String> decodedParameters = new HashMap<String, String>();
+        ParameterParser parameters = new ParameterParser(originalParameters);
+        for (int i = 0; i < parameters.numberOfParameters(); i++) {
+            decodedParameters.put(parameters.getKey(i + 1), parameters.decodedValue(i + 1));
+        }
+        return decodedParameters;
+    }
+
+    public String convertToBodyText() {
+        Map<String, String> decodedParameters = getDecodedParameters();
+        StringBuilder text = new StringBuilder();
+        for (Map.Entry<String, String> entry : decodedParameters.entrySet()) {
+            text.append(entry.getKey());
+            text.append(" = ");
+            text.append(entry.getValue());
+            text.append("\n");
+        }
+        return text.toString();
     }
 }

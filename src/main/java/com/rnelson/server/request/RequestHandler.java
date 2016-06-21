@@ -6,13 +6,16 @@ import com.rnelson.server.utilities.SharedUtilities;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RequestHandler {
     private final String[] requestLines;
     private String method;
     private String route;
     private String body;
+    private Map<String, String> decodedParameters;
 
     public RequestHandler(String request) {
         this.requestLines = request.split("\n");
@@ -52,11 +55,16 @@ public class RequestHandler {
     }
 
     public byte[] getResponse() {
+        // refactor this
         Response response = new Response(method, route);
         if (response.echoesBody()) {
             response.sendRequestBody(body);
         }
-
+        if (parameters() != null) {
+            ParameterParser parameters = new ParameterParser(parameters());
+            body = parameters.convertToBodyText();
+            response.sendRequestBody(body);
+        }
         byte[] header = response.getHeader();
         byte[] body = response.getBody();
         return SharedUtilities.addByteArrays(header, body);

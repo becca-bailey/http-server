@@ -152,11 +152,12 @@ public class RequestHandlerTest {
         assertTrue(response.contains("Location: http://localhost:5000"));
     }
 
-//    @Test
-//    public void parameterDecode() throws Throwable {
-//        byte[] responseBytes = parameterDecode.getResponse();
-//        String response = SharedUtilities.convertByteArrayToString(responseBytes);
-//        assertTrue(response.contains("variable_1=Operators <, >, =, !=; +, -, *, &, @, #, $, [, ]: \"is that all?\""));
-//        assertTrue(response.contains("variable_2=stuff"));
-//    }
+    @Test
+    public void parameterDecode() throws Throwable {
+        byte[] responseBytes = parameterDecode.getResponse();
+        String response = SharedUtilities.convertByteArrayToString(responseBytes);
+        System.out.println(response);
+        assertTrue(response.contains("variable_1 = Operators <, >, =, !=; +, -, *, &, @, #, $, [, ]: \"is that all\"?"));
+        assertTrue(response.contains("variable_2 = stuff"));
+    }
 }
