@@ -1,60 +1,76 @@
 package com.rnelson.server;
 
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
+import com.rnelson.server.utilities.SharedUtilities;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.*;
+import org.apache.http.params.HttpParams;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
-public class HTTPClient {
-    private String hostName;
-    private Integer portNumber;
+public class HTTPClient implements Runnable {
+    public String hostName;
+    public Integer portNumber;
     private Socket clientSocket;
+    private OutputStreamWriter out;
 
-    private String requestLine = "";
-    private String body = "";
-    private String[] responseLines;
+    public String requestLine = "";
+    public String body = "";
+    private HttpResponse httpResponse;
+    private String response;
+    private byte[] responseBytes;
+    private String statusLine;
+    private String[] headerLines;
 
     public HTTPClient(String hostName, Integer portNumber) {
         this.hostName = hostName;
         this.portNumber = portNumber;
     }
 
-    private String fullRequest() {
-        List<String> requestLines = Arrays.asList(requestLine, body);
-        return String.join("\r\n", requestLines) + "\r\n\r\n";
+    public String fullRequest() {
+        List<String> requestLines = Arrays.asList(requestLine);
+        return String.join("\r\n", requestLines) + "\r\n\r\n" + body;
     }
 
     private void sendRequestToServer() throws IOException {
         clientSocket = new Socket(hostName, portNumber);
-        OutputStreamWriter out = new OutputStreamWriter(clientSocket.getOutputStream());
+        out = new OutputStreamWriter(clientSocket.getOutputStream());
         out.write(fullRequest());
-        closeOutputStream(out);
     }
 
-    private String readServerResponse(BufferedReader in) throws IOException {
+    private String readServerResponse(InputStream in) throws IOException {
         StringBuilder responseFromServer = new StringBuilder();
-        responseFromServer.append(in.readLine());
-        while (in.ready()) {
-            responseFromServer.append((char) in.read());
+        while (in.read() != -1) {
+            responseFromServer.append(in.read());
         }
         return responseFromServer.toString();
     }
 
-    private void getResponseFromServer() throws IOException {
-        BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        String response = readServerResponse(in);
-        this.responseLines = response.split("\r\n");
+    public void setResponseVariables(String response) {
+        this.response = response;
+        String[] responseLines = response.split("\r\n");
+        this.statusLine = responseLines[0];
+    }
+
+    private void getResponseFromServer(HttpResponse response) throws IOException {
+        // I still need to get HttpResponse
+        this.httpResponse = response;
+        HttpEntity entity = response.getEntity();
+        if (entity != null) {
+            responseBytes = IOUtils.toByteArray(entity.getContent());
+        } else {
+            responseBytes = new byte[0];
+        }
     }
 
     public void connect() {
         try {
             sendRequestToServer();
             getResponseFromServer();
+            //http response goes here
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -68,29 +84,49 @@ public class HTTPClient {
         this.body = body;
     }
 
-    private void closeOutputStream(OutputStreamWriter out) throws IOException {
+    private void closeOutputStream() throws IOException {
         out.flush();
         out.close();
     }
 
     public Integer getResponseCode() {
-
+        return Integer.parseInt(SharedUtilities.findMatch("\\d{3}", statusLine, 0));
     }
 
     public String getResponseBody() {
+        return SharedUtilities.findMatch("(\\r\\n\\r\\n)(.*)\\z", response, 2);
+    }
 
+    public String getResponseHeader() {
+        return SharedUtilities.findMatch("(\\A.*)(\\r\\n\\r\\n)", response, 0);
     }
 
     public byte[] getResponseBytes() {
-
+        return response.getBytes();
     }
 
-    public String getHeaderField(String fieldName) {
-
+    public String[] splitHeader() {
+        String header = getResponseHeader();
+        return header.split("\r\n");
     }
 
-    public void disconnect() {
+    public String getHeaderField(String fieldName) throws NoSuchFieldException {
+        for (String headerLine : splitHeader()) {
+            if (headerLine.contains(fieldName)) {
+                return SharedUtilities.findMatch("(:\\s*)(\\S)", headerLine, 2);
+            }
+        }
+        throw new NoSuchFieldException("Field doesn't exist");
+    }
 
+    public void disconnect() throws IOException {
+        clientSocket.close();
+        closeOutputStream();
+    }
+
+    @Override
+    public void run() {
+        connect();
     }
 }
 
