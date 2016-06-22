@@ -1,20 +1,37 @@
 package com.rnelson.server.response;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.rnelson.server.utilities.Router;
+import com.rnelson.server.utilities.SharedUtilities;
 
-public class Response {
-    private static Map<Integer, String> statusCodes = new HashMap<Integer, String>();
+import java.util.*;
 
-    public static String status(Integer status) {
-        statusCodes.put(200, "HTTP/1.1 200 OK");
-        statusCodes.put(404, "HTTP/1.1 404 NOT FOUND");
-        statusCodes.put(201, "HTTP/1.1 201 CREATED");
-        statusCodes.put(418, "HTTP/1.1 418 I'm a teapot");
-        statusCodes.put(302, "HTTP/1.1 302 Found");
-        statusCodes.put(405, "HTTP/1.1 405 Method Not Allowed");
+import static com.rnelson.server.utilities.Router.routeOptions;
+import static com.rnelson.server.utilities.Router.statusCodesForRoutes;
 
-        return statusCodes.get(status);
+public class ResponseHeaders {
+    private String method;
+    private String route;
+    public String body = "";
+    private String options = "";
+
+    private List<String> arguments = new ArrayList<String>();
+
+    public static Map<String, List> requiredHeaderRows = new HashMap<String, List>();
+    private static Map<String, String> contentTypes = new HashMap<String, String>();
+
+    private String contentType = "Content-Type: text/html";
+    private String contentLength = "Content-Length: " + body.length();
+    private String connection = "Connection: Keep-Alive";
+    private String location = "Location: http://localhost:5000/";
+
+
+    private Router router;
+
+    public ResponseHeaders(String method, String route) {
+        this.method = method;
+        this.route = route;
+
+        router = new Router();
     }
 
     private Boolean isValidRoute() {
@@ -34,6 +51,9 @@ public class Response {
         String status = statusCodesForRoutes.get(method + " " + route);
         if (status == null) {
             status = statusCodesForRoutes.get(method + " *");
+        }
+        if (isRange()) {
+            status = Response.status(206);
         }
         return status;
     }
@@ -62,6 +82,14 @@ public class Response {
         return rows;
     }
 
+    public void sendArguments(List<String> arguments) {
+        this.arguments = arguments;
+    }
+
+    public Boolean isRange() {
+        return arguments.contains("range");
+    }
+
     public byte[] getHeader() {
         StringBuilder header = new StringBuilder();
         if (isValidRoute()) {
@@ -73,34 +101,30 @@ public class Response {
             header.append(String.join("\r\n", getRequiredHeaderRows()));
             header.append("\r\n\r\n");
         } else if (validRouteAndInvalidMethod()) {
-            header.append(status(405));
+            header.append(Response.status(405));
             header.append("\r\n\r\n");
         } else {
-            header.append(status(404));
+            header.append(Response.status(404));
             header.append("\r\n\r\n");
         }
         return header.toString().getBytes();
     }
 
-    public byte[] getPageContent() {
-        byte[] content = emptyContent;
-        if (isValidRoute() && pageContent.get(route) != null) {
-            content = pageContent.get(route);
-        }
-        return content;
-    }
-
-    public byte[] getBody() {
-        byte[] echoContentBytes = emptyContent;
-        byte[] bodyContent = emptyContent;
-        if (route.equals("/echo")) {
-            echoContentBytes = body.getBytes();
-        }
-        if (method.equals("GET")) {
-            bodyContent = SharedUtilities.addByteArrays(echoContentBytes, getPageContent());
-        } else {
-            bodyContent = echoContentBytes;
-        }
-        return bodyContent;
-    }
+//    public byte[] getBody() {
+//
+//    }
+//    public byte[] getBody() {
+//        getPageContent();
+//        byte[] echoContentBytes = emptyContent;
+//        byte[] bodyContent = emptyContent;
+//        if (route.equals("/echo")) {
+//            echoContentBytes = body.getBytes();
+//        }
+//        if (method.equals("GET")) {
+//            bodyContent = SharedUtilities.addByteArrays(echoContentBytes, getPageContent());
+//        } else {
+//            bodyContent = echoContentBytes;
+//        }
+//        return bodyContent;
+//    }
 }

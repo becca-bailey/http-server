@@ -43,40 +43,4 @@ public class HTTPClientTest {
         Integer status = 200;
         assertEquals(status, testClient.getResponseCode());
     }
-
-//    @Test
-//    public void getResponseBodyReturnsResponseBody() throws Throwable {
-//        assertEquals("test", testClient.getResponseBody());
-//    }
-//
-//    @Test
-//    public void getResponseHeaderReturnsHeader() throws Throwable {
-//        assertEquals("HTTP/1.1 200 OK\r\nContent-Length: 4", testClient.getResponseHeader());
-//    }
-//
-//    @Test
-//    public void getHeaderLinesReturnsStringArray() throws Throwable {
-//        String header[] = {"HTTP/1.1 200 OK", "Content-Length: 4"};
-//        String[] splitHeader = testClient.splitHeader();
-//        assertEquals(header.length, splitHeader.length);
-//        assertEquals(header[0], splitHeader[0]);
-//        assertEquals(header[1], splitHeader[1]);
-//    }
-//
-//    @Test
-//    public void getHeaderFieldReturnsValueOfField() throws Throwable {
-//        assertEquals("4", testClient.getHeaderField("Content-Length"));
-//    }
-//
-//    @Test
-//    public void getHeaderFieldThrowsExceptionIfNotFound() throws Throwable {
-//        Boolean exceptionThrown = false;
-//        try {
-//            testClient.getHeaderField("Some-Field");
-//        } catch (NoSuchFieldException e) {
-//            exceptionThrown = true;
-//        }
-//        assertTrue(exceptionThrown);
-//    }
-
 }

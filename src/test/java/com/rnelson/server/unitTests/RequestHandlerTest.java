@@ -5,28 +5,25 @@ import com.rnelson.server.response.Response;
 import com.rnelson.server.utilities.SharedUtilities;
 import org.junit.Test;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class RequestHandlerTest {
-    private final RequestHandler GETecho = new RequestHandler("GET /echo HTTP/1.1\nHost: localhost:8000\n\n");
-    private final RequestHandler HEAD200 = new RequestHandler("HEAD / HTTP/1.1");
-    private final RequestHandler HEAD404 = new RequestHandler("HEAD /foobar HTTP/1.1");
-    private final RequestHandler simpleGET = new RequestHandler("GET / HTTP/1.1");
-    private final RequestHandler POSTecho = new RequestHandler("POST /echo HTTP/1.1\nHost: localhost:8000\nContent-Length: 5\n\nhello");
-    private final RequestHandler simplePOST = new RequestHandler("POST /form HTTP/1.1\nContent-Length: 7\n\nmy=data");
+    private final RequestHandler GETecho = new RequestHandler("GET /echo HTTP/1.1\r\n\r\n");
+    private final RequestHandler HEAD200 = new RequestHandler("HEAD / HTTP/1.1\r\n\r\n");
+    private final RequestHandler HEAD404 = new RequestHandler("HEAD /foobar HTTP/1.1\r\n\r\n");
+    private final RequestHandler simpleGET = new RequestHandler("GET / HTTP/1.1\r\n\r\n");
+    private final RequestHandler POSTecho = new RequestHandler("POST /echo HTTP/1.1\r\nHost: localhost:8000\r\nContent-Length: 5\r\n\r\nhello");
+    private final RequestHandler simplePOST = new RequestHandler("POST /form HTTP/1.1\r\nContent-Length: 7\r\n\r\nmy=data");
     private final RequestHandler simplePUT = new RequestHandler("PUT /form HTTP/1.1\nContent-Length: 7\n\nmy=data");
-    private final RequestHandler NotFound = new RequestHandler("GET /foobar HTTP/1.1");
-    private final RequestHandler jpeg = new RequestHandler("GET /image.jpeg HTTP/1.1");
-    private final RequestHandler png = new RequestHandler("GET /image.png HTTP/1.1");
-    private final RequestHandler parameterDecode = new RequestHandler("GET /parameters?variable_1=Operators%20%3C%2C%20%3E%2C%20%3D%2C%20!%3D%3B%20%2B%2C%20-%2C%20*%2C%20%26%2C%20%40%2C%20%23%2C%20%24%2C%20%5B%2C%20%5D%3A%20%22is%20that%20all%22%3F&variable_2=stuff");
-    private final RequestHandler parameterDecode2 = new RequestHandler("POST /form?my=data");
-    private final RequestHandler simpleOPTIONS = new RequestHandler("OPTIONS /method_options");
-    private final RequestHandler simpleOPTIONS2 = new RequestHandler("OPTIONS /method_options2");
-    private final RequestHandler redirectPath = new RequestHandler("GET /redirect");
+    private final RequestHandler NotFound = new RequestHandler("GET /foobar HTTP/1.1\r\n\r\n");
+    private final RequestHandler jpeg = new RequestHandler("GET /image.jpeg HTTP/1.1\r\n\r\n");
+    private final RequestHandler png = new RequestHandler("GET /image.png HTTP/1.1\r\n\r\n");
+    private final RequestHandler parameterDecode = new RequestHandler("GET /parameters?variable_1=Operators%20%3C%2C%20%3E%2C%20%3D%2C%20!%3D%3B%20%2B%2C%20-%2C%20*%2C%20%26%2C%20%40%2C%20%23%2C%20%24%2C%20%5B%2C%20%5D%3A%20%22is%20that%20all%22%3F&variable_2=stuff\r\n\r\n");
+    private final RequestHandler parameterDecode2 = new RequestHandler("POST /form?my=data\r\n\r\n");
+    private final RequestHandler simpleOPTIONS = new RequestHandler("OPTIONS /method_options\r\n\r\n");
+    private final RequestHandler simpleOPTIONS2 = new RequestHandler("OPTIONS /method_options2\r\n\r\n");
+    private final RequestHandler redirectPath = new RequestHandler("GET /redirect\r\n\r\n");
 
     @Test
     public void methodReturnsRequestMethod() throws Throwable {
@@ -54,12 +51,24 @@ public class RequestHandlerTest {
     @Test
     public void responseBodyReturnsAllLinesAfterNewline() throws Throwable {
         assertEquals("hello", POSTecho.getRequestBody());
-//        assertEquals("", echoHandler.getRequestBody());
+        assertEquals("", GETecho.getRequestBody());
     }
 
     @Test
     public void parametersReturnsAllURLParameters() throws Throwable {
         assertEquals("variable_1=Operators%20%3C%2C%20%3E%2C%20%3D%2C%20!%3D%3B%20%2B%2C%20-%2C%20*%2C%20%26%2C%20%40%2C%20%23%2C%20%24%2C%20%5B%2C%20%5D%3A%20%22is%20that%20all%22%3F&variable_2=stuff", parameterDecode.parameters());
+    }
+
+    @Test
+    public void headerReturnsOnlyHeaderLines() throws Throwable {
+        assertEquals("POST /echo HTTP/1.1\r\nHost: localhost:8000\r\nContent-Length: 5", POSTecho.headerOnly());
+        assertEquals("GET /echo HTTP/1.1", GETecho.headerOnly());
+    }
+
+    @Test
+    public void parseHeadersAddsHeaderFieldsToMap() throws Throwable {
+        POSTecho.parseHeaders();
+        assertEquals(POSTecho.headerFields.get("Content-Length"), "5");
     }
 
     // getResponse
@@ -156,7 +165,6 @@ public class RequestHandlerTest {
     public void parameterDecode() throws Throwable {
         byte[] responseBytes = parameterDecode.getResponse();
         String response = SharedUtilities.convertByteArrayToString(responseBytes);
-        System.out.println(response);
         assertTrue(response.contains("variable_1 = Operators <, >, =, !=; +, -, *, &, @, #, $, [, ]: \"is that all\"?"));
         assertTrue(response.contains("variable_2 = stuff"));
     }

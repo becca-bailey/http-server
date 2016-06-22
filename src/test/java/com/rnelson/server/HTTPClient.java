@@ -49,6 +49,10 @@ public class HTTPClient {
         response = getResponseForMethod();
     }
 
+    public void setRange(int rangeStart, int rangeEnd) {
+
+    }
+
     private CloseableHttpResponse getResponseForMethod() {
         // refactor this!!
         CloseableHttpResponse response = null;

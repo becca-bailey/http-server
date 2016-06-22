@@ -1,13 +1,14 @@
 package com.rnelson.server.unitTests;
 
 import com.rnelson.server.response.Response;
+import com.rnelson.server.response.ResponseHeaders;
 import com.rnelson.server.utilities.SharedUtilities;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 
-public class ResponseTest {
+public class ResponseHeadersTest {
     @Test
     public void statusCanBeAccessedFromStaticContext() throws Throwable {
         assertEquals(Response.status(200), "HTTP/1.1 200 OK");
@@ -16,19 +17,19 @@ public class ResponseTest {
 
     @Test
     public void getResponseStatusReturnsStatus() throws Throwable {
-        Response response = new Response("GET", "/");
+        ResponseHeaders response = new ResponseHeaders("GET", "/");
         assertEquals(response.responseStatus(), Response.status(200));
     }
 
     @Test
     public void getOptionsReturnsOptions() throws Throwable {
-        Response response = new Response("OPTIONS" ,"/");
+        ResponseHeaders response = new ResponseHeaders("OPTIONS" ,"/");
         assertEquals(response.getOptions(), "Allow: GET,HEAD");
     }
 
     @Test
     public void getHeaderReturns404ForInvalidRoute() throws Throwable {
-        Response response = new Response("GET", "/foobar");
+        ResponseHeaders response = new ResponseHeaders("GET", "/foobar");
         byte[] headerBytes = response.getHeader();
         String header = new String(headerBytes, "UTF-8");
         assertEquals(Response.status(404) + "\r\n\r\n", header);
@@ -36,7 +37,7 @@ public class ResponseTest {
 
     @Test
     public void getHeaderReturnsHeaderForValidRoute() throws Throwable {
-        Response response = new Response("GET", "/");
+        ResponseHeaders response = new ResponseHeaders("GET", "/");
         byte[] headerBytes = response.getHeader();
         String header = new String(headerBytes, "UTF-8");
         assertTrue(header.contains(Response.status(200)));
@@ -44,13 +45,13 @@ public class ResponseTest {
 
     @Test
     public void imATeapot() throws Throwable {
-        Response response = new Response("GET", "/coffee");
+        ResponseHeaders response = new ResponseHeaders("GET", "/coffee");
         byte[] headerBytes = response.getHeader();
         String header = new String(headerBytes, "UTF-8");
         assertTrue(header.contains(Response.status(418)));
         assertTrue(header.contains("I'm a teapot"));
 
-        Response tea = new Response("GET", "/tea");
+        ResponseHeaders tea = new ResponseHeaders("GET", "/tea");
         byte[] teaBytes = tea.getHeader();
         String teaResponse = new String(teaBytes, "UTF-8");
         assertTrue(teaResponse.contains(Response.status(200)));
@@ -58,7 +59,7 @@ public class ResponseTest {
 
     @Test
     public void MethodNotAllowed() throws Throwable {
-        Response response = new Response("SOMETHING", "/file1");
+        ResponseHeaders response = new ResponseHeaders("SOMETHING", "/file1");
         byte[] headerBytes = response.getHeader();
         String header = SharedUtilities.convertByteArrayToString(headerBytes);
         assertTrue(header.contains(Response.status(405)));

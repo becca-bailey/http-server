@@ -7,4 +7,4 @@ Feature: Parameter Decode
       | decodedParameters |
       | variable_1 = Operators <, >, =, !=; +, -, *, &, @, #, $, [, ]: |
       | is that all                                                    |
-#      | variable_2 = stuff |
+      | variable_2 = stuff |

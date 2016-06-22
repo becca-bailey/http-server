@@ -61,14 +61,14 @@ public class FileHandlerTest {
     @Test
     public void addFileContentToPageContent() throws Throwable {
         file1.addFileContentToPageContent();
-        String fileContent = SharedUtilities.convertByteArrayToString(Router.pageContent.get("/file1"));
+        String fileContent = SharedUtilities.convertByteArrayToString(BodyContent.pageContent.get("/file1"));
         assertEquals("file1 contents", fileContent);
     }
 
     @Test
     public void addRequiredHeaderRowsForFileAddsHeaderRows() throws Throwable {
         file1.addRequiredHeaderRowsForFile();
-        List<String> headerContents = Response.requiredHeaderRows.get("GET /file1");
+        List<String> headerContents = ResponseHeaders.requiredHeaderRows.get("GET /file1");
         assertTrue(headerContents.contains("Content-Length: 14"));
     }
 }

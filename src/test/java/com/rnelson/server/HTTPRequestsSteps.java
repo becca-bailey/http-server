@@ -48,29 +48,43 @@ public class HTTPRequestsSteps {
     @When("^I request \"([^\"]*)\" \"([^\"]*)\"$")
     public void iRequest(String method, String route) throws Throwable {
         client.sendRequestHeader(method, route);
-        client.connect();
     }
 
     @When("^I \"([^\"]*)\" \"([^\"]*)\" to \"([^\"]*)\"$")
     public void iTo(String method, String postBody, String route) throws Throwable {
         client.sendRequestHeader(method, route);
         client.sendRequestBody(postBody);
-        client.connect();
+    }
+
+    // And
+
+    @And("^I specify a range from (\\d+) to (\\d+)$")
+    public void iSpecifyARangeFrom(int rangeStart, int rangeEnd) throws Throwable {
+        client.setRange(rangeStart, rangeEnd);
     }
 
     // Then
 
     @Then("^the response status should be (\\d+)$")
     public void theResponseStatusShouldBe(Integer status) throws Throwable {
+        client.connect();
         Integer responseStatus = client.getResponseCode();
         assertEquals(status, responseStatus);
     }
 
     @Then("^the response body has file contents \"([^\"]*)\"$")
     public void theResponseBodyHasFileContents(String filePath) throws Throwable {
+        client.connect();
         String fileContent = new String(Files.readAllBytes(Paths.get("public" + filePath)));
         String responseContent = new String(client.getResponseBytes());
         assertEquals(fileContent, responseContent);
+    }
+
+    @Then("^the response body should include \"([^\"]*)\"$")
+    public void theResponseBodyShouldInclude(String bodyText) throws Throwable {
+        client.connect();
+        String response = client.getResponseBody();
+        assertTrue(response.contains(bodyText));
     }
 
     // And
@@ -105,16 +119,18 @@ public class HTTPRequestsSteps {
         assertTrue(responseBody.contains(filePath));
     }
 
+    @And("^the body should include partial contents from (\\d+) to (\\d+)$")
+    public void theBodyShouldIncludePartialContentsFrom(int rangeStart, int rangeEnd) throws Throwable {
+        String fileContent = new String(Files.readAllBytes(Paths.get("public/partial_content.txt")));
+        String partialContent = fileContent.substring(rangeStart, rangeEnd);
+        String responseContent = new String(client.getResponseBytes());
+        assertEquals(partialContent, responseContent);
+    }
+
+    // After
+
     @After
     public void closeConnection() throws Throwable {
         client.disconnect();
-    }
-
-    @Then("^the response body should include \"([^\"]*)\"$")
-    public void theResponseBodyShouldInclude(String bodyText) throws Throwable {
-        // I need to refactor to get full response body before this test can pass
-        String response = getResponseBody();
-        System.out.println(response);
-        assertTrue(response.contains(bodyText));
     }
 }
