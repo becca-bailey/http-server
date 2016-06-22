@@ -11,7 +11,7 @@ public class SharedUtilities {
 
     public static String findMatch(String regex, String request, int group) {
         String match = null;
-        Pattern pattern = Pattern.compile(regex);
+        Pattern pattern = Pattern.compile(regex, Pattern.DOTALL);
         Matcher matcher = pattern.matcher(request);
         if (matcher.find()) {
             match = matcher.group(group).trim();

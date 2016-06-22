@@ -47,6 +47,8 @@ public class HTTPRequestsSteps {
     public void iRequest(String method, String route) throws Throwable {
         client.sendRequestHeader(method, route);
         client.connect();
+//        Thread clientRunner = new Thread(client);
+//        clientRunner.run();
     }
 
     @When("^I \"([^\"]*)\" \"([^\"]*)\" to \"([^\"]*)\"$")
@@ -54,6 +56,7 @@ public class HTTPRequestsSteps {
         client.sendRequestHeader(method, route);
         client.sendRequestBody(postBody);
         client.connect();
+
     }
 
     // Then
@@ -77,27 +80,6 @@ public class HTTPRequestsSteps {
     public void theResponseHeaderShouldInclude(String fieldName, String property) throws Throwable {
         assertEquals(property, client.getHeaderField(fieldName));
     }
-
-
-//    private String getResponseBody() throws IOException {
-//        String response = null;
-//        try {
-//            InputStream connectionInput = connection.getInputStream();
-//            BufferedReader in =
-//                    new BufferedReader(new InputStreamReader(connectionInput));
-//            response = in.readLine();
-//            connectionInput.close();
-//            in.close();
-//        } catch (FileNotFoundException ignored) {
-//        } catch (IOException e) {
-//            if (e.getMessage().contains("418")) {
-//                response = connection.getResponseMessage();
-//            } else {
-//                e.printStackTrace();
-//            }
-//        }
-//        return response;
-//    }
 
     @And("^the response body should be \"([^\"]*)\"$")
     public void theResponseBodyShouldBe(String body) throws Throwable {
