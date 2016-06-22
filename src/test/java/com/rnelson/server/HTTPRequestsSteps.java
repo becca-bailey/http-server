@@ -1,19 +1,21 @@
 package com.rnelson.server;
 
 import com.rnelson.server.utilities.Router;
-import cucumber.api.PendingException;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
-import cucumber.api.java.en.*;
-import java.io.*;
-import java.net.*;
+import cucumber.api.java.en.And;
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
 
 import static com.rnelson.server.GlobalHooks.serverRunner;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class HTTPRequestsSteps {
     private Integer port = 5000;
@@ -47,8 +49,6 @@ public class HTTPRequestsSteps {
     public void iRequest(String method, String route) throws Throwable {
         client.sendRequestHeader(method, route);
         client.connect();
-//        Thread clientRunner = new Thread(client);
-//        clientRunner.run();
     }
 
     @When("^I \"([^\"]*)\" \"([^\"]*)\" to \"([^\"]*)\"$")
@@ -56,7 +56,6 @@ public class HTTPRequestsSteps {
         client.sendRequestHeader(method, route);
         client.sendRequestBody(postBody);
         client.connect();
-
     }
 
     // Then
@@ -69,8 +68,8 @@ public class HTTPRequestsSteps {
 
     @Then("^the response body has file contents \"([^\"]*)\"$")
     public void theResponseBodyHasFileContents(String filePath) throws Throwable {
-        byte[] fileContent = Files.readAllBytes(Paths.get("public" + filePath));
-        byte[] responseContent = client.getResponseBytes();
+        String fileContent = new String(Files.readAllBytes(Paths.get("public" + filePath)));
+        String responseContent = new String(client.getResponseBytes());
         assertEquals(fileContent, responseContent);
     }
 

@@ -2,32 +2,42 @@ package com.rnelson.server;
 
 import com.rnelson.server.utilities.SharedUtilities;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.*;
-import org.apache.http.params.HttpParams;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.*;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 
-import java.io.*;
-import java.net.Socket;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
-public class HTTPClient implements Runnable {
+public class HTTPClient {
     public String hostName;
     public Integer portNumber;
-    private Socket clientSocket;
-    private OutputStreamWriter out;
+    private String url;
+    private CloseableHttpClient httpclient;
+    private CloseableHttpResponse response;
 
     public String requestLine = "";
     public String body = "";
-    private HttpResponse httpResponse;
-    private String response;
-    private byte[] responseBytes;
+    private String responseAsString;
     private String statusLine;
     private String[] headerLines;
+    private byte[] responseBody = new byte[0];
+    private String method;
+    private String requestUrl;
+    private HashMap<String, CloseableHttpResponse> methods;
 
     public HTTPClient(String hostName, Integer portNumber) {
         this.hostName = hostName;
         this.portNumber = portNumber;
+        this.url = "http://" + hostName + ":" + portNumber;
+        httpclient = HttpClients.createDefault();
     }
 
     public String fullRequest() {
@@ -36,47 +46,95 @@ public class HTTPClient implements Runnable {
     }
 
     private void sendRequestToServer() throws IOException {
-        clientSocket = new Socket(hostName, portNumber);
-        out = new OutputStreamWriter(clientSocket.getOutputStream());
-        out.write(fullRequest());
+        response = getResponseForMethod();
     }
 
-    private String readServerResponse(InputStream in) throws IOException {
-        StringBuilder responseFromServer = new StringBuilder();
-        while (in.read() != -1) {
-            responseFromServer.append(in.read());
+    private CloseableHttpResponse getResponseForMethod() {
+        // refactor this!!
+        CloseableHttpResponse response = null;
+        try {
+            if (method.equals("POST")) {
+                response = post();
+            } else if (method.equals("OPTIONS")) {
+                response = options();
+            } else if (method.equals("HEAD")) {
+                response = head();
+            } else if (method.equals("PUT")) {
+                response = put();
+            } else if (method.equals("DELETE")) {
+                response = delete();
+            } else {
+                response = get();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return responseFromServer.toString();
+        return response;
+    }
+
+    private CloseableHttpResponse get() throws IOException {
+        HttpGet httpget = new HttpGet(requestUrl);
+        return httpclient.execute(httpget);
+    }
+
+    private CloseableHttpResponse post() throws IOException {
+        HttpPost httppost = new HttpPost(requestUrl);
+        httppost.setEntity(new ByteArrayEntity(body.getBytes()));
+        return httpclient.execute(httppost);
+    }
+
+    private CloseableHttpResponse options() throws IOException {
+        HttpOptions httpoptions = new HttpOptions(requestUrl);
+        return httpclient.execute(httpoptions);
+    }
+
+    private CloseableHttpResponse head() throws IOException {
+        HttpHead httphead = new HttpHead(requestUrl);
+        return httpclient.execute(httphead);
+    }
+
+    private CloseableHttpResponse put() throws IOException {
+        HttpPut httpput = new HttpPut(requestUrl);
+        httpput.setEntity(new ByteArrayEntity(body.getBytes()));
+        return httpclient.execute(httpput);
+    }
+
+    private CloseableHttpResponse delete() throws IOException {
+        HttpDelete httpdelete = new HttpDelete(requestUrl);
+        return httpclient.execute(httpdelete);
     }
 
     public void setResponseVariables(String response) {
-        this.response = response;
+        this.responseAsString = response;
         String[] responseLines = response.split("\r\n");
         this.statusLine = responseLines[0];
     }
 
-    private void getResponseFromServer(HttpResponse response) throws IOException {
-        // I still need to get HttpResponse
-        this.httpResponse = response;
+    private void getResponseFromServer() throws IOException {
+        this.statusLine = response.getStatusLine().toString();
         HttpEntity entity = response.getEntity();
         if (entity != null) {
-            responseBytes = IOUtils.toByteArray(entity.getContent());
-        } else {
-            responseBytes = new byte[0];
+            responseBody = IOUtils.toByteArray(entity.getContent());
         }
+    }
+
+    public String getResponseBody() throws IOException {
+        String response = new String(responseBody);
+        return new String(responseBody);
     }
 
     public void connect() {
         try {
             sendRequestToServer();
             getResponseFromServer();
-            //http response goes here
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void sendRequestHeader(String method, String route) {
+        this.method = method;
+        this.requestUrl = url + route;
         this.requestLine = method.toUpperCase() + " " + route + " HTTP/1.1";
     }
 
@@ -84,25 +142,27 @@ public class HTTPClient implements Runnable {
         this.body = body;
     }
 
-    private void closeOutputStream() throws IOException {
-        out.flush();
-        out.close();
-    }
-
     public Integer getResponseCode() {
         return Integer.parseInt(SharedUtilities.findMatch("\\d{3}", statusLine, 0));
     }
 
-    public String getResponseBody() {
-        return SharedUtilities.findMatch("(\\r\\n\\r\\n)(.*)\\z", response, 2);
+    public String getResponseHeader() {
+        StringBuilder responseLines = new StringBuilder();
+        responseLines.append(response.getStatusLine());
+        for (Header header : response.getAllHeaders()) {
+            responseLines.append("\r\n");
+            responseLines.append(header);
+        }
+        responseLines.append("\r\n\r\n");
+        return responseLines.toString();
     }
 
-    public String getResponseHeader() {
-        return SharedUtilities.findMatch("(\\A.*)(\\r\\n\\r\\n)", response, 0);
+    public String getStatusLine() {
+        return response.getStatusLine().toString();
     }
 
     public byte[] getResponseBytes() {
-        return response.getBytes();
+        return responseBody;
     }
 
     public String[] splitHeader() {
@@ -113,20 +173,15 @@ public class HTTPClient implements Runnable {
     public String getHeaderField(String fieldName) throws NoSuchFieldException {
         for (String headerLine : splitHeader()) {
             if (headerLine.contains(fieldName)) {
-                return SharedUtilities.findMatch("(:\\s*)(\\S)", headerLine, 2);
+                return SharedUtilities.findMatch("(:\\s*)(\\S*)", headerLine, 2);
             }
         }
         throw new NoSuchFieldException("Field doesn't exist");
     }
 
     public void disconnect() throws IOException {
-        clientSocket.close();
-        closeOutputStream();
-    }
-
-    @Override
-    public void run() {
-        connect();
+        httpclient.close();
+        response.close();
     }
 }
 

@@ -1,4 +1,4 @@
-Feature: HEAD /foobar
+Feature: GET /foobar
   Scenario: Server responds to GET /foobar with 404
     Given the server is running
     When I request "GET" "/foobar"
