@@ -1,7 +1,7 @@
 package com.rnelson.server.file;
 
-import com.rnelson.server.response.Response;
-import com.rnelson.server.utilities.Router;
+import com.rnelson.server.response.BodyContent;
+import com.rnelson.server.response.ResponseHeaders;
 import com.rnelson.server.utilities.SharedUtilities;
 
 import java.io.File;
@@ -61,10 +61,10 @@ public class FileHandler {
     }
 
     public void addFileContentToPageContent() {
-        Router.pageContent.put("/" + fileName, getFileContents());
+        BodyContent.pageContent.put("/" + fileName, getFileContents());
     }
 
     public void addRequiredHeaderRowsForFile() {
-        Response.requiredHeaderRows.put("GET /" + fileName, Arrays.asList(fileContentTypeHeader(), contentLengthHeader()));
+        ResponseHeaders.requiredHeaderRows.put("GET /" + fileName, Arrays.asList(fileContentTypeHeader(), contentLengthHeader()));
     }
 }

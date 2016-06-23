@@ -60,22 +60,70 @@ public class RequestHandler {
     }
 
     public String parameters() {
-        return SharedUtilities.findMatch("([?])(.*)", requestLines[0], 2);
+        return SharedUtilities.findMatch("([?])(.*)", headerLines[0], 2);
+    }
+
+    public Map<String, String> parseHeaders() {
+        headerFields = new HashMap<String, String>();
+        for (int i = 1; i < headerLines.length; i++) {
+            String[] fields = headerLines[i].split(":");
+            String parameter = fields[0];
+            String options = fields[1].trim();
+            headerFields.put(parameter, options);
+        }
+        return headerFields;
+    }
+
+    private List<String> getResponseBodyArguments() {
+        List<String> arguments = new ArrayList<String>();
+
+        Boolean echoResponseBody = route.equals("/echo") && ((method.equals("POST") || method.equals("PUT")));
+        Boolean headOnly = method.equals("HEAD") || method.equals("POST") || method.equals("PUT");
+        Boolean delete = method.equals("DELETE");
+        Boolean range = parseHeaders().containsKey("Content-Range");
+        // add has authorization
+
+        Map<String, Boolean> argumentAndConditions = new HashMap<String, Boolean>();
+        argumentAndConditions.put("echoResponseBody", echoResponseBody);
+        argumentAndConditions.put("headOnly", headOnly);
+        argumentAndConditions.put("delete", delete);
+        argumentAndConditions.put("range", range);
+
+        for (Map.Entry<String,Boolean> entry : argumentAndConditions.entrySet()) {
+            String parameter = entry.getKey();
+            Boolean condition = entry.getValue();
+            if (condition) {
+                arguments.add(parameter);
+            }
+        }
+        return arguments;
+    }
+
+    public String parseParameters() {
+        String parameterString = "";
+        if (parameters() != null) {
+            ParameterParser parameters = new ParameterParser(parameters());
+            parameterString = parameters.convertToBodyText();
+        }
+        return parameterString;
     }
 
     public byte[] getResponse() {
-        // refactor this
-        Response response = new Response(method, route);
-        if (response.echoesBody()) {
-            response.sendRequestBody(body);
-        }
-        if (parameters() != null) {
-            ParameterParser parameters = new ParameterParser(parameters());
-            body = parameters.convertToBodyText();
-            response.sendRequestBody(body);
-        }
-        byte[] header = response.getHeader();
-        byte[] body = response.getBody();
+        List<String> arguments = getResponseBodyArguments();
+        Map<String, String> headerFields = parseHeaders();
+        String parameters = parseParameters();
+
+        BodyContent bodyContent = new BodyContent(method, route);
+        bodyContent.sendRequestBody(body);
+        bodyContent.sendArguments(arguments);
+        bodyContent.sendHeaderFields(headerFields);
+        bodyContent.sendUrlParameters(parameters);
+
+        ResponseHeaders headers = new ResponseHeaders(method, route);
+        headers.sendArguments(arguments);
+
+        byte[] header = headers.getHeader();
+        byte[] body = bodyContent.getBody();
         return SharedUtilities.addByteArrays(header, body);
     }
 

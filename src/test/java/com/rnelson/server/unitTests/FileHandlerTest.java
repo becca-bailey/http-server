@@ -1,10 +1,11 @@
 package com.rnelson.server.unitTests;
 
 import com.rnelson.server.file.FileHandler;
-import com.rnelson.server.response.Response;
-import com.rnelson.server.utilities.Router;
+import com.rnelson.server.response.BodyContent;
+import com.rnelson.server.response.ResponseHeaders;
 import com.rnelson.server.utilities.SharedUtilities;
 import org.junit.Test;
+
 import java.io.File;
 import java.util.List;
 

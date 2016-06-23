@@ -1,6 +1,6 @@
 package com.rnelson.server;
 
-import com.rnelson.server.utilities.Router;
+import com.rnelson.server.response.BodyContent;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
@@ -40,7 +40,7 @@ public class HTTPRequestsSteps {
     @Given("^the page content of \"([^\"]*)\" is empty$")
     public void thePageContentOfIsEmpty(String route) throws Throwable {
         byte[] emptyContent = new byte[0];
-        Router.pageContent.put(route, emptyContent);
+        BodyContent.pageContent.put(route, emptyContent);
     }
 
     // When
