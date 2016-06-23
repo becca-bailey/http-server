@@ -3,6 +3,7 @@ package com.rnelson.server.request;
 import com.rnelson.server.file.DirectoryHandler;
 import com.rnelson.server.response.BodyContent;
 import com.rnelson.server.response.ResponseHeaders;
+import com.rnelson.server.utilities.Router;
 import com.rnelson.server.utilities.SharedUtilities;
 
 import java.util.*;
@@ -23,6 +24,7 @@ public class RequestHandler {
         this.method = method();
         this.route = route();
         this.body = getRequestBody();
+        Router router = new Router();
     }
 
     private String statusLine() {
@@ -72,6 +74,37 @@ public class RequestHandler {
         return headerFields;
     }
 
+    public boolean isAuthorized() {
+        Map<String, String> headerFields = parseHeaders();
+        if (headerFields.containsKey("Authorization")) {
+            String encodedCredentials = headerFields.get("Authorization");
+            String[] usernameAndPassword = getUsernameAndPassword(encodedCredentials);
+            String username = usernameAndPassword[0];
+            String password = usernameAndPassword[1];
+            return userIsAuthorized(username, password);
+        }
+        return false;
+    }
+
+    public String[] getUsernameAndPassword(String encodedCredentials) {
+        String[] usernameAndPassword = new String[2];
+        if (SharedUtilities.findMatch("Basic", encodedCredentials, 0) != null) {
+            String encoding = SharedUtilities.findMatch("\\S+$", encodedCredentials, 0);
+            String decoded = decodeBase64(encoding);
+            usernameAndPassword = decoded.split(":");
+        }
+        return usernameAndPassword;
+    }
+
+    private String decodeBase64(String encoding) {
+        byte[] decodedBytes = Base64.getDecoder().decode(encoding.getBytes());
+        return new String(decodedBytes);
+    }
+
+    public Boolean userIsAuthorized(String username, String password) {
+        return (password.equals(Router.authorizedUsers.get(username)));
+    }
+
     private List<String> getResponseBodyArguments() {
         List<String> arguments = new ArrayList<String>();
 
@@ -79,13 +112,16 @@ public class RequestHandler {
         Boolean headOnly = method.equals("HEAD") || method.equals("POST") || method.equals("PUT");
         Boolean delete = method.equals("DELETE");
         Boolean range = parseHeaders().containsKey("Range");
-        // add has authorization
+        Boolean authorized = isAuthorized();
+        Boolean notAuthorized = !isAuthorized();
 
         Map<String, Boolean> argumentAndConditions = new HashMap<String, Boolean>();
         argumentAndConditions.put("echoResponseBody", echoResponseBody);
         argumentAndConditions.put("headOnly", headOnly);
         argumentAndConditions.put("delete", delete);
         argumentAndConditions.put("range", range);
+        argumentAndConditions.put("authorized", authorized);
+        argumentAndConditions.put("notAuthorized", notAuthorized);
 
         for (Map.Entry<String,Boolean> entry : argumentAndConditions.entrySet()) {
             String parameter = entry.getKey();

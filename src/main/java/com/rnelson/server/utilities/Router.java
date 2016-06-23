@@ -7,6 +7,8 @@ import java.util.*;
 public class Router {
     public static Map<String, List<String>> routeOptions = new HashMap<String, List<String>>();
     public static Map<String, String> statusCodesForRoutes = new HashMap<String, String>();
+    public static Map<String, String> authorizedUsers = new HashMap<String, String>();
+    public static List<String> protectedRoutes = new ArrayList<String>();
 
 
     public Router() {
@@ -31,5 +33,8 @@ public class Router {
         statusCodesForRoutes.put("GET /form", Response.status(200));
         statusCodesForRoutes.put("GET /parameters", Response.status(200));
 
+        protectedRoutes.add("/logs");
+
+        authorizedUsers.put("admin", "hunter1");
     }
 }
