@@ -58,9 +58,9 @@ public class HTTPRequestsSteps {
 
     // And
 
-    @And("^I specify a range from (\\d+) to (\\d+)$")
-    public void iSpecifyARangeFrom(int rangeStart, int rangeEnd) throws Throwable {
-        client.setRange(rangeStart, rangeEnd);
+    @And("^I specify a range \"([^\"]*)\"$")
+    public void iSpecifyARange(String range) throws Throwable {
+        client.setRange(range);
     }
 
     // Then
@@ -122,8 +122,8 @@ public class HTTPRequestsSteps {
     @And("^the body should include partial contents from (\\d+) to (\\d+)$")
     public void theBodyShouldIncludePartialContentsFrom(int rangeStart, int rangeEnd) throws Throwable {
         String fileContent = new String(Files.readAllBytes(Paths.get("public/partial_content.txt")));
-        String partialContent = fileContent.substring(rangeStart, rangeEnd);
-        String responseContent = new String(client.getResponseBytes());
+        String partialContent = fileContent.substring(rangeStart, rangeEnd + 1);
+        String responseContent = client.getResponseBody();
         assertEquals(partialContent, responseContent);
     }
 

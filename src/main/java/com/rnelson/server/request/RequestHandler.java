@@ -1,13 +1,11 @@
 package com.rnelson.server.request;
 
+import com.rnelson.server.file.DirectoryHandler;
 import com.rnelson.server.response.BodyContent;
 import com.rnelson.server.response.ResponseHeaders;
 import com.rnelson.server.utilities.SharedUtilities;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class RequestHandler {
     private String method;
@@ -80,7 +78,7 @@ public class RequestHandler {
         Boolean echoResponseBody = route.equals("/echo") && ((method.equals("POST") || method.equals("PUT")));
         Boolean headOnly = method.equals("HEAD") || method.equals("POST") || method.equals("PUT");
         Boolean delete = method.equals("DELETE");
-        Boolean range = parseHeaders().containsKey("Content-Range");
+        Boolean range = parseHeaders().containsKey("Range");
         // add has authorization
 
         Map<String, Boolean> argumentAndConditions = new HashMap<String, Boolean>();
@@ -112,6 +110,7 @@ public class RequestHandler {
         List<String> arguments = getResponseBodyArguments();
         Map<String, String> headerFields = parseHeaders();
         String parameters = parseParameters();
+        preparePageContent();
 
         BodyContent bodyContent = new BodyContent(method, route);
         bodyContent.sendRequestBody(body);
@@ -119,15 +118,26 @@ public class RequestHandler {
         bodyContent.sendHeaderFields(headerFields);
         bodyContent.sendUrlParameters(parameters);
 
+        byte[] responseBody = bodyContent.getBody();
+
         ResponseHeaders headers = new ResponseHeaders(method, route);
         headers.sendArguments(arguments);
+        headers.sendBodyLength(responseBody.length);
 
         byte[] header = headers.getHeader();
-        byte[] body = bodyContent.getBody();
-        return SharedUtilities.addByteArrays(header, body);
+        return SharedUtilities.addByteArrays(header, responseBody);
     }
 
     public byte[] processRequest() {
         return getResponse();
     }
+
+    public void preparePageContent() {
+        BodyContent.pageContent.put("/coffee", ("I'm a teapot").getBytes());
+        String publicDirectory = "public";
+        DirectoryHandler directoryHandler = new DirectoryHandler(publicDirectory);
+        BodyContent.pageContent.put("/", (directoryHandler.getDirectoryLinks()).getBytes());
+        directoryHandler.handleAllFiles();
+    }
+
 }

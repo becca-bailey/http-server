@@ -1,10 +1,8 @@
 package com.rnelson.server.utilities;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.*;
+import java.util.regex.*;
 
 public class SharedUtilities {
     public static List<String> imageExtensions = Arrays.asList("jpg", "jpeg", "png", "svg", "gif", "bmp");

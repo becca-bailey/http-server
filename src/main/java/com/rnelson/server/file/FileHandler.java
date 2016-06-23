@@ -4,13 +4,10 @@ import com.rnelson.server.response.BodyContent;
 import com.rnelson.server.response.ResponseHeaders;
 import com.rnelson.server.utilities.SharedUtilities;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class FileHandler {
     private File file;
@@ -21,10 +18,6 @@ public class FileHandler {
         this.file = file;
         this.fileName = file.getName();
         this.filePath = file.getPath();
-    }
-
-    public Boolean fileIsImage() {
-        return SharedUtilities.imageExtensions.contains(fileExtension());
     }
 
     public byte[] getFileContents() {
@@ -65,6 +58,6 @@ public class FileHandler {
     }
 
     public void addRequiredHeaderRowsForFile() {
-        ResponseHeaders.requiredHeaderRows.put("GET /" + fileName, Arrays.asList(fileContentTypeHeader(), contentLengthHeader()));
+        ResponseHeaders.requiredHeaderRows.put("GET /" + fileName, Arrays.asList(fileContentTypeHeader()));
     }
 }

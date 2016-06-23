@@ -3,8 +3,7 @@ package com.rnelson.server.file;
 import com.rnelson.server.response.Response;
 import com.rnelson.server.utilities.Router;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.Arrays;
 
 public class DirectoryHandler {

@@ -2,10 +2,7 @@ package com.rnelson.server.utilities;
 
 import com.rnelson.server.response.Response;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Router {
     public static Map<String, List<String>> routeOptions = new HashMap<String, List<String>>();
@@ -33,5 +30,6 @@ public class Router {
         statusCodesForRoutes.put("GET /redirect", Response.status(302));
         statusCodesForRoutes.put("GET /form", Response.status(200));
         statusCodesForRoutes.put("GET /parameters", Response.status(200));
+
     }
 }

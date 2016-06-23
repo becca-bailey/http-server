@@ -1,15 +1,12 @@
 package com.rnelson.server.request;
 
-import com.rnelson.server.utilities.SharedUtilities;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ParameterParser {
-    String originalParameters;
-    String[] splitParameters;
+    private String originalParameters;
+    private String[] splitParameters;
 
     public ParameterParser(String parameters) {
         this.originalParameters = parameters;

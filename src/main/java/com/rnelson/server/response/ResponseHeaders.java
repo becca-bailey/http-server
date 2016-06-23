@@ -11,8 +11,8 @@ import static com.rnelson.server.utilities.Router.statusCodesForRoutes;
 public class ResponseHeaders {
     private String method;
     private String route;
-    public String body = "";
     private String options = "";
+    private Integer bodyLength;
 
     private List<String> arguments = new ArrayList<String>();
 
@@ -20,10 +20,7 @@ public class ResponseHeaders {
     private static Map<String, String> contentTypes = new HashMap<String, String>();
 
     private String contentType = "Content-Type: text/html";
-    private String contentLength = "Content-Length: " + body.length();
-    private String connection = "Connection: Keep-Alive";
     private String location = "Location: http://localhost:5000/";
-
 
     private Router router;
 
@@ -34,12 +31,16 @@ public class ResponseHeaders {
         router = new Router();
     }
 
+    public void sendBodyLength(Integer length) {
+        this.bodyLength = length;
+    }
+
     private Boolean isValidRoute() {
-        return routeOptions.containsKey(route) && routeOptions.get(route).contains(method);
+        return Router.routeOptions.containsKey(route) && routeOptions.get(route).contains(method);
     }
 
     private Boolean validRouteAndInvalidMethod() {
-        return routeOptions.containsKey(route) && !(routeOptions.get(route).contains(method));
+        return Router.routeOptions.containsKey(route) && !(routeOptions.get(route).contains(method));
     }
 
     public String getOptions() {
@@ -58,10 +59,15 @@ public class ResponseHeaders {
         return status;
     }
 
+    private String getContentLength() {
+        return "Content-Length: " + bodyLength;
+    }
+
     private void populateRequiredHeaders() {
+        String contentLength = getContentLength();
+
         List<String> standardRows = Arrays.asList(contentType);
-        List<String> optionsRows = Arrays.asList(contentType, options, contentLength);
-        List<String> typeAndLength = Arrays.asList(contentType, contentLength);
+        List<String> optionsRows = Arrays.asList(contentType, options);
         List<String> redirectRows = Arrays.asList(location);
 
         requiredHeaderRows.put("GET *", standardRows);
@@ -86,8 +92,12 @@ public class ResponseHeaders {
         this.arguments = arguments;
     }
 
-    public Boolean isRange() {
+    private Boolean isRange() {
         return arguments.contains("range");
+    }
+
+    private Boolean bodyHasContent() {
+        return !arguments.contains("headOnly");
     }
 
     public byte[] getHeader() {
@@ -99,6 +109,10 @@ public class ResponseHeaders {
             header.append(responseStatus());
             header.append("\r\n");
             header.append(String.join("\r\n", getRequiredHeaderRows()));
+            if (bodyHasContent()) {
+                header.append("\r\n");
+                header.append(getContentLength());
+            }
             header.append("\r\n\r\n");
         } else if (validRouteAndInvalidMethod()) {
             header.append(Response.status(405));
@@ -109,22 +123,4 @@ public class ResponseHeaders {
         }
         return header.toString().getBytes();
     }
-
-//    public byte[] getBody() {
-//
-//    }
-//    public byte[] getBody() {
-//        getPageContent();
-//        byte[] echoContentBytes = emptyContent;
-//        byte[] bodyContent = emptyContent;
-//        if (route.equals("/echo")) {
-//            echoContentBytes = body.getBytes();
-//        }
-//        if (method.equals("GET")) {
-//            bodyContent = SharedUtilities.addByteArrays(echoContentBytes, getPageContent());
-//        } else {
-//            bodyContent = echoContentBytes;
-//        }
-//        return bodyContent;
-//    }
 }

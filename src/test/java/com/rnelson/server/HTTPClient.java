@@ -4,14 +4,13 @@ import com.rnelson.server.utilities.SharedUtilities;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
+import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +31,8 @@ public class HTTPClient {
     private String method;
     private String requestUrl;
     private HashMap<String, CloseableHttpResponse> methods;
+    private Boolean isRange = false;
+    private String requestedRange;
 
     public HTTPClient(String hostName, Integer portNumber) {
         this.hostName = hostName;
@@ -40,17 +41,34 @@ public class HTTPClient {
         httpclient = HttpClients.createDefault();
     }
 
-    public String fullRequest() {
-        List<String> requestLines = Arrays.asList(requestLine);
-        return String.join("\r\n", requestLines) + "\r\n\r\n" + body;
+    public void sendRequestHeader(String method, String route) {
+        this.method = method;
+        this.requestUrl = url + route;
+        this.requestLine = method.toUpperCase() + " " + route + " HTTP/1.1";
+    }
+
+    public void connect() {
+        try {
+            sendRequestToServer();
+            getResponseFromServer();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void sendRequestToServer() throws IOException {
         response = getResponseForMethod();
     }
 
-    public void setRange(int rangeStart, int rangeEnd) {
+    public String fullRequest() {
+        List<String> requestLines = Arrays.asList(requestLine);
+        return String.join("\r\n", requestLines) + "\r\n\r\n" + body;
+    }
 
+    public void setRange(String range) throws IOException {
+        isRange = true;
+        requestedRange = "bytes=" + range;
+        httpclient = HttpClients.custom().build();
     }
 
     private CloseableHttpResponse getResponseForMethod() {
@@ -77,8 +95,13 @@ public class HTTPClient {
     }
 
     private CloseableHttpResponse get() throws IOException {
-        HttpGet httpget = new HttpGet(requestUrl);
-        return httpclient.execute(httpget);
+        if (isRange) {
+            HttpUriRequest request = RequestBuilder.get().setUri(requestUrl).setHeader(HttpHeaders.RANGE, requestedRange).build();
+            return httpclient.execute(request);
+        } else {
+            HttpGet httpget = new HttpGet(requestUrl);
+            return httpclient.execute(httpget);
+        }
     }
 
     private CloseableHttpResponse post() throws IOException {
@@ -125,21 +148,6 @@ public class HTTPClient {
     public String getResponseBody() throws IOException {
         String response = new String(responseBody);
         return new String(responseBody);
-    }
-
-    public void connect() {
-        try {
-            sendRequestToServer();
-            getResponseFromServer();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void sendRequestHeader(String method, String route) {
-        this.method = method;
-        this.requestUrl = url + route;
-        this.requestLine = method.toUpperCase() + " " + route + " HTTP/1.1";
     }
 
     public void sendRequestBody(String body) {

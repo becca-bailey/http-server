@@ -1,4 +1,5 @@
 Feature: Method Not Allowed
+
   Scenario: GET /file1
     Given the server is running
     When I request "GET" "/file1"
