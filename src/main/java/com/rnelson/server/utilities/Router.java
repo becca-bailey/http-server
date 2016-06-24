@@ -6,7 +6,7 @@ import java.util.*;
 
 public class Router {
     public static Map<String, List<String>> routeOptions = new HashMap<String, List<String>>();
-    public static Map<String, String> statusCodesForRoutes = new HashMap<String, String>();
+    public static Map<String, String> statusCodesForRequests = new HashMap<String, String>();
     public static Map<String, String> authorizedUsers = new HashMap<String, String>();
     public static List<String> protectedRoutes = new ArrayList<String>();
 
@@ -23,18 +23,18 @@ public class Router {
         routeOptions.put("/parameters", Arrays.asList("GET"));
         routeOptions.put("/logs", Arrays.asList("GET", "HEAD", "POST"));
 
-        statusCodesForRoutes.put("GET *", Response.status(200));
-        statusCodesForRoutes.put("HEAD *", Response.status(200));
-        statusCodesForRoutes.put("POST *", Response.status(200));
-        statusCodesForRoutes.put("OPTIONS *", Response.status(200));
-        statusCodesForRoutes.put("PUT *", Response.status(200));
-        statusCodesForRoutes.put("DELETE *", Response.status(200));
-        statusCodesForRoutes.put("PATCH *", Response.status(204));
-        statusCodesForRoutes.put("GET /coffee", Response.status(418));
-        statusCodesForRoutes.put("GET /redirect", Response.status(302));
-        statusCodesForRoutes.put("GET /form", Response.status(200));
-        statusCodesForRoutes.put("GET /parameters", Response.status(200));
-        statusCodesForRoutes.put("GET /logs", Response.status(401));
+        statusCodesForRequests.put("GET *", Response.status(200));
+        statusCodesForRequests.put("HEAD *", Response.status(200));
+        statusCodesForRequests.put("POST *", Response.status(200));
+        statusCodesForRequests.put("OPTIONS *", Response.status(200));
+        statusCodesForRequests.put("PUT *", Response.status(200));
+        statusCodesForRequests.put("DELETE *", Response.status(200));
+        statusCodesForRequests.put("PATCH *", Response.status(204));
+        statusCodesForRequests.put("GET /coffee", Response.status(418));
+        statusCodesForRequests.put("GET /redirect", Response.status(302));
+        statusCodesForRequests.put("GET /form", Response.status(200));
+        statusCodesForRequests.put("GET /parameters", Response.status(200));
+        statusCodesForRequests.put("GET /logs", Response.status(401));
 
         protectedRoutes.add("/logs");
 

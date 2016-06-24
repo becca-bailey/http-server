@@ -6,7 +6,7 @@ import com.rnelson.server.utilities.SharedUtilities;
 import java.util.*;
 
 import static com.rnelson.server.utilities.Router.routeOptions;
-import static com.rnelson.server.utilities.Router.statusCodesForRoutes;
+import static com.rnelson.server.utilities.Router.statusCodesForRequests;
 
 public class ResponseHeaders {
     private final String method;
@@ -106,9 +106,9 @@ public class ResponseHeaders {
     }
 
     private String getStatusFromRoute() {
-        String status = Router.statusCodesForRoutes.get(method + " " + route);
+        String status = Router.statusCodesForRequests.get(method + " " + route);
         if (status == null) {
-            status = Router.statusCodesForRoutes.get(method + " *");
+            status = Router.statusCodesForRequests.get(method + " *");
         }
         return status;
     }
@@ -147,13 +147,13 @@ public class ResponseHeaders {
     }
 
     private void populateRequiredHeaders() {
-        String contentType = "Content-Type: text/html";
+        String defaultContentType = "Content-Type: text/html";
         String location = "Location: http://localhost:5000/";
 
         String contentLength = getContentLength();
 
-        List<String> standardRows = Arrays.asList(contentType);
-        List<String> optionsRows = Arrays.asList(contentType, options);
+        List<String> standardRows = Arrays.asList(defaultContentType);
+        List<String> optionsRows = Arrays.asList(defaultContentType, options);
         List<String> redirectRows = Arrays.asList(location);
 
         requiredHeaderRows.put("GET *", standardRows);

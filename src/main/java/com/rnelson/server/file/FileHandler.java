@@ -47,6 +47,9 @@ public class FileHandler {
         fileTypesToContentTypes.put("gif", "image/GIF");
         fileTypesToContentTypes.put("png", "image/PNG");
         fileTypesToContentTypes.put("txt", "text/plain");
+        fileTypesToContentTypes.put(null, "text/plain");
+
+        String contentType = fileTypesToContentTypes.get(fileExtension());
 
         return "Content-Type: " + fileTypesToContentTypes.get(fileExtension());
     }
