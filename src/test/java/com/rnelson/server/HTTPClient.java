@@ -1,16 +1,22 @@
 package com.rnelson.server;
 
+import com.rnelson.server.request.RequestHandler;
 import com.rnelson.server.utilities.SharedUtilities;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.*;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHeaders;
+import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.impl.client.*;
-import org.apache.commons.codec.binary.Base64;
-
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 public class HTTPClient {
     public String hostName;
@@ -34,7 +40,9 @@ public class HTTPClient {
     private HashMap<String, CloseableHttpResponse> methods;
     private Boolean isRange = false;
     private Boolean hasCredentials = false;
+    private Boolean isEtag = false;
     private String requestedRange;
+    private String etag;
 
     public HTTPClient(String hostName, Integer portNumber) {
         this.hostName = hostName;
@@ -46,7 +54,11 @@ public class HTTPClient {
     public void sendRequestHeader(String method, String route) {
         this.method = method;
         this.requestUrl = url + route;
-        this.requestLine = method.toUpperCase() + " " + route + " HTTP/1.1";
+        this.requestLine = fullRequestLine(method, route);
+    }
+
+    private String fullRequestLine(String method, String route) {
+        return method.toUpperCase() + " " + route + " HTTP/1.1";
     }
 
     public void sendRequestBody(String body) {
@@ -57,6 +69,10 @@ public class HTTPClient {
         isRange = true;
         requestedRange = "bytes=" + range;
         httpclient = HttpClients.custom().build();
+    }
+
+    public void setEtag(String etag) throws IOException {
+        this.etag = etag;
     }
 
     public void sendCredentials(String username, String password) {
@@ -97,6 +113,8 @@ public class HTTPClient {
                 response = put();
             } else if (method.equals("DELETE")) {
                 response = delete();
+            } else if (method.equals("PATCH")) {
+                response = patch();
             } else {
                 response = get();
             }
@@ -116,7 +134,8 @@ public class HTTPClient {
         if (isRange) {
             HttpUriRequest request = RequestBuilder.get().setUri(requestUrl).setHeader(HttpHeaders.RANGE, requestedRange).build();
             return httpclient.execute(request);
-        } else {
+        }
+        else {
             HttpGet httpget = new HttpGet(requestUrl);
             return httpclient.execute(httpget);
         }
@@ -147,6 +166,13 @@ public class HTTPClient {
     private CloseableHttpResponse delete() throws IOException {
         HttpDelete httpdelete = new HttpDelete(requestUrl);
         return httpclient.execute(httpdelete);
+    }
+
+    private CloseableHttpResponse patch() throws IOException {
+        HttpPatch httppatch = new HttpPatch(requestUrl);
+        httppatch.setHeader(HttpHeaders.ETAG, etag);
+        httppatch.setEntity(new ByteArrayEntity(body.getBytes()));
+        return httpclient.execute(httppatch);
     }
 
     public void setResponseVariables(String response) {
@@ -213,6 +239,12 @@ public class HTTPClient {
     public void disconnect() throws IOException {
         httpclient.close();
         response.close();
+    }
+
+    public void mockRequest(String method, String route) {
+        String request = fullRequestLine(method, route);
+        RequestHandler handler = new RequestHandler(request + "\r\n\r\n");
+        handler.logRequest();
     }
 }
 

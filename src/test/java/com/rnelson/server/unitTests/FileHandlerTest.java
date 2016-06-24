@@ -2,14 +2,13 @@ package com.rnelson.server.unitTests;
 
 import com.rnelson.server.file.FileHandler;
 import com.rnelson.server.response.BodyContent;
-import com.rnelson.server.response.ResponseHeaders;
 import com.rnelson.server.utilities.SharedUtilities;
 import org.junit.Test;
 
 import java.io.File;
-import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class FileHandlerTest {
     private FileHandler file1 = new FileHandler(new File("public/file1"));
@@ -17,6 +16,7 @@ public class FileHandlerTest {
     private FileHandler gif = new FileHandler(new File("public/image.gif"));
     private FileHandler png = new FileHandler(new File("public/image.png"));
     private FileHandler text = new FileHandler(new File("public/text-file.txt"));
+    private FileHandler test = new FileHandler(new File("public/test"));
 
     @Test
     public void getFileContentsReturnsContentsOfFile() throws Throwable {
@@ -60,9 +60,20 @@ public class FileHandlerTest {
     }
 
     @Test
-    public void addRequiredHeaderRowsForFileAddsHeaderRows() throws Throwable {
-        file1.addRequiredHeaderRowsForFile();
-        List<String> headerContents = ResponseHeaders.requiredHeaderRows.get("GET /file1");
-//        assertTrue(headerContents.contains("Content-Length: 14"));
+    public void updateFileContentReplacesExistingContent() throws Throwable {
+        String content = "new content";
+        test.updateFileContent(content);
+        assertTrue(new String(test.getFileContents()).equals(content));
+    }
+
+    @Test
+    public void addFileContentAddsToExistingContent() throws Throwable {
+        test.addFileContent("add");
+        test.addFileContent("this");
+        test.addFileContent("content");
+        String contents = new String(test.getFileContents());
+        assertTrue(contents.contains("add"));
+        assertTrue(contents.contains("this"));
+        assertTrue(contents.contains("content"));
     }
 }

@@ -25,7 +25,7 @@ public class RequestHandlerTest {
     private final RequestHandler simpleOPTIONS = new RequestHandler("OPTIONS /method_options\r\n\r\n");
     private final RequestHandler simpleOPTIONS2 = new RequestHandler("OPTIONS /method_options2\r\n\r\n");
     private final RequestHandler redirectPath = new RequestHandler("GET /redirect\r\n\r\n");
-    private final RequestHandler basicAuth = new RequestHandler("GET /logs\r\nAuthorization: Basic YWRtaW46aHVudGVyMQ==\r\n\r\n");
+    private final RequestHandler basicAuth = new RequestHandler("GET /logs\r\nAuthorization: Basic YWRtaW46aHVudGVyMg==\r\n\r\n");
 
 
     @Test
@@ -187,7 +187,7 @@ public class RequestHandlerTest {
 
     @Test
     public void userIsAuthorizedReturnsTrueOrFalse() {
-        assertTrue(basicAuth.userIsAuthorized("admin", "hunter1"));
+        assertTrue(basicAuth.userIsAuthorized("admin", "hunter2"));
         assertFalse(basicAuth.userIsAuthorized("test", "test"));
     }
 }

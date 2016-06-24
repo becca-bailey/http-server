@@ -6,7 +6,7 @@ import com.rnelson.server.utilities.SharedUtilities;
 import java.util.*;
 
 import static com.rnelson.server.utilities.Router.routeOptions;
-import static com.rnelson.server.utilities.Router.statusCodesForRoutes;
+import static com.rnelson.server.utilities.Router.statusCodesForRequests;
 
 public class ResponseHeaders {
     private final String method;
@@ -47,6 +47,10 @@ public class ResponseHeaders {
         }
     }
 
+    private Boolean isValidRoute() {
+        return Router.routeOptions.containsKey(route) && validMethod();
+    }
+
     private Boolean methodNotAllowed() {
         return Router.routeOptions.containsKey(route) && !validMethod();
     }
@@ -58,14 +62,20 @@ public class ResponseHeaders {
         header.append(responseStatus());
         header.append("\r\n");
         header.append(getRequiredHeaderRows());
-        header.append("\r\n");
-        header.append(getSpecialHeaderRows());
+        if (headerIncludesSpecialRows()) {
+            header.append("\r\n");
+            header.append(getSpecialHeaderRows());
+        }
         header.append("\r\n\r\n");
         return header.toString();
     }
 
+    private Boolean headerIncludesSpecialRows() {
+        return unauthorized() || bodyHasContent();
+    }
+
     private String getSpecialHeaderRows() {
-        String authorization = "Authorization: Basic";
+        String authorization = "WWW-Authenticate: Basic";
 
         List<String> rows = new ArrayList<>();
         if (unauthorized()) {
@@ -86,26 +96,21 @@ public class ResponseHeaders {
     }
 
     private String getStatusFromArgument() {
-        String status = "";
         if (isRange()) {
-            status = Response.status(206);
+            return Response.status(206);
         }
         if (isAuthorized()) {
-            status = Response.status(200);
+            return Response.status(200);
         }
-        return status;
+        return "";
     }
 
     private String getStatusFromRoute() {
-        String status = statusCodesForRoutes.get(method + " " + route);
+        String status = Router.statusCodesForRequests.get(method + " " + route);
         if (status == null) {
-            status = statusCodesForRoutes.get(method + " *");
+            status = Router.statusCodesForRequests.get(method + " *");
         }
         return status;
-    }
-
-    private Boolean isValidRoute() {
-        return Router.routeOptions.containsKey(route) && validMethod();
     }
 
     private Boolean validMethod() {
@@ -142,13 +147,13 @@ public class ResponseHeaders {
     }
 
     private void populateRequiredHeaders() {
-        String contentType = "Content-Type: text/html";
+        String defaultContentType = "Content-Type: text/html";
         String location = "Location: http://localhost:5000/";
 
         String contentLength = getContentLength();
 
-        List<String> standardRows = Arrays.asList(contentType);
-        List<String> optionsRows = Arrays.asList(contentType, options);
+        List<String> standardRows = Arrays.asList(defaultContentType);
+        List<String> optionsRows = Arrays.asList(defaultContentType, options);
         List<String> redirectRows = Arrays.asList(location);
 
         requiredHeaderRows.put("GET *", standardRows);
@@ -157,6 +162,7 @@ public class ResponseHeaders {
         requiredHeaderRows.put("POST *", standardRows);
         requiredHeaderRows.put("PUT *", standardRows);
         requiredHeaderRows.put("DELETE *", standardRows);
+        requiredHeaderRows.put("PATCH *", standardRows);
         requiredHeaderRows.put("GET /redirect", redirectRows);
     }
 

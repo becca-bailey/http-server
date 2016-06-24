@@ -1,5 +1,6 @@
 package com.rnelson.server;
 
+import com.rnelson.server.file.FileHandler;
 import com.rnelson.server.response.BodyContent;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
@@ -8,6 +9,7 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
+import java.io.File;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.nio.file.Files;
@@ -43,6 +45,22 @@ public class HTTPRequestsSteps {
         BodyContent.pageContent.put(route, emptyContent);
     }
 
+    // And
+
+    @And("^\"([^\"]*)\" has original contents \"([^\"]*)\"$")
+    public void hasOriginalContents(String fileName, String contents) throws Throwable {
+        File file = new File("public" + fileName);
+        FileHandler handler = new FileHandler(file);
+        handler.updateFileContent(contents);
+    }
+
+    @And("^I have made additional requests$")
+    public void iHaveMadeAdditionalRequests() throws Throwable {
+        client.mockRequest("GET", "/log");
+        client.mockRequest("PUT", "/these");
+        client.mockRequest("HEAD", "/requests");
+    }
+
     // When
 
     @When("^I request \"([^\"]*)\" \"([^\"]*)\"$")
@@ -68,6 +86,11 @@ public class HTTPRequestsSteps {
     @And("^I specify a range \"([^\"]*)\"$")
     public void iSpecifyARange(String range) throws Throwable {
         client.setRange(range);
+    }
+
+    @And("^I set the etag to \"([^\"]*)\"$")
+    public void iSetTheEtagTo(String etag) throws Throwable {
+        client.setEtag(etag);
     }
 
     // Then
@@ -137,7 +160,7 @@ public class HTTPRequestsSteps {
     @And("^the response body has log contents$")
     public void theResponseBodyHasLogContents() throws Throwable {
         String responseBody = client.getResponseBody();
-        assertTrue(responseBody.contains("GET /log HTTP/1.1"));
+        assertTrue(responseBody.contains("GET /logs HTTP/1.1"));
         assertTrue(responseBody.contains("PUT /these HTTP/1.1"));
         assertTrue(responseBody.contains("HEAD /requests HTTP/1.1"));
     }
@@ -147,5 +170,12 @@ public class HTTPRequestsSteps {
     @After
     public void closeConnection() throws Throwable {
         client.disconnect();
+    }
+
+    @And("^the file content is set back to \"([^\"]*)\"$")
+    public void theFileContentIsSetBackTo(String defaultContent) throws Throwable {
+        File patchFile = new File("public/patch-content.txt");
+        FileHandler patchHandler = new FileHandler(patchFile);
+        assertEquals(defaultContent, new String(patchHandler.getFileContents()));
     }
 }

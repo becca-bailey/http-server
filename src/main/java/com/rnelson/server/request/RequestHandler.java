@@ -1,11 +1,13 @@
 package com.rnelson.server.request;
 
 import com.rnelson.server.file.DirectoryHandler;
+import com.rnelson.server.file.FileHandler;
 import com.rnelson.server.response.BodyContent;
 import com.rnelson.server.response.ResponseHeaders;
 import com.rnelson.server.utilities.Router;
 import com.rnelson.server.utilities.SharedUtilities;
 
+import java.io.File;
 import java.util.*;
 
 public class RequestHandler {
@@ -25,6 +27,14 @@ public class RequestHandler {
         this.route = route();
         this.body = getRequestBody();
         Router router = new Router();
+        logRequest();
+    }
+
+    public void logRequest() {
+        String requestLine = requestLine();
+        File logs = new File("public/logs");
+        FileHandler logHandler = new FileHandler(logs);
+        logHandler.addFileContent(requestLine);
     }
 
     public byte[] getResponse() {
@@ -49,7 +59,7 @@ public class RequestHandler {
         return SharedUtilities.addByteArrays(header, responseBody);
     }
 
-    private String statusLine() {
+    private String requestLine() {
         String[] headerLines = splitHeader();
         return headerLines[0];
     }
@@ -113,7 +123,7 @@ public class RequestHandler {
     }
 
     public boolean includeUnauthorizedArgument() {
-        return requiresAuthorization() || !isAuthorized();
+        return requiresAuthorization() && !isAuthorized();
     }
 
     public String[] getUsernameAndPassword(String encodedCredentials) {
@@ -164,8 +174,8 @@ public class RequestHandler {
     }
 
     private Boolean sendHeadOnly() {
-        List<String> postOnlyMethods = Arrays.asList("HEAD", "POST", "PUT", "OPTIONS");
-        return postOnlyMethods.contains(method);
+        List<String> postOnlyMethods = Arrays.asList("HEAD", "POST", "PUT", "OPTIONS", "PATCH");
+        return postOnlyMethods.contains(method) || includeUnauthorizedArgument();
     }
 
     private Boolean sendEchoResponse() {
