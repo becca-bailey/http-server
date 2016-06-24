@@ -1,7 +1,10 @@
 package com.rnelson.server.response;
 
+import com.rnelson.server.file.FileHandler;
 import com.rnelson.server.utilities.SharedUtilities;
 
+import java.io.File;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,15 +47,26 @@ public class BodyContent {
     }
 
     private void editPageContent() {
+        List<String> updateMethods = Arrays.asList("POST", "PUT");
         if (method.equals("DELETE")) {
             deletePageContent();
         }
-        if (method.equals("POST") || method.equals("PUT")) {
-            addPageContent();
+        if (updateMethods.contains(method)) {
+            updatePageContent();
+        }
+        if (method.equals("PATCH")) {
+            updateFileContent();
         }
     }
 
-    private void addPageContent() {
+    private void updatePageContent() {
+        pageContent.put(route, requestBody.getBytes());
+    }
+
+    private void updateFileContent() {
+        File file = new File("public" + route);
+        FileHandler handler = new FileHandler(file);
+        handler.updateFileContent(requestBody);
         pageContent.put(route, requestBody.getBytes());
     }
 

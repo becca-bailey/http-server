@@ -1,5 +1,6 @@
 package com.rnelson.server;
 
+import com.rnelson.server.request.RequestHandler;
 import com.rnelson.server.utilities.SharedUtilities;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.*;
@@ -34,7 +35,9 @@ public class HTTPClient {
     private HashMap<String, CloseableHttpResponse> methods;
     private Boolean isRange = false;
     private Boolean hasCredentials = false;
+    private Boolean isEtag = false;
     private String requestedRange;
+    private String etag;
 
     public HTTPClient(String hostName, Integer portNumber) {
         this.hostName = hostName;
@@ -57,6 +60,10 @@ public class HTTPClient {
         isRange = true;
         requestedRange = "bytes=" + range;
         httpclient = HttpClients.custom().build();
+    }
+
+    public void setEtag(String etag) throws IOException {
+        this.etag = etag;
     }
 
     public void sendCredentials(String username, String password) {
@@ -97,6 +104,8 @@ public class HTTPClient {
                 response = put();
             } else if (method.equals("DELETE")) {
                 response = delete();
+            } else if (method.equals("PATCH")) {
+                response = patch();
             } else {
                 response = get();
             }
@@ -116,7 +125,8 @@ public class HTTPClient {
         if (isRange) {
             HttpUriRequest request = RequestBuilder.get().setUri(requestUrl).setHeader(HttpHeaders.RANGE, requestedRange).build();
             return httpclient.execute(request);
-        } else {
+        }
+        else {
             HttpGet httpget = new HttpGet(requestUrl);
             return httpclient.execute(httpget);
         }
@@ -147,6 +157,13 @@ public class HTTPClient {
     private CloseableHttpResponse delete() throws IOException {
         HttpDelete httpdelete = new HttpDelete(requestUrl);
         return httpclient.execute(httpdelete);
+    }
+
+    private CloseableHttpResponse patch() throws IOException {
+        HttpPatch httppatch = new HttpPatch(requestUrl);
+        httppatch.setHeader(HttpHeaders.ETAG, etag);
+        httppatch.setEntity(new ByteArrayEntity(body.getBytes()));
+        return httpclient.execute(httppatch);
     }
 
     public void setResponseVariables(String response) {

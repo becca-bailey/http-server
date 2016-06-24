@@ -164,7 +164,7 @@ public class RequestHandler {
     }
 
     private Boolean sendHeadOnly() {
-        List<String> postOnlyMethods = Arrays.asList("HEAD", "POST", "PUT", "OPTIONS");
+        List<String> postOnlyMethods = Arrays.asList("HEAD", "POST", "PUT", "OPTIONS", "PATCH");
         return postOnlyMethods.contains(method);
     }
 

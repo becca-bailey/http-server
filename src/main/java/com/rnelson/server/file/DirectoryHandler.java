@@ -16,7 +16,7 @@ public class DirectoryHandler {
     public void handleAllFiles() {
         for (File file : getDirectoryListing()) {
             Router.statusCodesForRoutes.put("GET /" + file.getName(), Response.status(200));
-            Router.routeOptions.put("/" + file.getName(), Arrays.asList("GET"));
+            Router.routeOptions.put("/" + file.getName(), Arrays.asList("GET", "PATCH"));
             FileHandler handler = new FileHandler(file);
             handler.addFileContentToPageContent();
             handler.addRequiredHeaderRowsForFile();

@@ -7,7 +7,9 @@ import com.rnelson.server.utilities.SharedUtilities;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FileHandler {
     private File file;
@@ -59,5 +61,16 @@ public class FileHandler {
 
     public void addRequiredHeaderRowsForFile() {
         ResponseHeaders.requiredHeaderRows.put("GET /" + fileName, Arrays.asList(fileContentTypeHeader()));
+    }
+
+    public void updateFileContent(String newContent) {
+        BufferedWriter writer;
+        try {
+            writer = new BufferedWriter(new FileWriter(file));
+            writer.write(newContent);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

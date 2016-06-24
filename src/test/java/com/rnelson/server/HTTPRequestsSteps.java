@@ -1,5 +1,6 @@
 package com.rnelson.server;
 
+import com.rnelson.server.file.FileHandler;
 import com.rnelson.server.response.BodyContent;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
@@ -8,6 +9,7 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
+import java.io.File;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.nio.file.Files;
@@ -43,6 +45,15 @@ public class HTTPRequestsSteps {
         BodyContent.pageContent.put(route, emptyContent);
     }
 
+    // And
+
+    @And("^\"([^\"]*)\" has original contents \"([^\"]*)\"$")
+    public void hasOriginalContents(String fileName, String contents) throws Throwable {
+        File file = new File("public" + fileName);
+        FileHandler handler = new FileHandler(file);
+        handler.updateFileContent(contents);
+    }
+
     // When
 
     @When("^I request \"([^\"]*)\" \"([^\"]*)\"$")
@@ -68,6 +79,11 @@ public class HTTPRequestsSteps {
     @And("^I specify a range \"([^\"]*)\"$")
     public void iSpecifyARange(String range) throws Throwable {
         client.setRange(range);
+    }
+
+    @And("^I set the etag to \"([^\"]*)\"$")
+    public void iSetTheEtagTo(String etag) throws Throwable {
+        client.setEtag(etag);
     }
 
     // Then

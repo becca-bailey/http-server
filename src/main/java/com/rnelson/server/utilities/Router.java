@@ -29,6 +29,7 @@ public class Router {
         statusCodesForRoutes.put("OPTIONS *", Response.status(200));
         statusCodesForRoutes.put("PUT *", Response.status(200));
         statusCodesForRoutes.put("DELETE *", Response.status(200));
+        statusCodesForRoutes.put("PATCH *", Response.status(204));
         statusCodesForRoutes.put("GET /coffee", Response.status(418));
         statusCodesForRoutes.put("GET /redirect", Response.status(302));
         statusCodesForRoutes.put("GET /form", Response.status(200));

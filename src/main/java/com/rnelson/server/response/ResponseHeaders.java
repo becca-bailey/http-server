@@ -47,6 +47,10 @@ public class ResponseHeaders {
         }
     }
 
+    private Boolean isValidRoute() {
+        return Router.routeOptions.containsKey(route) && validMethod();
+    }
+
     private Boolean methodNotAllowed() {
         return Router.routeOptions.containsKey(route) && !validMethod();
     }
@@ -58,10 +62,16 @@ public class ResponseHeaders {
         header.append(responseStatus());
         header.append("\r\n");
         header.append(getRequiredHeaderRows());
-        header.append("\r\n");
-        header.append(getSpecialHeaderRows());
+        if (headerIncludesSpecialRows()) {
+            header.append("\r\n");
+            header.append(getSpecialHeaderRows());
+        }
         header.append("\r\n\r\n");
         return header.toString();
+    }
+
+    private Boolean headerIncludesSpecialRows() {
+        return unauthorized() || bodyHasContent();
     }
 
     private String getSpecialHeaderRows() {
@@ -86,26 +96,21 @@ public class ResponseHeaders {
     }
 
     private String getStatusFromArgument() {
-        String status = "";
         if (isRange()) {
-            status = Response.status(206);
+            return Response.status(206);
         }
         if (isAuthorized()) {
-            status = Response.status(200);
+            return Response.status(200);
         }
-        return status;
+        return "";
     }
 
     private String getStatusFromRoute() {
-        String status = statusCodesForRoutes.get(method + " " + route);
+        String status = Router.statusCodesForRoutes.get(method + " " + route);
         if (status == null) {
-            status = statusCodesForRoutes.get(method + " *");
+            status = Router.statusCodesForRoutes.get(method + " *");
         }
         return status;
-    }
-
-    private Boolean isValidRoute() {
-        return Router.routeOptions.containsKey(route) && validMethod();
     }
 
     private Boolean validMethod() {
@@ -157,6 +162,7 @@ public class ResponseHeaders {
         requiredHeaderRows.put("POST *", standardRows);
         requiredHeaderRows.put("PUT *", standardRows);
         requiredHeaderRows.put("DELETE *", standardRows);
+        requiredHeaderRows.put("PATCH *", standardRows);
         requiredHeaderRows.put("GET /redirect", redirectRows);
     }
 
