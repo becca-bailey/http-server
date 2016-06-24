@@ -73,4 +73,14 @@ public class FileHandler {
             e.printStackTrace();
         }
     }
+
+    public void addFileContent(String newContent) {
+        try {
+            FileWriter writer = new FileWriter(filePath, true);
+            writer.write(newContent + "\n");
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

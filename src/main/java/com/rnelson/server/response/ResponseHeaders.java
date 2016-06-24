@@ -75,7 +75,7 @@ public class ResponseHeaders {
     }
 
     private String getSpecialHeaderRows() {
-        String authorization = "Authorization: Basic";
+        String authorization = "WWW-Authenticate: Basic";
 
         List<String> rows = new ArrayList<>();
         if (unauthorized()) {

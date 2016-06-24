@@ -20,5 +20,9 @@ Feature: PATCH with etag
   Scenario: Content can be set back to default
     When I "PATCH" "default content" to "/patch-content.txt"
     And I set the etag to "5c36acad75b78b82be6d9cbbd6143ab7e0cc04b0"
+    Then the response status should be 204
+
+  Scenario: Default content
     When I request "GET" "patch-content.txt"
     Then the response status should be 200
+    And the file content is set back to "default content"

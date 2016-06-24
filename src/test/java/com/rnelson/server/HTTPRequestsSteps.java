@@ -54,6 +54,13 @@ public class HTTPRequestsSteps {
         handler.updateFileContent(contents);
     }
 
+    @And("^I have made additional requests$")
+    public void iHaveMadeAdditionalRequests() throws Throwable {
+        client.mockRequest("GET", "/log");
+        client.mockRequest("PUT", "/these");
+        client.mockRequest("HEAD", "/requests");
+    }
+
     // When
 
     @When("^I request \"([^\"]*)\" \"([^\"]*)\"$")
@@ -153,7 +160,7 @@ public class HTTPRequestsSteps {
     @And("^the response body has log contents$")
     public void theResponseBodyHasLogContents() throws Throwable {
         String responseBody = client.getResponseBody();
-        assertTrue(responseBody.contains("GET /log HTTP/1.1"));
+        assertTrue(responseBody.contains("GET /logs HTTP/1.1"));
         assertTrue(responseBody.contains("PUT /these HTTP/1.1"));
         assertTrue(responseBody.contains("HEAD /requests HTTP/1.1"));
     }
@@ -163,5 +170,12 @@ public class HTTPRequestsSteps {
     @After
     public void closeConnection() throws Throwable {
         client.disconnect();
+    }
+
+    @And("^the file content is set back to \"([^\"]*)\"$")
+    public void theFileContentIsSetBackTo(String defaultContent) throws Throwable {
+        File patchFile = new File("public/patch-content.txt");
+        FileHandler patchHandler = new FileHandler(patchFile);
+        assertEquals(defaultContent, new String(patchHandler.getFileContents()));
     }
 }

@@ -38,6 +38,6 @@ public class Router {
 
         protectedRoutes.add("/logs");
 
-        authorizedUsers.put("admin", "hunter1");
+        authorizedUsers.put("admin", "hunter2");
     }
 }

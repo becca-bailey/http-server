@@ -2,16 +2,21 @@ package com.rnelson.server;
 
 import com.rnelson.server.request.RequestHandler;
 import com.rnelson.server.utilities.SharedUtilities;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.*;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHeaders;
+import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.impl.client.*;
-import org.apache.commons.codec.binary.Base64;
-
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 public class HTTPClient {
     public String hostName;
@@ -49,7 +54,11 @@ public class HTTPClient {
     public void sendRequestHeader(String method, String route) {
         this.method = method;
         this.requestUrl = url + route;
-        this.requestLine = method.toUpperCase() + " " + route + " HTTP/1.1";
+        this.requestLine = fullRequestLine(method, route);
+    }
+
+    private String fullRequestLine(String method, String route) {
+        return method.toUpperCase() + " " + route + " HTTP/1.1";
     }
 
     public void sendRequestBody(String body) {
@@ -230,6 +239,12 @@ public class HTTPClient {
     public void disconnect() throws IOException {
         httpclient.close();
         response.close();
+    }
+
+    public void mockRequest(String method, String route) {
+        String request = fullRequestLine(method, route);
+        RequestHandler handler = new RequestHandler(request + "\r\n\r\n");
+        handler.logRequest();
     }
 }
 
