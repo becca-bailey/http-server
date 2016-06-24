@@ -59,7 +59,7 @@ public class ResponseHeadersTest {
 
     @Test
     public void MethodNotAllowed() throws Throwable {
-        ResponseHeaders response = new ResponseHeaders("SOMETHING", "/file1");
+        ResponseHeaders response = new ResponseHeaders("SOMETHING", "/");
         byte[] headerBytes = response.getHeader();
         String header = SharedUtilities.convertByteArrayToString(headerBytes);
         assertTrue(header.contains(Response.status(405)));

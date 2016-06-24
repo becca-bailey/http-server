@@ -9,38 +9,115 @@ import static com.rnelson.server.utilities.Router.routeOptions;
 import static com.rnelson.server.utilities.Router.statusCodesForRoutes;
 
 public class ResponseHeaders {
-    private String method;
-    private String route;
-    private String options = "";
+    private final String method;
+    private final String route;
+    private String options;
     private Integer bodyLength;
 
-    private List<String> arguments = new ArrayList<String>();
+    private List<String> arguments = new ArrayList<>();
 
-    public static Map<String, List> requiredHeaderRows = new HashMap<String, List>();
-    private static Map<String, String> contentTypes = new HashMap<String, String>();
+    public static Map<String, List<String>> requiredHeaderRows = new HashMap<>();
+    private static Map<String, String> contentTypes = new HashMap<>();
 
-    private String contentType = "Content-Type: text/html";
-    private String location = "Location: http://localhost:5000/";
-
-    private Router router;
+    private String fourOhFour = Response.status(404) + "\r\n\r\n";
+    private String fourOhFive = Response.status(405) + "\r\n\r\n";
 
     public ResponseHeaders(String method, String route) {
         this.method = method;
         this.route = route;
 
-        router = new Router();
+        Router router = new Router();
     }
 
     public void sendBodyLength(Integer length) {
         this.bodyLength = length;
     }
 
-    private Boolean isValidRoute() {
-        return Router.routeOptions.containsKey(route) && routeOptions.get(route).contains(method);
+    public void sendArguments(List<String> arguments) {
+        this.arguments = arguments;
     }
 
-    private Boolean validRouteAndInvalidMethod() {
-        return Router.routeOptions.containsKey(route) && !(routeOptions.get(route).contains(method));
+    public byte[] getHeader() {
+        if (isValidRoute()) {
+            return headerForValidRoute().getBytes();
+        } else if (methodNotAllowed()) {
+            return fourOhFive.getBytes();
+        } else {
+            return fourOhFour.getBytes();
+        }
+    }
+
+    private Boolean methodNotAllowed() {
+        return Router.routeOptions.containsKey(route) && !validMethod();
+    }
+
+    private String headerForValidRoute() {
+        StringBuilder header = new StringBuilder();
+        this.options = getOptions();
+        populateRequiredHeaders();
+        header.append(responseStatus());
+        header.append("\r\n");
+        header.append(getRequiredHeaderRows());
+        header.append("\r\n");
+        header.append(getSpecialHeaderRows());
+        header.append("\r\n\r\n");
+        return header.toString();
+    }
+
+    private String getSpecialHeaderRows() {
+        String authorization = "Authorization: Basic";
+
+        List<String> rows = new ArrayList<>();
+        if (unauthorized()) {
+            rows.add(authorization);
+        }
+        if (bodyHasContent()) {
+            rows.add(getContentLength());
+        }
+        return String.join("\r\n", rows);
+    }
+
+    public String responseStatus() {
+        if (responseStatusForArgument()) {
+            return getStatusFromArgument();
+        } else {
+            return getStatusFromRoute();
+        }
+    }
+
+    private String getStatusFromArgument() {
+        String status = "";
+        if (isRange()) {
+            status = Response.status(206);
+        }
+        if (isAuthorized()) {
+            status = Response.status(200);
+        }
+        return status;
+    }
+
+    private String getStatusFromRoute() {
+        String status = statusCodesForRoutes.get(method + " " + route);
+        if (status == null) {
+            status = statusCodesForRoutes.get(method + " *");
+        }
+        return status;
+    }
+
+    private Boolean isValidRoute() {
+        return Router.routeOptions.containsKey(route) && validMethod();
+    }
+
+    private Boolean validMethod() {
+        return routeOptions.get(route).contains(method);
+    }
+
+    private String getRequiredHeaderRows() {
+        List rows = requiredHeaderRows.get(method + " " + route);
+        if (rows == null) {
+            rows = requiredHeaderRows.get(method + " *");
+        }
+        return String.join("\r\n", rows);
     }
 
     public String getOptions() {
@@ -48,15 +125,16 @@ public class ResponseHeaders {
         return "Allow: " + allowedOptions;
     }
 
-    public String responseStatus() {
-        String status = statusCodesForRoutes.get(method + " " + route);
-        if (status == null) {
-            status = statusCodesForRoutes.get(method + " *");
-        }
-        if (isRange()) {
-            status = Response.status(206);
-        }
-        return status;
+    private boolean responseStatusForArgument() {
+        return isRange() || isAuthorized();
+    }
+
+    private boolean isAuthorized() {
+        return arguments.contains("authorized");
+    }
+
+    private boolean unauthorized() {
+        return arguments.contains("unauthorized");
     }
 
     private String getContentLength() {
@@ -64,6 +142,9 @@ public class ResponseHeaders {
     }
 
     private void populateRequiredHeaders() {
+        String contentType = "Content-Type: text/html";
+        String location = "Location: http://localhost:5000/";
+
         String contentLength = getContentLength();
 
         List<String> standardRows = Arrays.asList(contentType);
@@ -79,19 +160,6 @@ public class ResponseHeaders {
         requiredHeaderRows.put("GET /redirect", redirectRows);
     }
 
-    private List<String> getRequiredHeaderRows() {
-        List<String> rows;
-        rows = requiredHeaderRows.get(method + " " + route);
-        if (rows == null) {
-            rows = requiredHeaderRows.get(method + " *");
-        }
-        return rows;
-    }
-
-    public void sendArguments(List<String> arguments) {
-        this.arguments = arguments;
-    }
-
     private Boolean isRange() {
         return arguments.contains("range");
     }
@@ -100,27 +168,4 @@ public class ResponseHeaders {
         return !arguments.contains("headOnly");
     }
 
-    public byte[] getHeader() {
-        StringBuilder header = new StringBuilder();
-        if (isValidRoute()) {
-            this.options = getOptions();
-            populateRequiredHeaders();
-
-            header.append(responseStatus());
-            header.append("\r\n");
-            header.append(String.join("\r\n", getRequiredHeaderRows()));
-            if (bodyHasContent()) {
-                header.append("\r\n");
-                header.append(getContentLength());
-            }
-            header.append("\r\n\r\n");
-        } else if (validRouteAndInvalidMethod()) {
-            header.append(Response.status(405));
-            header.append("\r\n\r\n");
-        } else {
-            header.append(Response.status(404));
-            header.append("\r\n\r\n");
-        }
-        return header.toString().getBytes();
-    }
 }

@@ -2,7 +2,9 @@ package com.rnelson.server.response;
 
 import com.rnelson.server.utilities.SharedUtilities;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class BodyContent {
     private String method;
@@ -11,12 +13,10 @@ public class BodyContent {
     private String parameters;
     private String publicDirectory = "public";
 
-
     private List<String> arguments;
     private Map<String, String> headerFields;
     private byte[] emptyContent = new byte[0];
     public static Map<String, byte[]> pageContent = new HashMap<String, byte[]>();
-
 
     public BodyContent(String method, String route) {
         this.method = method;
@@ -43,15 +43,17 @@ public class BodyContent {
         this.parameters = parametersAsString;
     }
 
-    private void changePageContent() {
+    private void editPageContent() {
         if (method.equals("DELETE")) {
             deletePageContent();
         }
         if (method.equals("POST") || method.equals("PUT")) {
-            pageContent.put(route, requestBody.getBytes());
+            addPageContent();
         }
-        BodyContent.pageContent.put("/parameters", parameters.getBytes());
+    }
 
+    private void addPageContent() {
+        pageContent.put(route, requestBody.getBytes());
     }
 
     private Boolean responseEchoesRequest() {
@@ -67,26 +69,65 @@ public class BodyContent {
     }
 
     public byte[] getBody() {
-        // refactor this
-        changePageContent();
+        editPageContent();
         byte[] content = emptyContent;
-        if (pageContent.get(route) != null) {
-            content = pageContent.get(route);
+        if (pageHasContent()) {
+            content = getContentForConditions();
+            return applyRange(content);
+        } else {
+            return content;
         }
-        if (sendHeaderOnly()) {
-            content = emptyContent;
+    }
+
+    private byte[] getContentForConditions() {
+        Map<byte[], Boolean> contentWithConditions = getContentWithConditions();
+        for (Map.Entry<byte[], Boolean> entry : contentWithConditions.entrySet()) {
+            byte[] pageContent = entry.getKey();
+            Boolean condition = entry.getValue();
+            if (condition) {
+                return pageContent;
+            }
         }
-        if (responseEchoesRequest()) {
-            content = requestBody.getBytes();
+        return emptyContent;
+    }
+
+    private Map<byte[], Boolean> getContentWithConditions() {
+        Map<byte[], Boolean> contentWithConditions = new HashMap<>();
+        contentWithConditions.put(pageContent.get(route), existingPageContent());
+        contentWithConditions.put(requestBody.getBytes(), responseEchoesRequest());
+        contentWithConditions.put(parameters.getBytes(), contentIncludesParameters());
+        return contentWithConditions;
+    }
+
+    private Boolean contentIncludesParameters() {
+        return route.equals("/parameters");
+    }
+
+    private Boolean isPostEcho() {
+        return method.equals("POST") && route.equals("/echo");
+    }
+
+    private Boolean pageHasContent() {
+        if (isPostEcho()) {
+            return true;
         }
+        return !sendHeaderOnly();
+    }
+
+    private byte[] applyRange(byte[] content) {
+        byte[] contentInRange = content;
         if (contentRange()) {
-            Integer minRange = getMinRange(content.length);
-            Integer maxRange = getMaxRange(content.length);
+            int minRange = getMinRange(content.length);
+            int maxRange = getMaxRange(content.length);
             byte[] partialContent = new byte[(maxRange - minRange) + 1];
             System.arraycopy(content, minRange, partialContent, 0, partialContent.length);
-            content = partialContent;
+            contentInRange = partialContent;
         }
-        return content;
+        return contentInRange;
+    }
+
+    private Boolean existingPageContent() {
+        return pageContent.get(route) != null;
     }
 
     public Boolean finalBytes(String byteRange) {
@@ -100,21 +141,38 @@ public class BodyContent {
     }
 
     public Integer[] minAndMaxInRange(String range, Integer contentLength) {
-        Integer min;
-        Integer max;
+        int highestIndex = contentLength - 1;
         if (finalBytes(range)) {
-            int difference = Integer.parseInt(SharedUtilities.findMatch("\\d+", range, 0)) - 1;
-            min = (contentLength - 1) - difference;
-            max = (contentLength - 1);
+            return finalMinMax(range, highestIndex);
         } else if (bytesToEnd(range)) {
-            min = Integer.parseInt(SharedUtilities.findMatch("\\d*", range, 0));
-            max = (contentLength - 1);
+            return minMaxToEnd(range, highestIndex);
         } else {
-            String[] splitRange = range.split("-");
-            min = Integer.parseInt(splitRange[0]);
-            max = Integer.parseInt(splitRange[1]);
+            return givenMinAndMax(range);
         }
-        return new Integer[]{min, max};
+    }
+
+    private Integer[] finalMinMax(String range, int highestIndex) {
+        int difference = Integer.parseInt(SharedUtilities.findMatch("\\d+", range, 0)) - 1;
+        int min = highestIndex - difference;
+        int max = highestIndex;
+        return toIntArray(min, max);
+    }
+
+    private Integer[] minMaxToEnd(String range, int highestIndex) {
+        int min = Integer.parseInt(SharedUtilities.findMatch("\\d*", range, 0));
+        int max = highestIndex;
+        return toIntArray(min, max);
+    }
+
+    private Integer[] givenMinAndMax(String range) {
+        String[] splitRange = range.split("-");
+        int min = Integer.parseInt(splitRange[0]);
+        int max = Integer.parseInt(splitRange[1]);
+        return toIntArray(min, max);
+    }
+
+    private Integer[] toIntArray(int min, int max) {
+        return new Integer[]{min,max};
     }
 
     private Integer getMinRange(Integer contentLength) {
@@ -130,5 +188,4 @@ public class BodyContent {
         Integer[] minAndMax = minAndMaxInRange(range, contentLength);
         return minAndMax[1];
     }
-
 }
