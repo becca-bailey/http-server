@@ -6,6 +6,8 @@ import org.apache.http.*;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.*;
+import org.apache.commons.codec.binary.Base64;
+
 
 import java.io.IOException;
 import java.util.*;
@@ -19,6 +21,10 @@ public class HTTPClient {
 
     public String requestLine = "";
     public String body = "";
+
+    public String username;
+    public String password;
+
     private String responseAsString;
     private String statusLine;
     private String[] headerLines;
@@ -27,6 +33,7 @@ public class HTTPClient {
     private String requestUrl;
     private HashMap<String, CloseableHttpResponse> methods;
     private Boolean isRange = false;
+    private Boolean hasCredentials = false;
     private String requestedRange;
 
     public HTTPClient(String hostName, Integer portNumber) {
@@ -40,6 +47,23 @@ public class HTTPClient {
         this.method = method;
         this.requestUrl = url + route;
         this.requestLine = method.toUpperCase() + " " + route + " HTTP/1.1";
+    }
+
+    public void sendRequestBody(String body) {
+        this.body = body;
+    }
+
+    public void setRange(String range) throws IOException {
+        isRange = true;
+        requestedRange = "bytes=" + range;
+        httpclient = HttpClients.custom().build();
+    }
+
+    public void sendCredentials(String username, String password) {
+        hasCredentials = true;
+        this.username = username;
+        this.password = password;
+        httpclient = HttpClients.custom().build();
     }
 
     public void connect() {
@@ -60,14 +84,7 @@ public class HTTPClient {
         return String.join("\r\n", requestLines) + "\r\n\r\n" + body;
     }
 
-    public void setRange(String range) throws IOException {
-        isRange = true;
-        requestedRange = "bytes=" + range;
-        httpclient = HttpClients.custom().build();
-    }
-
     private CloseableHttpResponse getResponseForMethod() {
-        // refactor this!!
         CloseableHttpResponse response = null;
         try {
             if (method.equals("POST")) {
@@ -90,6 +107,12 @@ public class HTTPClient {
     }
 
     private CloseableHttpResponse get() throws IOException {
+        if (hasCredentials) {
+            String credentials = username + ":" + password;
+            String encodedCredentials = "Basic " + base64Encode(credentials);
+            HttpUriRequest request = RequestBuilder.get().setUri(requestUrl).setHeader(HttpHeaders.AUTHORIZATION, encodedCredentials).build();
+            return httpclient.execute(request);
+        }
         if (isRange) {
             HttpUriRequest request = RequestBuilder.get().setUri(requestUrl).setHeader(HttpHeaders.RANGE, requestedRange).build();
             return httpclient.execute(request);
@@ -145,10 +168,6 @@ public class HTTPClient {
         return new String(responseBody);
     }
 
-    public void sendRequestBody(String body) {
-        this.body = body;
-    }
-
     public Integer getResponseCode() {
         return Integer.parseInt(SharedUtilities.findMatch("\\d{3}", statusLine, 0));
     }
@@ -186,10 +205,14 @@ public class HTTPClient {
         throw new NoSuchFieldException("Field doesn't exist");
     }
 
+    private String base64Encode(String s) {
+        byte[] encodedBytes = Base64.encodeBase64(s.getBytes());
+        return new String(encodedBytes);
+    }
+
     public void disconnect() throws IOException {
         httpclient.close();
         response.close();
-
     }
 }
 

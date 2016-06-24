@@ -3,6 +3,7 @@ package com.rnelson.server.request;
 import com.rnelson.server.file.DirectoryHandler;
 import com.rnelson.server.response.BodyContent;
 import com.rnelson.server.response.ResponseHeaders;
+import com.rnelson.server.utilities.Router;
 import com.rnelson.server.utilities.SharedUtilities;
 
 import java.util.*;
@@ -23,6 +24,29 @@ public class RequestHandler {
         this.method = method();
         this.route = route();
         this.body = getRequestBody();
+        Router router = new Router();
+    }
+
+    public byte[] getResponse() {
+        List<String> arguments = getResponseBodyArguments();
+        Map<String, String> headerFields = parseHeaders();
+        String parameters = parseParameters();
+        preparePageContent();
+
+        BodyContent bodyContent = new BodyContent(method, route);
+        bodyContent.sendRequestBody(body);
+        bodyContent.sendArguments(arguments);
+        bodyContent.sendHeaderFields(headerFields);
+        bodyContent.sendUrlParameters(parameters);
+
+        byte[] responseBody = bodyContent.getBody();
+
+        ResponseHeaders headers = new ResponseHeaders(method, route);
+        headers.sendArguments(arguments);
+        headers.sendBodyLength(responseBody.length);
+
+        byte[] header = headers.getHeader();
+        return SharedUtilities.addByteArrays(header, responseBody);
     }
 
     private String statusLine() {
@@ -72,20 +96,62 @@ public class RequestHandler {
         return headerFields;
     }
 
+    private boolean requiresAuthorization() {
+        return Router.protectedRoutes.contains(route);
+    };
+
+    public boolean isAuthorized() {
+        Map<String, String> headerFields = parseHeaders();
+        if (headerFields.containsKey("Authorization")) {
+            String encodedCredentials = headerFields.get("Authorization");
+            String[] usernameAndPassword = getUsernameAndPassword(encodedCredentials);
+            String username = usernameAndPassword[0];
+            String password = usernameAndPassword[1];
+            return userIsAuthorized(username, password);
+        }
+        return false;
+    }
+
+    public boolean includeUnauthorizedArgument() {
+        return requiresAuthorization() || !isAuthorized();
+    }
+
+    public String[] getUsernameAndPassword(String encodedCredentials) {
+        String[] usernameAndPassword = new String[2];
+        if (SharedUtilities.findMatch("Basic", encodedCredentials, 0) != null) {
+            String encoding = SharedUtilities.findMatch("\\S+$", encodedCredentials, 0);
+            String decoded = decodeBase64(encoding);
+            usernameAndPassword = decoded.split(":");
+        }
+        return usernameAndPassword;
+    }
+
+    private String decodeBase64(String encoding) {
+        byte[] decodedBytes = Base64.getDecoder().decode(encoding.getBytes());
+        return new String(decodedBytes);
+    }
+
+    public Boolean userIsAuthorized(String username, String password) {
+        return (password.equals(Router.authorizedUsers.get(username)));
+    }
+
     private List<String> getResponseBodyArguments() {
         List<String> arguments = new ArrayList<String>();
 
-        Boolean echoResponseBody = route.equals("/echo") && ((method.equals("POST") || method.equals("PUT")));
-        Boolean headOnly = method.equals("HEAD") || method.equals("POST") || method.equals("PUT");
+        Boolean echoResponseBody = sendEchoResponse();
+        Boolean headOnly = sendHeadOnly();
         Boolean delete = method.equals("DELETE");
-        Boolean range = parseHeaders().containsKey("Range");
-        // add has authorization
+        Boolean range = headerIncludesRange();
+        Boolean authorized = isAuthorized();
+        Boolean unauthorized = includeUnauthorizedArgument();
 
         Map<String, Boolean> argumentAndConditions = new HashMap<String, Boolean>();
         argumentAndConditions.put("echoResponseBody", echoResponseBody);
         argumentAndConditions.put("headOnly", headOnly);
         argumentAndConditions.put("delete", delete);
         argumentAndConditions.put("range", range);
+        argumentAndConditions.put("authorized", authorized);
+        argumentAndConditions.put("unauthorized", unauthorized);
 
         for (Map.Entry<String,Boolean> entry : argumentAndConditions.entrySet()) {
             String parameter = entry.getKey();
@@ -97,6 +163,19 @@ public class RequestHandler {
         return arguments;
     }
 
+    private Boolean sendHeadOnly() {
+        List<String> postOnlyMethods = Arrays.asList("HEAD", "POST", "PUT", "OPTIONS");
+        return postOnlyMethods.contains(method);
+    }
+
+    private Boolean sendEchoResponse() {
+        return route.equals("/echo") && ((method.equals("POST") || method.equals("PUT")));
+    }
+
+    private Boolean headerIncludesRange() {
+        return parseHeaders().containsKey("Range");
+    }
+
     public String parseParameters() {
         String parameterString = "";
         if (parameters() != null) {
@@ -104,32 +183,6 @@ public class RequestHandler {
             parameterString = parameters.convertToBodyText();
         }
         return parameterString;
-    }
-
-    public byte[] getResponse() {
-        List<String> arguments = getResponseBodyArguments();
-        Map<String, String> headerFields = parseHeaders();
-        String parameters = parseParameters();
-        preparePageContent();
-
-        BodyContent bodyContent = new BodyContent(method, route);
-        bodyContent.sendRequestBody(body);
-        bodyContent.sendArguments(arguments);
-        bodyContent.sendHeaderFields(headerFields);
-        bodyContent.sendUrlParameters(parameters);
-
-        byte[] responseBody = bodyContent.getBody();
-
-        ResponseHeaders headers = new ResponseHeaders(method, route);
-        headers.sendArguments(arguments);
-        headers.sendBodyLength(responseBody.length);
-
-        byte[] header = headers.getHeader();
-        return SharedUtilities.addByteArrays(header, responseBody);
-    }
-
-    public byte[] processRequest() {
-        return getResponse();
     }
 
     public void preparePageContent() {

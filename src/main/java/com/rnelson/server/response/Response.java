@@ -14,6 +14,7 @@ public class Response {
         statusCodes.put(302, "HTTP/1.1 302 Found");
         statusCodes.put(405, "HTTP/1.1 405 Method Not Allowed");
         statusCodes.put(206, "HTTP/1.1 206 Partial Content");
+        statusCodes.put(401, "HTTP/1.1 401 Not Authorized");
 
         return statusCodes.get(status);
     }

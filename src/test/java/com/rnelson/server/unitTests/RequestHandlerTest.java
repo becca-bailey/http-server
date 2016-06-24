@@ -6,6 +6,7 @@ import com.rnelson.server.utilities.SharedUtilities;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class RequestHandlerTest {
@@ -24,6 +25,8 @@ public class RequestHandlerTest {
     private final RequestHandler simpleOPTIONS = new RequestHandler("OPTIONS /method_options\r\n\r\n");
     private final RequestHandler simpleOPTIONS2 = new RequestHandler("OPTIONS /method_options2\r\n\r\n");
     private final RequestHandler redirectPath = new RequestHandler("GET /redirect\r\n\r\n");
+    private final RequestHandler basicAuth = new RequestHandler("GET /logs\r\nAuthorization: Basic YWRtaW46aHVudGVyMQ==\r\n\r\n");
+
 
     @Test
     public void methodReturnsRequestMethod() throws Throwable {
@@ -167,5 +170,24 @@ public class RequestHandlerTest {
         String response = SharedUtilities.convertByteArrayToString(responseBytes);
         assertTrue(response.contains("variable_1 = Operators <, >, =, !=; +, -, *, &, @, #, $, [, ]: \"is that all\"?"));
         assertTrue(response.contains("variable_2 = stuff"));
+    }
+
+    @Test
+    public void getUserNameAndPasswordAcceptsBase64EncodedCredentials() {
+        String encodedCredentials = "Basic YWRtaW46aHVudGVyMQ==";
+        String[] usernameAndPassword = new String[]{"admin", "hunter1"};
+        assertEquals(usernameAndPassword[0], basicAuth.getUsernameAndPassword(encodedCredentials)[0]);
+        assertEquals(usernameAndPassword[1], basicAuth.getUsernameAndPassword(encodedCredentials)[1]);
+    }
+
+    @Test
+    public void isAuthorizedReturnsTrueOrFalse() {
+        assertTrue(basicAuth.isAuthorized());
+    }
+
+    @Test
+    public void userIsAuthorizedReturnsTrueOrFalse() {
+        assertTrue(basicAuth.userIsAuthorized("admin", "hunter1"));
+        assertFalse(basicAuth.userIsAuthorized("test", "test"));
     }
 }

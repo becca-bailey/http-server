@@ -1,18 +1,21 @@
 package com.rnelson.server;
 
 import com.rnelson.server.response.BodyContent;
-import com.rnelson.server.utilities.Router;
+import cucumber.api.java.After;
+import cucumber.api.java.Before;
+import cucumber.api.java.en.And;
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 import static com.rnelson.server.GlobalHooks.serverRunner;
-
-import cucumber.api.*;
-import cucumber.api.java.*;
-import cucumber.api.java.en.*;
-
-import java.io.*;
-import java.net.*;
-import java.nio.file.*;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class HTTPRequestsSteps {
     private Integer port = 5000;
@@ -45,6 +48,13 @@ public class HTTPRequestsSteps {
     @When("^I request \"([^\"]*)\" \"([^\"]*)\"$")
     public void iRequest(String method, String route) throws Throwable {
         client.sendRequestHeader(method, route);
+    }
+
+
+    @When("^I request \"([^\"]*)\" \"([^\"]*)\" with authorization$")
+    public void iRequestWithAuthorization(String method, String route) throws Throwable {
+        client.sendRequestHeader(method, route);
+        client.sendCredentials("admin", "hunter2");
     }
 
     @When("^I \"([^\"]*)\" \"([^\"]*)\" to \"([^\"]*)\"$")
@@ -122,6 +132,14 @@ public class HTTPRequestsSteps {
         String partialContent = fileContent.substring(rangeStart, rangeEnd + 1);
         String responseContent = client.getResponseBody();
         assertEquals(partialContent, responseContent);
+    }
+
+    @And("^the response body has log contents$")
+    public void theResponseBodyHasLogContents() throws Throwable {
+        String responseBody = client.getResponseBody();
+        assertTrue(responseBody.contains("GET /log HTTP/1.1"));
+        assertTrue(responseBody.contains("PUT /these HTTP/1.1"));
+        assertTrue(responseBody.contains("HEAD /requests HTTP/1.1"));
     }
 
     // After
