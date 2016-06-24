@@ -21,6 +21,7 @@ public class Router {
         routeOptions.put("/tea", Arrays.asList("GET"));
         routeOptions.put("/redirect", Arrays.asList("GET"));
         routeOptions.put("/parameters", Arrays.asList("GET"));
+        routeOptions.put("/logs", Arrays.asList("GET", "HEAD", "POST"));
 
         statusCodesForRoutes.put("GET *", Response.status(200));
         statusCodesForRoutes.put("HEAD *", Response.status(200));
@@ -32,6 +33,7 @@ public class Router {
         statusCodesForRoutes.put("GET /redirect", Response.status(302));
         statusCodesForRoutes.put("GET /form", Response.status(200));
         statusCodesForRoutes.put("GET /parameters", Response.status(200));
+        statusCodesForRoutes.put("GET /logs", Response.status(401));
 
         protectedRoutes.add("/logs");
 

@@ -1,7 +1,6 @@
 package com.rnelson.server;
 
 import com.rnelson.server.utilities.SharedUtilities;
-import com.sun.org.apache.regexp.internal.RE;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.*;
 import org.apache.http.client.methods.*;
@@ -86,7 +85,6 @@ public class HTTPClient {
     }
 
     private CloseableHttpResponse getResponseForMethod() {
-        // refactor this!!
         CloseableHttpResponse response = null;
         try {
             if (method.equals("POST")) {

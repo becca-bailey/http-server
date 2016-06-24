@@ -27,6 +27,28 @@ public class RequestHandler {
         Router router = new Router();
     }
 
+    public byte[] getResponse() {
+        List<String> arguments = getResponseBodyArguments();
+        Map<String, String> headerFields = parseHeaders();
+        String parameters = parseParameters();
+        preparePageContent();
+
+        BodyContent bodyContent = new BodyContent(method, route);
+        bodyContent.sendRequestBody(body);
+        bodyContent.sendArguments(arguments);
+        bodyContent.sendHeaderFields(headerFields);
+        bodyContent.sendUrlParameters(parameters);
+
+        byte[] responseBody = bodyContent.getBody();
+
+        ResponseHeaders headers = new ResponseHeaders(method, route);
+        headers.sendArguments(arguments);
+        headers.sendBodyLength(responseBody.length);
+
+        byte[] header = headers.getHeader();
+        return SharedUtilities.addByteArrays(header, responseBody);
+    }
+
     private String statusLine() {
         String[] headerLines = splitHeader();
         return headerLines[0];
@@ -74,6 +96,10 @@ public class RequestHandler {
         return headerFields;
     }
 
+    private boolean requiresAuthorization() {
+        return Router.protectedRoutes.contains(route);
+    };
+
     public boolean isAuthorized() {
         Map<String, String> headerFields = parseHeaders();
         if (headerFields.containsKey("Authorization")) {
@@ -84,6 +110,10 @@ public class RequestHandler {
             return userIsAuthorized(username, password);
         }
         return false;
+    }
+
+    public boolean includeUnauthorizedArgument() {
+        return requiresAuthorization() || !isAuthorized();
     }
 
     public String[] getUsernameAndPassword(String encodedCredentials) {
@@ -108,12 +138,12 @@ public class RequestHandler {
     private List<String> getResponseBodyArguments() {
         List<String> arguments = new ArrayList<String>();
 
-        Boolean echoResponseBody = route.equals("/echo") && ((method.equals("POST") || method.equals("PUT")));
-        Boolean headOnly = method.equals("HEAD") || method.equals("POST") || method.equals("PUT");
+        Boolean echoResponseBody = sendEchoResponse();
+        Boolean headOnly = sendHeadOnly();
         Boolean delete = method.equals("DELETE");
-        Boolean range = parseHeaders().containsKey("Range");
+        Boolean range = headerIncludesRange();
         Boolean authorized = isAuthorized();
-        Boolean notAuthorized = !isAuthorized();
+        Boolean unauthorized = includeUnauthorizedArgument();
 
         Map<String, Boolean> argumentAndConditions = new HashMap<String, Boolean>();
         argumentAndConditions.put("echoResponseBody", echoResponseBody);
@@ -121,7 +151,7 @@ public class RequestHandler {
         argumentAndConditions.put("delete", delete);
         argumentAndConditions.put("range", range);
         argumentAndConditions.put("authorized", authorized);
-        argumentAndConditions.put("notAuthorized", notAuthorized);
+        argumentAndConditions.put("unauthorized", unauthorized);
 
         for (Map.Entry<String,Boolean> entry : argumentAndConditions.entrySet()) {
             String parameter = entry.getKey();
@@ -133,6 +163,19 @@ public class RequestHandler {
         return arguments;
     }
 
+    private Boolean sendHeadOnly() {
+        List<String> postOnlyMethods = Arrays.asList("HEAD", "POST", "PUT", "OPTIONS");
+        return postOnlyMethods.contains(method);
+    }
+
+    private Boolean sendEchoResponse() {
+        return route.equals("/echo") && ((method.equals("POST") || method.equals("PUT")));
+    }
+
+    private Boolean headerIncludesRange() {
+        return parseHeaders().containsKey("Range");
+    }
+
     public String parseParameters() {
         String parameterString = "";
         if (parameters() != null) {
@@ -140,32 +183,6 @@ public class RequestHandler {
             parameterString = parameters.convertToBodyText();
         }
         return parameterString;
-    }
-
-    public byte[] getResponse() {
-        List<String> arguments = getResponseBodyArguments();
-        Map<String, String> headerFields = parseHeaders();
-        String parameters = parseParameters();
-        preparePageContent();
-
-        BodyContent bodyContent = new BodyContent(method, route);
-        bodyContent.sendRequestBody(body);
-        bodyContent.sendArguments(arguments);
-        bodyContent.sendHeaderFields(headerFields);
-        bodyContent.sendUrlParameters(parameters);
-
-        byte[] responseBody = bodyContent.getBody();
-
-        ResponseHeaders headers = new ResponseHeaders(method, route);
-        headers.sendArguments(arguments);
-        headers.sendBodyLength(responseBody.length);
-
-        byte[] header = headers.getHeader();
-        return SharedUtilities.addByteArrays(header, responseBody);
-    }
-
-    public byte[] processRequest() {
-        return getResponse();
     }
 
     public void preparePageContent() {
