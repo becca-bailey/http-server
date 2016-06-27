@@ -4,7 +4,7 @@ import com.rnelson.server.file.DirectoryHandler;
 import com.rnelson.server.file.FileHandler;
 import com.rnelson.server.response.BodyContent;
 import com.rnelson.server.response.ResponseHeaders;
-import com.rnelson.server.utilities.Router;
+import com.rnelson.server.utilities.RouterList;
 import com.rnelson.server.utilities.SharedUtilities;
 
 import java.io.File;
@@ -26,7 +26,7 @@ public class RequestHandler {
         this.method = method();
         this.route = route();
         this.body = getRequestBody();
-        Router router = new Router();
+        RouterList routerList = new RouterList();
         logRequest();
     }
 
@@ -107,7 +107,7 @@ public class RequestHandler {
     }
 
     private boolean requiresAuthorization() {
-        return Router.protectedRoutes.contains(route);
+        return RouterList.protectedRoutes.contains(route);
     };
 
     public boolean isAuthorized() {
@@ -142,7 +142,7 @@ public class RequestHandler {
     }
 
     public Boolean userIsAuthorized(String username, String password) {
-        return (password.equals(Router.authorizedUsers.get(username)));
+        return (password.equals(RouterList.authorizedUsers.get(username)));
     }
 
     private List<String> getResponseBodyArguments() {

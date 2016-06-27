@@ -1,7 +1,7 @@
 package com.rnelson.server.file;
 
 import com.rnelson.server.response.Response;
-import com.rnelson.server.utilities.Router;
+import com.rnelson.server.utilities.RouterList;
 
 import java.io.*;
 import java.util.Arrays;
@@ -15,8 +15,8 @@ public class DirectoryHandler {
 
     public void handleAllFiles() {
         for (File file : getDirectoryListing()) {
-            Router.statusCodesForRequests.put("GET /" + file.getName(), Response.status(200));
-            Router.routeOptions.put("/" + file.getName(), Arrays.asList("GET", "PATCH"));
+            RouterList.statusCodesForRequests.put("GET /" + file.getName(), Response.status(200));
+            RouterList.routeOptions.put("/" + file.getName(), Arrays.asList("GET", "PATCH"));
             FileHandler handler = new FileHandler(file);
             handler.addFileContentToPageContent();
             handler.addRequiredHeaderRowsForFile();

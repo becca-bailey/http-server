@@ -1,12 +1,10 @@
 package com.rnelson.server.response;
 
-import com.rnelson.server.utilities.Router;
-import com.rnelson.server.utilities.SharedUtilities;
+import com.rnelson.server.utilities.RouterList;
 
 import java.util.*;
 
-import static com.rnelson.server.utilities.Router.routeOptions;
-import static com.rnelson.server.utilities.Router.statusCodesForRequests;
+import static com.rnelson.server.utilities.RouterList.routeOptions;
 
 public class ResponseHeaders {
     private final String method;
@@ -26,7 +24,7 @@ public class ResponseHeaders {
         this.method = method;
         this.route = route;
 
-        Router router = new Router();
+        RouterList routerList = new RouterList();
     }
 
     public void sendBodyLength(Integer length) {
@@ -48,11 +46,11 @@ public class ResponseHeaders {
     }
 
     private Boolean isValidRoute() {
-        return Router.routeOptions.containsKey(route) && validMethod();
+        return RouterList.routeOptions.containsKey(route) && validMethod();
     }
 
     private Boolean methodNotAllowed() {
-        return Router.routeOptions.containsKey(route) && !validMethod();
+        return RouterList.routeOptions.containsKey(route) && !validMethod();
     }
 
     private String headerForValidRoute() {
@@ -106,9 +104,9 @@ public class ResponseHeaders {
     }
 
     private String getStatusFromRoute() {
-        String status = Router.statusCodesForRequests.get(method + " " + route);
+        String status = RouterList.statusCodesForRequests.get(method + " " + route);
         if (status == null) {
-            status = Router.statusCodesForRequests.get(method + " *");
+            status = RouterList.statusCodesForRequests.get(method + " *");
         }
         return status;
     }

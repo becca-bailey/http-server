@@ -4,14 +4,14 @@ import com.rnelson.server.response.Response;
 
 import java.util.*;
 
-public class Router {
+public class RouterList {
     public static Map<String, List<String>> routeOptions = new HashMap<String, List<String>>();
     public static Map<String, String> statusCodesForRequests = new HashMap<String, String>();
     public static Map<String, String> authorizedUsers = new HashMap<String, String>();
     public static List<String> protectedRoutes = new ArrayList<String>();
 
 
-    public Router() {
+    public RouterList() {
         routeOptions.put("/", Arrays.asList("GET", "HEAD"));
         routeOptions.put("/echo", Arrays.asList("GET", "POST"));
         routeOptions.put("/form", Arrays.asList("POST", "PUT", "GET", "DELETE"));
