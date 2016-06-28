@@ -3,6 +3,7 @@ package com.rnelson.server;
 import application.Config;
 import com.rnelson.server.request.Request;
 import com.rnelson.server.request.RequestHandler;
+import com.rnelson.server.response.Response;
 import com.rnelson.server.utilities.exceptions.ControllerException;
 
 import java.io.BufferedReader;
@@ -35,17 +36,20 @@ class ServerRunner implements Runnable {
         String requestData = getFullRequest(in);
         Config.initializeRoutes();
         byte[] response;
-        if (requestData.contains(" / ")) {
+        if (requestData.contains(" / ") || requestData.contains("/foobar")) {
             Controller controller = null;
             Request request = new Request(requestData);
             String route = request.route();
             String method = request.method();
             try {
-                controller = router.getControllerForRoute(route);
+                controller = Config.router.getControllerForRoute(route);
+                response = controller.getResponse(method);
             } catch (ControllerException e) {
                 System.out.println(e.getMessage());
-            } finally {
-                response = controller.getResponse(method);
+                response = Response.notFound.getBytes();
+            } catch (NullPointerException e) {
+                System.out.println(route + " not found in class " + controller.getClass());
+                response = Response.methodNotAllowed.getBytes();
             }
         } else {
             RequestHandler handler = new RequestHandler(requestData);
