@@ -16,5 +16,7 @@ public class Config {
         router = new Router(root);
         router.addRoute(HttpMethods.get, "/");
         router.addRoute(HttpMethods.head, "/");
+        router.addRoute(HttpMethods.get, "/coffee");
+        router.addRoute(HttpMethods.get, "/tea");
     }
 }

@@ -1,7 +1,11 @@
 package application.controllers;
 
-/**
- * Created by Becca on 6/28/16.
- */
-public class TeaController {
+import com.rnelson.server.controller.Controller;
+import com.rnelson.server.header.Header;
+
+public class TeaController extends Controller {
+    public byte[] get() {
+        Header header = new Header(200);
+        return header.getResponseHeader();
+    }
 }

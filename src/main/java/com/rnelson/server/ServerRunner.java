@@ -1,12 +1,11 @@
 package com.rnelson.server;
 
 import application.Config;
-import com.rnelson.server.Router.Router;
+import com.rnelson.server.router.Router;
 import com.rnelson.server.controller.Controller;
 import com.rnelson.server.request.Request;
-import com.rnelson.server.request.RequestHandler;
 import com.rnelson.server.response.Response;
-import com.rnelson.server.utilities.exceptions.ControllerException;
+import com.rnelson.server.utilities.exceptions.RouterException;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
