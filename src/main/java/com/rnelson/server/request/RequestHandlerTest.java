@@ -1,13 +1,10 @@
-package com.rnelson.server.unitTests;
+package com.rnelson.server.request;
 
-import com.rnelson.server.request.RequestHandler;
 import com.rnelson.server.response.Response;
 import com.rnelson.server.utilities.SharedUtilities;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class RequestHandlerTest {
     private final RequestHandler GETecho = new RequestHandler("GET /echo HTTP/1.1\r\n\r\n");

@@ -1,6 +1,6 @@
 package com.rnelson.server.response;
 
-import com.rnelson.server.file.FileHandler;
+import com.rnelson.server.fileHandler.FileHandler;
 import com.rnelson.server.utilities.SharedUtilities;
 
 import java.io.File;

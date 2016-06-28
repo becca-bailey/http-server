@@ -1,6 +1,5 @@
-package com.rnelson.server.unitTests;
+package com.rnelson.server.utilities;
 
-import com.rnelson.server.utilities.SharedUtilities;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;

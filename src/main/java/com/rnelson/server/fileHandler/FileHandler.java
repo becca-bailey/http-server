@@ -1,4 +1,4 @@
-package com.rnelson.server.file;
+package com.rnelson.server.fileHandler;
 
 import com.rnelson.server.response.BodyContent;
 import com.rnelson.server.response.ResponseHeaders;

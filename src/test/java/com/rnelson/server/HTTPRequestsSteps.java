@@ -1,6 +1,7 @@
 package com.rnelson.server;
 
-import com.rnelson.server.file.FileHandler;
+import com.rnelson.server.fileHandler.FileHandler;
+import com.rnelson.server.httpClient.HTTPClient;
 import com.rnelson.server.response.BodyContent;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
