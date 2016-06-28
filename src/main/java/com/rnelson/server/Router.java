@@ -1,5 +1,6 @@
 package com.rnelson.server;
 
+import application.Config;
 import com.rnelson.server.utilities.exceptions.ControllerException;
 import com.rnelson.server.utilities.exceptions.RouterException;
 import org.apache.commons.io.FilenameUtils;
@@ -34,7 +35,7 @@ public class Router {
                 return existingRoute;
             }
         }
-        throw new RouterException("route not found");
+        throw new RouterException("Route not found.");
     }
 
     public int countRoutes() {
@@ -47,19 +48,18 @@ public class Router {
     }
 
     public Controller getControllerForRoute(String url) throws ControllerException {
+        Route route = null;
         try {
-            Route route = getExistingRoute(url);
-            File[] controllerFiles = listControllers();
+            route = getExistingRoute(url);
             String expectedClassName = expectedControllerClass(route.getClassName());
-            for (File file : controllerFiles) {
+            for (File file : listControllers()) {
                 String fileName = FilenameUtils.removeExtension(file.getName());
-                if (controllerMatchesFilename(fileName, expectedClassName)) {
-                    Class controllerClass = Class.forName(getPackageNameFromFileName(fileName));
-                    return (Controller) controllerClass.newInstance();
+                if (fileName.equals(expectedClassName)) {
+                    return controllerInstance(fileName);
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (RouterException e) {
+            System.out.println(e.getMessage());
         }
         throw new ControllerException("Controller not found. Server is looking for '/controllers/<This>Controller.java' in the root directory.");
     }
@@ -72,7 +72,14 @@ public class Router {
         return className + "Controller";
     }
 
-    private Boolean controllerMatchesFilename (String fileName, String expectedClassName) {
-        return fileName.equals(expectedClassName);
+    private Controller controllerInstance(String fileName) {
+        Controller controller = null;
+        try {
+            Class controllerClass = Class.forName(getPackageNameFromFileName(fileName));
+            controller = (Controller) controllerClass.newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return controller;
     }
 }
