@@ -55,8 +55,7 @@ public class Router {
                 String fileName = FilenameUtils.removeExtension(file.getName());
                 if (controllerMatchesFilename(fileName, expectedClassName)) {
                     Class controllerClass = Class.forName(getPackageNameFromFileName(fileName));
-//                    return controllerClass.newInstance();
-                    return new RootController();
+                    return (Controller) controllerClass.newInstance();
                 }
             }
         } catch (Exception e) {
@@ -66,8 +65,7 @@ public class Router {
     }
 
     private String getPackageNameFromFileName(String fileName) {
-        return "com.rnelson.server.controllers." + FilenameUtils.removeExtension(fileName);
-        // fix this with a config file
+        return Config.packageName + ".controllers." + FilenameUtils.removeExtension(fileName);
     }
 
     private String expectedControllerClass(String className) {
