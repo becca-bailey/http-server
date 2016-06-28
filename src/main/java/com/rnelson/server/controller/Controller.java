@@ -1,4 +1,4 @@
-package com.rnelson.server;
+package com.rnelson.server.controller;
 
 import com.rnelson.server.utilities.http.HttpMethods;
 

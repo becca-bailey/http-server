@@ -1,17 +1,17 @@
-package com.rnelson.server.request;
+package com.rnelson.server.imageRequest;
 
-import com.rnelson.server.file.FileHandler;
+import com.rnelson.server.fileHandler.FileHandler;
+import com.rnelson.server.request.RequestHandler;
 import com.rnelson.server.utilities.SharedUtilities;
 
 import java.io.File;
-import java.net.MalformedURLException;
 
-public class ImageRequestHandler extends RequestHandler {
+public class ImageRequest extends RequestHandler {
     private String method;
     private String route;
     public File file;
 
-    public ImageRequestHandler(String imageRequest) {
+    public ImageRequest(String imageRequest) {
         super(imageRequest);
         this.route = route();
         this.file = new File(route);

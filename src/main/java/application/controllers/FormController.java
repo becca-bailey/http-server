@@ -1,6 +1,6 @@
 package application.controllers;
 
-import com.rnelson.server.Controller;
+import com.rnelson.server.controller.Controller;
 
 public class FormController extends Controller {
     public byte[] get() {

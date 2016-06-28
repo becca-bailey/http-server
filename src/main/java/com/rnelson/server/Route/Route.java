@@ -1,4 +1,4 @@
-package com.rnelson.server;
+package com.rnelson.server.Route;
 
 import com.rnelson.server.utilities.SharedUtilities;
 
@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 public class Route {
-    String url;
+    public String url;
     String rootName = "Root";
     Set<String> methods = new HashSet<String>();
 

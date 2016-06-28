@@ -1,6 +1,5 @@
-package com.rnelson.server.unitTests;
+package com.rnelson.server.fileHandler;
 
-import com.rnelson.server.file.FileHandler;
 import com.rnelson.server.response.BodyContent;
 import com.rnelson.server.utilities.SharedUtilities;
 import org.junit.Test;
@@ -15,7 +14,7 @@ public class FileHandlerTest {
     private FileHandler jpeg = new FileHandler(new File("public/image.jpeg"));
     private FileHandler gif = new FileHandler(new File("public/image.gif"));
     private FileHandler png = new FileHandler(new File("public/image.png"));
-    private FileHandler text = new FileHandler(new File("public/text-file.txt"));
+    private FileHandler text = new FileHandler(new File("public/text-fileHandler.txt"));
     private FileHandler test = new FileHandler(new File("public/test"));
 
     @Test

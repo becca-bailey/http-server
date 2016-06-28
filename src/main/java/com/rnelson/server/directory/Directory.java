@@ -1,15 +1,16 @@
-package com.rnelson.server.file;
+package com.rnelson.server.directory;
 
+import com.rnelson.server.fileHandler.FileHandler;
 import com.rnelson.server.response.Response;
 import com.rnelson.server.utilities.RouterList;
 
 import java.io.*;
 import java.util.Arrays;
 
-public class DirectoryHandler {
+public class Directory {
     private String directory = "public";
 
-    public DirectoryHandler(String directory) {
+    public Directory(String directory) {
         this.directory = directory + "/";
     }
 

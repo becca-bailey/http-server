@@ -1,7 +1,8 @@
 package com.rnelson.server.request;
 
-import com.rnelson.server.file.DirectoryHandler;
-import com.rnelson.server.file.FileHandler;
+import com.rnelson.server.directory.Directory;
+import com.rnelson.server.fileHandler.FileHandler;
+import com.rnelson.server.parameterParser.ParameterParser;
 import com.rnelson.server.response.BodyContent;
 import com.rnelson.server.response.ResponseHeaders;
 import com.rnelson.server.utilities.RouterList;
@@ -198,9 +199,9 @@ public class RequestHandler {
     public void preparePageContent() {
         BodyContent.pageContent.put("/coffee", ("I'm a teapot").getBytes());
         String publicDirectory = "public";
-        DirectoryHandler directoryHandler = new DirectoryHandler(publicDirectory);
-        BodyContent.pageContent.put("/", (directoryHandler.getDirectoryLinks()).getBytes());
-        directoryHandler.handleAllFiles();
+        Directory directory = new Directory(publicDirectory);
+        BodyContent.pageContent.put("/", (directory.getDirectoryLinks()).getBytes());
+        directory.handleAllFiles();
     }
 
 }
