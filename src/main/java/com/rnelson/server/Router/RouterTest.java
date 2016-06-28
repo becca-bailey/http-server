@@ -71,12 +71,12 @@ public class RouterTest {
 
     @Test
     public void getControllerForRouteThrowsControllerException() throws Throwable {
-        Boolean controllerException = false;
+        Boolean routerException = false;
         try {
             testRouter.getControllerForRoute("/foobar");
-        } catch (ControllerException e) {
-            controllerException = true;
+        } catch (RouterException e) {
+            routerException = true;
         }
-        assertTrue(controllerException);
+        assertTrue(routerException);
     }
 }

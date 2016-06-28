@@ -1,4 +1,4 @@
-package com.rnelson.server.Route;
+package com.rnelson.server.route;
 
 import com.rnelson.server.utilities.http.HttpMethods;
 import org.junit.Test;

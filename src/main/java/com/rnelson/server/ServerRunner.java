@@ -38,24 +38,19 @@ class ServerRunner implements Runnable {
         String requestData = getFullRequest(in);
         Config.initializeRoutes();
         byte[] response;
-        if (requestData.contains(" / ") || requestData.contains("/foobar")) {
-            Controller controller = null;
-            Request request = new Request(requestData);
-            String route = request.route();
-            String method = request.method();
-            try {
-                controller = Config.router.getControllerForRoute(route);
-                response = controller.getResponse(method);
-            } catch (ControllerException e) {
-                System.out.println(e.getMessage());
-                response = Response.notFound.getBytes();
-            } catch (NullPointerException e) {
-                System.out.println(route + " not found in class " + controller.getClass());
-                response = Response.methodNotAllowed.getBytes();
-            }
-        } else {
-            RequestHandler handler = new RequestHandler(requestData);
-            response = handler.getResponse();
+        Controller controller = null;
+        Request request = new Request(requestData);
+        String route = request.route();
+        String method = request.method();
+        try {
+            controller = Config.router.getControllerForRoute(route);
+            response = controller.getResponse(method);
+        } catch (RouterException e) {
+            System.out.println(e.getMessage());
+            response = Response.notFound.getBytes();
+        } catch (NullPointerException e) {
+            System.out.println(route + " not found in Controller.");
+            response = Response.methodNotAllowed.getBytes();
         }
         out.write(response);
         out.close();

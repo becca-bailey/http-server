@@ -1,9 +1,8 @@
-package com.rnelson.server.Router;
+package com.rnelson.server.router;
 
 import application.Config;
+import com.rnelson.server.route.Route;
 import com.rnelson.server.controller.Controller;
-import com.rnelson.server.Route.Route;
-import com.rnelson.server.utilities.exceptions.ControllerException;
 import com.rnelson.server.utilities.exceptions.RouterException;
 import org.apache.commons.io.FilenameUtils;
 
@@ -37,7 +36,7 @@ public class Router {
                 return existingRoute;
             }
         }
-        throw new RouterException("Route not found.");
+        throw new RouterException("Route not found. Server is looking for route " + url +".");
     }
 
     public int countRoutes() {
@@ -49,10 +48,9 @@ public class Router {
         return controllersDirectory.listFiles();
     }
 
-    public Controller getControllerForRoute(String url) throws ControllerException {
-        Route route = null;
+    public Controller getControllerForRoute(String url) throws RouterException {
         try {
-            route = getExistingRoute(url);
+            Route route = getExistingRoute(url);
             String expectedClassName = expectedControllerClass(route.getClassName());
             for (File file : listControllers()) {
                 String fileName = FilenameUtils.removeExtension(file.getName());
@@ -63,7 +61,7 @@ public class Router {
         } catch (RouterException e) {
             System.out.println(e.getMessage());
         }
-        throw new ControllerException("Controller not found. Server is looking for '/controllers/<This>Controller.java' in the root directory.");
+        throw new RouterException("Controller not found. Server is looking for '/controllers/<This>Controller.java' in the root directory.");
     }
 
     private String getPackageNameFromFileName(String fileName) {
@@ -79,7 +77,9 @@ public class Router {
         try {
             Class controllerClass = Class.forName(getPackageNameFromFileName(fileName));
             controller = (Controller) controllerClass.newInstance();
-        } catch (Exception e) {
+        } catch (ClassCastException e) {
+            System.out.println(fileName + " must be an instance of Controller.");
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
         return controller;
