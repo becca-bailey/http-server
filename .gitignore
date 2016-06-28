@@ -3,3 +3,4 @@ http-server.iml
 .idea/
 classes/
 test/
+public/logs
