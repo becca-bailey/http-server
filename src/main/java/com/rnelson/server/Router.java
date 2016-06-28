@@ -1,5 +1,6 @@
 package com.rnelson.server;
 
+import com.rnelson.server.controllers.RootController;
 import com.rnelson.server.utilities.exceptions.ControllerException;
 import com.rnelson.server.utilities.exceptions.RouterException;
 import org.apache.commons.io.FilenameUtils;
@@ -46,7 +47,7 @@ public class Router {
         return controllersDirectory.listFiles();
     }
 
-    public Object getControllerForRoute(String url) throws ControllerException {
+    public Controller getControllerForRoute(String url) throws ControllerException {
         try {
             Route route = getExistingRoute(url);
             File[] controllerFiles = listControllers();
@@ -55,7 +56,8 @@ public class Router {
                 String fileName = FilenameUtils.removeExtension(file.getName());
                 if (controllerMatchesFilename(fileName, expectedClassName)) {
                     Class controllerClass = Class.forName(getPackageNameFromFileName(fileName));
-                    return controllerClass.newInstance();
+//                    return controllerClass.newInstance();
+                    return new RootController();
                 }
             }
         } catch (Exception e) {

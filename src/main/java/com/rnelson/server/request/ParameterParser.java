@@ -31,8 +31,9 @@ public class ParameterParser {
     }
 
     public String getValue(int nth) {
-        int i = nth - 1;
-        return keyValuePair(i)[1];
+//        int i = nth - 1;
+//        return keyValuePair(i)[1];
+        return "";
     }
 
     public String decodedValue(int nth) {

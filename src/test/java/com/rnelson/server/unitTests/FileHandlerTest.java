@@ -39,7 +39,7 @@ public class FileHandlerTest {
         assertEquals("jpeg", jpeg.fileExtension());
         assertEquals("gif", gif.fileExtension());
         assertEquals("png", png.fileExtension());
-        assertEquals(null, file1.fileExtension());
+        assertEquals("", file1.fileExtension());
     }
 
     @Test
