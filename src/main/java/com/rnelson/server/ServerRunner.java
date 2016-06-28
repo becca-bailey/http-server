@@ -1,17 +1,21 @@
 package com.rnelson.server;
 
+import application.Config;
 import com.rnelson.server.request.Request;
 import com.rnelson.server.request.RequestHandler;
 import com.rnelson.server.utilities.exceptions.ControllerException;
-import com.rnelson.server.utilities.http.HttpMethods;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 class ServerRunner implements Runnable {
     private final int serverPort;
     private Boolean running = true;
+    private Router router = Config.router;
 
     ServerRunner(int port) {
         this.serverPort = port;
@@ -29,17 +33,13 @@ class ServerRunner implements Runnable {
 
     private void respondToRequest (DataOutputStream out, BufferedReader in) throws IOException {
         String requestData = getFullRequest(in);
+        Config.initializeRoutes();
         byte[] response;
-        if (requestData.contains("GET / ")) {
+        if (requestData.contains(" / ")) {
             Controller controller = null;
             Request request = new Request(requestData);
             String route = request.route();
             String method = request.method();
-            File rootDirectory = new File("src/main/java/com/rnelson/server/");
-            // get this from a config file
-            Router router = new Router(rootDirectory);
-            router.addRoute(HttpMethods.get, "/");
-            // ^ this will go somewhere else
             try {
                 controller = router.getControllerForRoute(route);
             } catch (ControllerException e) {
