@@ -1,6 +1,5 @@
 package com.rnelson.server;
 
-import com.rnelson.server.controllers.RootController;
 import com.rnelson.server.utilities.exceptions.ControllerException;
 import com.rnelson.server.utilities.exceptions.RouterException;
 import org.apache.commons.io.FilenameUtils;
