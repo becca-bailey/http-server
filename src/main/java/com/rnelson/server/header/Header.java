@@ -1,7 +1,16 @@
 package com.rnelson.server.header;
 
-/**
- * Created by Becca on 6/28/16.
- */
+import com.rnelson.server.response.Response;
+
 public class Header {
+    String status;
+    String crlf = "\r\n";
+
+    public Header(int status) {
+        this.status = Response.status(status);
+    }
+
+    public byte[] getResponseHeader() {
+        return (status + crlf + crlf).getBytes();
+    }
 }

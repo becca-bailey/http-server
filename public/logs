@@ -3168,3 +3168,4 @@ POST /form HTTP/1.1
 PUT /form HTTP/1.1
 GET /coffee HTTP/1.1
 GET /tea HTTP/1.1
+GET /echo HTTP/1.1

@@ -1,9 +1,8 @@
-package com.rnelson.server.Router;
+package com.rnelson.server.router;
 
 import application.controllers.RootController;
+import com.rnelson.server.route.Route;
 import com.rnelson.server.controller.Controller;
-import com.rnelson.server.Route.Route;
-import com.rnelson.server.utilities.exceptions.ControllerException;
 import com.rnelson.server.utilities.exceptions.RouterException;
 import com.rnelson.server.utilities.http.HttpMethods;
 import org.junit.Test;
