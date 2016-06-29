@@ -2,8 +2,8 @@ package application.controllers;
 
 import application.Config;
 import com.rnelson.server.Controller;
-import com.rnelson.server.FileHandler;
-import com.rnelson.server.Header;
+import com.rnelson.server.content.FileHandler;
+import com.rnelson.server.header.Header;
 import com.rnelson.server.utilities.ContentType;
 import com.rnelson.server.utilities.Response;
 import com.rnelson.server.utilities.SharedUtilities;

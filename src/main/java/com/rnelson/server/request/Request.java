@@ -1,4 +1,4 @@
-package com.rnelson.server;
+package com.rnelson.server.request;
 
 import com.rnelson.server.utilities.SharedUtilities;
 

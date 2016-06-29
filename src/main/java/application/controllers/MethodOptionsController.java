@@ -1,7 +1,7 @@
 package application.controllers;
 
 import com.rnelson.server.Controller;
-import com.rnelson.server.Header;
+import com.rnelson.server.header.Header;
 import com.rnelson.server.utilities.Response;
 
 import java.util.Set;

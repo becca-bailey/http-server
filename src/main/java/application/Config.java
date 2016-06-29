@@ -1,7 +1,7 @@
 package application;
 
 
-import com.rnelson.server.Router;
+import com.rnelson.server.routing.Router;
 import com.rnelson.server.utilities.http.HttpMethods;
 
 import java.io.File;
