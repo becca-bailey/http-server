@@ -1,10 +1,6 @@
 package com.rnelson.server;
 
 import application.Config;
-import com.rnelson.server.router.Router;
-import com.rnelson.server.controller.Controller;
-import com.rnelson.server.request.Request;
-import com.rnelson.server.response.Response;
 import com.rnelson.server.utilities.exceptions.RouterException;
 
 import java.io.BufferedReader;
@@ -13,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.function.Supplier;
 
 class ServerRunner implements Runnable {
     private final int serverPort;
@@ -39,20 +36,27 @@ class ServerRunner implements Runnable {
         byte[] response;
         Controller controller = null;
         Request request = new Request(requestData);
-        String route = request.route();
+        String uri = request.uri();
         String method = request.method();
+        String body = request.getRequestBody();
         try {
-            controller = Config.router.getControllerForRoute(route);
-            response = controller.getResponse(method);
+            controller = Config.router.getControllerForRoute(uri);
+            controller.sendRequestBody(body);
+            Supplier<byte[]> controllerAction = Config.router.getControllerAction(controller, method);
+            response = getResponse(controllerAction);
         } catch (RouterException e) {
             System.out.println(e.getMessage());
             response = Response.notFound.getBytes();
         } catch (NullPointerException e) {
-            System.out.println(route + " not found in Controller.");
+            System.out.println(method + " not found in Controller.");
             response = Response.methodNotAllowed.getBytes();
         }
         out.write(response);
         out.close();
+    }
+
+    private byte[] getResponse(Supplier<byte[]> supplier) {
+        return (byte[]) supplier.get();
     }
 
     public void stop() {

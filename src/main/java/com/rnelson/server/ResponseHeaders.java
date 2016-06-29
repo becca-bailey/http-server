@@ -1,5 +1,6 @@
-package com.rnelson.server.response;
+package com.rnelson.server;
 
+import com.rnelson.server.Response;
 import com.rnelson.server.utilities.RouterList;
 
 import java.util.*;

@@ -1,6 +1,4 @@
-package com.rnelson.server.header;
-
-import com.rnelson.server.response.Response;
+package com.rnelson.server;
 
 public class Header {
     String status;

@@ -1,4 +1,4 @@
-package com.rnelson.server.route;
+package com.rnelson.server;
 
 import com.rnelson.server.utilities.SharedUtilities;
 

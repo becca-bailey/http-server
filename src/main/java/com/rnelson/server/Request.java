@@ -1,4 +1,4 @@
-package com.rnelson.server.request;
+package com.rnelson.server;
 
 import com.rnelson.server.utilities.SharedUtilities;
 
@@ -13,7 +13,7 @@ public class Request {
         body = getRequestBody();
     }
 
-    public String route() {
+    public String uri() {
         return getRequestLine().split(" ")[1];
     }
 
