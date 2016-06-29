@@ -10,7 +10,7 @@ public class Route {
     String url;
     public String controllerPrefix;
     private String rootName = "Root";
-    Set<String> methods = new HashSet<String>();
+    private Set<String> methods = new HashSet<String>();
 
     public Route(String url) {
         this.url = url;
@@ -47,6 +47,10 @@ public class Route {
         } else {
             return rootName;
         }
+    }
+
+    public Set<String> getMethods() {
+        return methods;
     }
 
     private Boolean isRootPath(String url) {
