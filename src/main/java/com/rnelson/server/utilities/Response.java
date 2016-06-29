@@ -1,4 +1,4 @@
-package com.rnelson.server;
+package com.rnelson.server.utilities;
 
 import java.util.HashMap;
 import java.util.Map;

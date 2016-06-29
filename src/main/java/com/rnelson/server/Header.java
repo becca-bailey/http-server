@@ -1,5 +1,7 @@
 package com.rnelson.server;
 
+import com.rnelson.server.utilities.Response;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -16,6 +18,11 @@ public class Header {
     public void includeOptions(Set<String> methodOptions) {
         String optionsHeader = "Allow: " + String.join(",", methodOptions);
         this.rows.add(optionsHeader);
+    }
+
+    public void includeContentType(String contentType) {
+        String contentTypeHeader = "Content-Type: " + contentType;
+        this.rows.add(contentTypeHeader);
     }
 
     private String getResponseAsString() {

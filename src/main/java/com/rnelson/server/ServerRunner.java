@@ -1,6 +1,7 @@
 package com.rnelson.server;
 
 import application.Config;
+import com.rnelson.server.utilities.Response;
 import com.rnelson.server.utilities.exceptions.RouterException;
 
 import java.io.BufferedReader;
@@ -57,7 +58,15 @@ class ServerRunner implements Runnable {
     }
 
     private byte[] getResponse(Supplier<byte[]> supplier) {
-        return supplier.get();
+        byte[] response = new byte[0];
+        try {
+            response = supplier.get();
+        } catch (NullPointerException e) {
+            System.out.println("Method doesn't exist in Router actions.");
+            e.printStackTrace();
+            System.exit(1);
+        }
+        return response;
     }
 
     public void stop() {
