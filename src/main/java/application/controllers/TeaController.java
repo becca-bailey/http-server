@@ -46,6 +46,11 @@ public class TeaController implements Controller {
     }
 
     @Override
+    public byte[] redirect() {
+        return new byte[0];
+    }
+
+    @Override
     public void sendRequestBody(String body) {
 
     }
@@ -57,6 +62,11 @@ public class TeaController implements Controller {
 
     @Override
     public void sendFile(File file) {
+
+    }
+
+    @Override
+    public void isAuthorized(Boolean isAuthorized) {
 
     }
 }

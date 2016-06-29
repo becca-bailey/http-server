@@ -7,6 +7,7 @@ public interface Controller {
 
     String body = null;
     Set<String> methodOptions = null;
+    Boolean isAuthorized = null;
 
     byte[] get();
 
@@ -22,9 +23,13 @@ public interface Controller {
 
     byte[] delete();
 
+    byte[] redirect();
+
     void sendRequestBody(String body);
 
     void sendMethodOptions(Set<String> methodOptions);
 
     void sendFile(File file);
+
+    void isAuthorized(Boolean isAuthorized);
 }

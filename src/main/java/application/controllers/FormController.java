@@ -71,6 +71,11 @@ public class FormController implements Controller {
     }
 
     @Override
+    public byte[] redirect() {
+        return Response.methodNotAllowed.getBytes();
+    }
+
+    @Override
     public void sendRequestBody(String body) {
         this.body = body;
     }
@@ -82,6 +87,11 @@ public class FormController implements Controller {
 
     @Override
     public void sendFile(File file) {
+
+    }
+
+    @Override
+    public void isAuthorized(Boolean isAuthorized) {
 
     }
 }

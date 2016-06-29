@@ -108,7 +108,7 @@ public class HTTPRequestsSteps {
     @Then("^the response body has file contents \"([^\"]*)\"$")
     public void theResponseBodyHasFileContents(String filePath) throws Throwable {
         client.connect();
-        byte[] fileContent = Files.readAllBytes(Paths.get(Config.rootDirectory + "/" + Config.publicDirectory + filePath));
+        byte[] fileContent = Files.readAllBytes(Paths.get(Config.publicDirectory.getPath() + filePath));
         byte[] responseContent = client.getResponseBytes();
         assertArrayEquals(fileContent, responseContent);
     }

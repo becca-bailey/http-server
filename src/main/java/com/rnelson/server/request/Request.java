@@ -1,6 +1,11 @@
 package com.rnelson.server.request;
 
+import application.Config;
+import com.rnelson.server.content.FileHandler;
 import com.rnelson.server.utilities.SharedUtilities;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Request {
     private String request;
@@ -29,12 +34,40 @@ public class Request {
         return SharedUtilities.findMatch("([\\r]*\\n[\\r]*\\n)(.*)", request, 2);
     }
 
-    public String getRequestLine() {
+    public Map<String, String> parseHeaders() {
+        Map<String,String> headerFields = new HashMap<String, String>();
+        String[] headerLines = splitHeader();
+        for (int i = 1; i < headerLines.length; i++) {
+            String[] fields = headerLines[i].split(":");
+            String parameter = fields[0];
+            String options = fields[1].trim();
+            headerFields.put(parameter, options);
+        }
+        return headerFields;
+    }
+
+    public Credentials getCredentials () {
+        Map<String, String> headerFields = parseHeaders();
+        String authorization;
+        if (headerFields.containsKey("Authorization")) {
+            authorization = headerFields.get("Authorization");
+        } else {
+            authorization = "";
+        }
+        return new Credentials(authorization);
+    }
+
+    private String getRequestLine() {
         return splitHeader()[0];
     }
 
-    public String[] splitHeader() {
+    private String[] splitHeader() {
         return header.split("\\n");
     }
 
+    public void logRequest() {
+        String requestLine = getRequestLine();
+        FileHandler logHandler = new FileHandler(Config.logfile);
+        logHandler.addFileContent(requestLine + "\n");
+    }
 }

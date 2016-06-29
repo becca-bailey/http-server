@@ -6,10 +6,10 @@ import com.rnelson.server.utilities.http.HttpMethods;
 import java.io.File;
 
 public class Directory {
-    private String directory;
+    private File directory;
 
-    public Directory(String directory) {
-        this.directory = directory + "/";
+    public Directory(File directory) {
+        this.directory = directory;
     }
 
     public void addFileRoutes() {
@@ -30,7 +30,7 @@ public class Directory {
         File[] directoryListing = getDirectoryListing();
 
         StringBuilder directoryContents = new StringBuilder();
-        directoryContents.append(generateParagraph(directory));
+        directoryContents.append(generateParagraph(directory.getName()));
         directoryContents.append("<ul>");
         for (File file : directoryListing) {
             FileHandler fileHandler = new FileHandler(file);
@@ -41,8 +41,6 @@ public class Directory {
     }
 
     public File[] getDirectoryListing() {
-        String publicDirectory = directory;
-        File directory = new File(publicDirectory);
         return directory.listFiles();
     }
 }

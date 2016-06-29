@@ -10,6 +10,7 @@ import java.util.Set;
 public class Route {
     String url;
     public String controllerPrefix;
+    public Boolean isProtected = false;
     private String rootName = "Root";
     private Set<String> methods = new HashSet<String>();
 
@@ -27,6 +28,10 @@ public class Route {
 
     public void addMethod(String method) {
         methods.add(method);
+    }
+
+    public void protect() {
+        this.isProtected = true;
     }
 
     public Boolean hasMethod(String method) {
