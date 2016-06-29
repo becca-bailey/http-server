@@ -19,6 +19,8 @@ public interface Controller {
 
     byte[] options();
 
+    byte[] delete();
+
     void sendRequestBody(String body);
 
     void sendMethodOptions(Set<String> methodOptions);

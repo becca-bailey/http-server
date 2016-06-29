@@ -79,6 +79,7 @@ public class Router {
         controllerMethods.put(HttpMethods.put, controller::put);
         controllerMethods.put(HttpMethods.options, controller::options);
         controllerMethods.put(HttpMethods.patch, controller::patch);
+        controllerMethods.put(HttpMethods.delete, controller::delete);
 
         return controllerMethods.get(method);
     }

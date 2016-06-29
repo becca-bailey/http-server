@@ -2,7 +2,7 @@ package application.controllers;
 
 import com.rnelson.server.Controller;
 import com.rnelson.server.Header;
-import com.rnelson.server.Response;
+import com.rnelson.server.utilities.Response;
 
 import java.util.Set;
 
@@ -40,6 +40,11 @@ public class MethodOptionsController implements Controller {
         Header header = new Header(200);
         header.includeOptions(methodOptions);
         return header.getResponseHeader();
+    }
+
+    @Override
+    public byte[] delete() {
+        return Response.methodNotAllowed.getBytes();
     }
 
     @Override

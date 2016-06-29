@@ -2,7 +2,7 @@ package application.controllers;
 
 import com.rnelson.server.Controller;
 import com.rnelson.server.Header;
-import com.rnelson.server.Response;
+import com.rnelson.server.utilities.Response;
 import com.rnelson.server.utilities.SharedUtilities;
 
 import java.util.Set;
@@ -39,6 +39,11 @@ public class CoffeeController implements Controller {
 
     @Override
     public byte[] options() {
+        return Response.methodNotAllowed.getBytes();
+    }
+
+    @Override
+    public byte[] delete() {
         return Response.methodNotAllowed.getBytes();
     }
 
