@@ -7,17 +7,21 @@ import java.util.List;
 import java.util.Set;
 
 public class Route {
-    public String url;
-    String rootName = "Root";
+    String url;
+    public String controllerPrefix;
+    private String rootName = "Root";
     Set<String> methods = new HashSet<String>();
 
     public Route(String url) {
         this.url = url;
     }
 
-    public Route(String url, String defaultRootName) {
+    public Route(String url, String controllerPrefix) {
         this.url = url;
-        this.rootName = defaultRootName;
+        this.controllerPrefix = controllerPrefix;
+        if (isRootPath(url)) {
+            this.rootName = controllerPrefix;
+        }
     }
 
     public void addMethod(String method) {
@@ -43,5 +47,9 @@ public class Route {
         } else {
             return rootName;
         }
+    }
+
+    private Boolean isRootPath(String url) {
+        return url.equals("/");
     }
 }

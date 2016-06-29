@@ -22,8 +22,15 @@ public class Config {
         router.addRoute(HttpMethods.post, "/form");
         router.addRoute(HttpMethods.get, "/echo");
         router.addRoute(HttpMethods.post, "/echo");
-        router.addRoute(HttpMethods.options, "/method_options");
-        router.addRoute(HttpMethods.options, "/method_options2");
+
+        router.addRoute(HttpMethods.get, "/method_options", "MethodOptions");
+        router.addRoute(HttpMethods.head, "/method_options", "MethodOptions");
+        router.addRoute(HttpMethods.post, "/method_options", "MethodOptions");
+        router.addRoute(HttpMethods.options, "/method_options", "MethodOptions");
+        router.addRoute(HttpMethods.put, "/method_options", "MethodOptions");
+
+        router.addRoute(HttpMethods.get, "/method_options2", "MethodOptions");
+        router.addRoute(HttpMethods.options, "/method_options2", "MethodOptions");
         router.addRoute(HttpMethods.get, "/logs");
     }
 }

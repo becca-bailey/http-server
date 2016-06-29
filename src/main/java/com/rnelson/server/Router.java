@@ -1,8 +1,6 @@
 package com.rnelson.server;
 
 import application.Config;
-import com.rnelson.server.Controller;
-import com.rnelson.server.Route;
 import com.rnelson.server.utilities.exceptions.RouterException;
 import com.rnelson.server.utilities.http.HttpMethods;
 import org.apache.commons.io.FilenameUtils;
@@ -26,12 +24,22 @@ public class Router {
         Route route = null;
         try {
             route = getExistingRoute(url);
-        } catch(RouterException notFound) {
+        } catch (RouterException notFound) {
             route = new Route(url);
-        } finally {
-            route.addMethod(method);
-            routes.add(route);
         }
+        route.addMethod(method);
+        routes.add(route);
+    }
+
+    public void addRoute(String method, String url, String controllerPrefix) {
+        Route route = null;
+        try {
+            route = getExistingRoute(url);
+        } catch (RouterException notFound) {
+            route = new Route(url, controllerPrefix);
+        }
+        route.addMethod(method);
+        routes.add(route);
     }
 
     public Route getExistingRoute(String url) throws RouterException {
@@ -40,7 +48,7 @@ public class Router {
                 return existingRoute;
             }
         }
-        throw new RouterException("Route not found. Server is looking for uri " + url +".");
+        throw new RouterException("Route not found. Server is looking for url " + url +".");
     }
 
     public int countRoutes() {
@@ -52,20 +60,15 @@ public class Router {
         return controllersDirectory.listFiles();
     }
 
-    public Controller getControllerForRoute(String url) throws RouterException {
-        try {
-            Route route = getExistingRoute(url);
-            String expectedClassName = expectedControllerClass(route.getClassName());
-            for (File file : listControllers()) {
-                String fileName = FilenameUtils.removeExtension(file.getName());
-                if (fileName.equals(expectedClassName)) {
-                    return controllerInstance(fileName);
-                }
+    public Controller getControllerForRoute(Route route) throws RouterException {
+        String expectedClassName = expectedControllerClass(route);
+        for (File file : listControllers()) {
+            String fileName = FilenameUtils.removeExtension(file.getName());
+            if (fileName.equals(expectedClassName)) {
+                return controllerInstance(fileName);
             }
-        } catch (RouterException e) {
-            System.out.println(e.getMessage());
         }
-        throw new RouterException("Controller not found. Server is looking for '/controllers/<This>Controller.java' in the root directory.");
+        throw new RouterException("Controller not found. Server is looking for '/controllers/" + route.getClassName() + "Controller.java' in the root directory.");
     }
 
     public Supplier<byte[]> getControllerAction(Controller controller, String method) {
@@ -84,8 +87,12 @@ public class Router {
         return Config.packageName + ".controllers." + FilenameUtils.removeExtension(fileName);
     }
 
-    private String expectedControllerClass(String className) {
-        return className + "Controller";
+    private String expectedControllerClass(Route route) {
+        if (route.controllerPrefix != null) {
+            return route.controllerPrefix + "Controller";
+        } else {
+            return route.getClassName() + "Controller";
+        }
     }
 
     private Controller controllerInstance(String fileName) {

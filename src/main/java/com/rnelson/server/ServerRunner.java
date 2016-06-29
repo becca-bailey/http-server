@@ -31,32 +31,33 @@ class ServerRunner implements Runnable {
     }
 
     private void respondToRequest (DataOutputStream out, BufferedReader in) throws IOException {
-        String requestData = getFullRequest(in);
         Config.initializeRoutes();
+        // does this go here?
+
         byte[] response;
-        Controller controller = null;
-        Request request = new Request(requestData);
-        String uri = request.uri();
+
+        Request request = new Request(getFullRequest(in));
+        String url = request.url();
         String method = request.method();
         String body = request.getRequestBody();
+
         try {
-            controller = Config.router.getControllerForRoute(uri);
+            Route route = Config.router.getExistingRoute(url);
+            Controller controller = Config.router.getControllerForRoute(route);
             controller.sendRequestBody(body);
+            controller.sendMethodOptions(route.methods);
             Supplier<byte[]> controllerAction = Config.router.getControllerAction(controller, method);
             response = getResponse(controllerAction);
         } catch (RouterException e) {
             System.out.println(e.getMessage());
             response = Response.notFound.getBytes();
-        } catch (NullPointerException e) {
-            System.out.println(method + " not found in Controller.");
-            response = Response.methodNotAllowed.getBytes();
         }
         out.write(response);
         out.close();
     }
 
     private byte[] getResponse(Supplier<byte[]> supplier) {
-        return (byte[]) supplier.get();
+        return supplier.get();
     }
 
     public void stop() {
