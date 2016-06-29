@@ -1,7 +1,7 @@
 package application.controllers;
 
 import com.rnelson.server.Controller;
-import com.rnelson.server.Directory;
+import com.rnelson.server.content.Directory;
 import com.rnelson.server.utilities.Response;
 import com.rnelson.server.utilities.SharedUtilities;
 

@@ -1,5 +1,6 @@
-package com.rnelson.server;
+package com.rnelson.server.content;
 
+import com.rnelson.server.header.ResponseHeaders;
 import com.rnelson.server.utilities.SharedUtilities;
 
 import java.io.*;

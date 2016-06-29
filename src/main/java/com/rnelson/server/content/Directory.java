@@ -1,9 +1,9 @@
-package com.rnelson.server;
+package com.rnelson.server.content;
 
 import com.rnelson.server.utilities.Response;
 import com.rnelson.server.utilities.RouterList;
 
-import java.io.*;
+import java.io.File;
 import java.util.Arrays;
 
 public class Directory {

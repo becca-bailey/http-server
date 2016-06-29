@@ -1,6 +1,7 @@
-package com.rnelson.server;
+package com.rnelson.server.routing;
 
 import application.Config;
+import com.rnelson.server.Controller;
 import com.rnelson.server.utilities.exceptions.RouterException;
 import com.rnelson.server.utilities.http.HttpMethods;
 import org.apache.commons.io.FilenameUtils;

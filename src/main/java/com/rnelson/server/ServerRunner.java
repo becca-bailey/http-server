@@ -1,6 +1,9 @@
 package com.rnelson.server;
 
 import application.Config;
+import com.rnelson.server.request.Request;
+import com.rnelson.server.routing.Route;
+import com.rnelson.server.routing.Router;
 import com.rnelson.server.utilities.Response;
 import com.rnelson.server.utilities.exceptions.RouterException;
 
