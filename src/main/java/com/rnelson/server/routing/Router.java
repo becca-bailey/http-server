@@ -2,6 +2,7 @@ package com.rnelson.server.routing;
 
 import application.Config;
 import com.rnelson.server.Controller;
+import com.rnelson.server.request.Credentials;
 import com.rnelson.server.utilities.exceptions.RouterException;
 import com.rnelson.server.utilities.http.HttpMethods;
 import org.apache.commons.io.FilenameUtils;
@@ -22,25 +23,42 @@ public class Router {
     }
 
     public void addRoute(String method, String url) {
+        Route route = addOrUpdateRoute(url);
+        route.addMethod(method);
+        routes.add(route);
+    }
+
+    public void addRoute(String method, String url, String controllerPrefix) {
+        Route route = addOrUpdateRoute(url, controllerPrefix);
+        route.addMethod(method);
+        routes.add(route);
+    }
+
+    public void addProtectedRoute(String method, String url) {
+        Route route = addOrUpdateRoute(url);
+        route.addMethod(method);
+        route.protect();
+        routes.add(route);
+    }
+
+    private Route addOrUpdateRoute(String url) {
         Route route = null;
         try {
             route = getExistingRoute(url);
         } catch (RouterException notFound) {
             route = new Route(url);
         }
-        route.addMethod(method);
-        routes.add(route);
+        return route;
     }
 
-    public void addRoute(String method, String url, String controllerPrefix) {
+    private Route addOrUpdateRoute(String url, String controllerPrefix) {
         Route route = null;
         try {
             route = getExistingRoute(url);
         } catch (RouterException notFound) {
             route = new Route(url, controllerPrefix);
         }
-        route.addMethod(method);
-        routes.add(route);
+        return route;
     }
 
     public Route getExistingRoute(String url) throws RouterException {
@@ -72,7 +90,18 @@ public class Router {
         throw new RouterException("Controller not found. Server is looking for '/controllers/" + route.getClassName() + "Controller.java' in the root directory.");
     }
 
-    public Supplier<byte[]> getControllerAction(Controller controller, String method) {
+    public Boolean userIsAuthorized(Route route, Credentials credentials) {
+        if (route.isProtected) {
+            return checkCredentials(credentials);
+        }
+        return true;
+    }
+
+    private Boolean checkCredentials(Credentials credentials) {
+        return credentials.isUsername(Config.username) && credentials.isPassword(Config.password);
+    }
+
+    public Supplier<byte[]> getControllerAction(Controller controller, String method, Boolean redirect) {
         Map<String, Supplier<byte[]>> controllerMethods = new HashMap<>();
         controllerMethods.put(HttpMethods.get, controller::get);
         controllerMethods.put(HttpMethods.head, controller::head);
@@ -82,7 +111,11 @@ public class Router {
         controllerMethods.put(HttpMethods.patch, controller::patch);
         controllerMethods.put(HttpMethods.delete, controller::delete);
 
-        return controllerMethods.get(method);
+        if (redirect) {
+            return controller::redirect;
+        } else {
+            return controllerMethods.get(method);
+        }
     }
 
     private String getPackageNameFromFileName(String fileName) {

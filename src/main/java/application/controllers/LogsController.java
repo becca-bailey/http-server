@@ -1,58 +1,67 @@
 package application.controllers;
 
+import application.Config;
 import com.rnelson.server.Controller;
 import com.rnelson.server.content.FileHandler;
 import com.rnelson.server.header.Header;
-import com.rnelson.server.utilities.Response;
 import com.rnelson.server.utilities.SharedUtilities;
 
 import java.io.File;
 import java.util.Set;
 
-public class FileController implements Controller {
-    private File file;
+public class LogsController implements Controller {
+    Boolean isAuthorized;
 
     @Override
     public byte[] get() {
-        FileHandler handler = new FileHandler(file);
-        Header header = new Header(200);
-        header.includeContentType(handler.fileExtension());
-        return SharedUtilities.addByteArrays(header.getResponseHeader(), handler.getFileContents());
+        Header header;
+        if (isAuthorized) {
+            header = new Header(200);
+            byte[] responseHeader = header.getResponseHeader();
+            File logs = new File(Config.rootDirectory + "/views/logs");
+            FileHandler handler = new FileHandler(logs);
+            byte[] content = handler.getFileContents();
+            return SharedUtilities.addByteArrays(responseHeader, content);
+        } else {
+            header = new Header(401);
+            header.includeBasicAuthorization();
+            return header.getResponseHeader();
+        }
     }
 
     @Override
     public byte[] head() {
-        return Response.methodNotAllowed.getBytes();
+        return new byte[0];
     }
 
     @Override
     public byte[] post() {
-        return Response.methodNotAllowed.getBytes();
+        return new byte[0];
     }
 
     @Override
     public byte[] put() {
-        return Response.methodNotAllowed.getBytes();
+        return new byte[0];
     }
 
     @Override
     public byte[] patch() {
-        return Response.methodNotAllowed.getBytes();
+        return new byte[0];
     }
 
     @Override
     public byte[] options() {
-        return Response.methodNotAllowed.getBytes();
+        return new byte[0];
     }
 
     @Override
     public byte[] delete() {
-        return Response.methodNotAllowed.getBytes();
+        return new byte[0];
     }
 
     @Override
     public byte[] redirect() {
-        return Response.methodNotAllowed.getBytes();
+        return new byte[0];
     }
 
     @Override
@@ -67,11 +76,11 @@ public class FileController implements Controller {
 
     @Override
     public void sendFile(File file) {
-        this.file = file;
+
     }
 
     @Override
     public void isAuthorized(Boolean isAuthorized) {
-
+        this.isAuthorized = isAuthorized;
     }
 }

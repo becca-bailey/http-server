@@ -1,56 +1,54 @@
 package application.controllers;
 
+import application.Config;
 import com.rnelson.server.Controller;
 import com.rnelson.server.header.Header;
-import com.rnelson.server.utilities.Response;
-import com.rnelson.server.utilities.SharedUtilities;
 
 import java.io.File;
 import java.util.Set;
 
-public class CoffeeController implements Controller {
-
+public class RedirectController implements Controller {
     @Override
     public byte[] get() {
-        byte[] body = ("I'm a teapot").getBytes();
-        Header header = new Header(418);
-        byte[] responseHeader = header.getResponseHeader();
-        return SharedUtilities.addByteArrays(responseHeader, body);
+        Config.redirect = true;
+        Header header = new Header(302);
+        header.includeLocation("http://localhost:5000");
+        return header.getResponseHeader();
     }
 
     @Override
     public byte[] head() {
-        return Response.methodNotAllowed.getBytes();
+        return new byte[0];
     }
 
     @Override
     public byte[] post() {
-        return Response.methodNotAllowed.getBytes();
+        return new byte[0];
     }
 
     @Override
     public byte[] put() {
-        return Response.methodNotAllowed.getBytes();
+        return new byte[0];
     }
 
     @Override
     public byte[] patch() {
-        return Response.methodNotAllowed.getBytes();
+        return new byte[0];
     }
 
     @Override
     public byte[] options() {
-        return Response.methodNotAllowed.getBytes();
+        return new byte[0];
     }
 
     @Override
     public byte[] delete() {
-        return Response.methodNotAllowed.getBytes();
+        return new byte[0];
     }
 
     @Override
     public byte[] redirect() {
-        return Response.methodNotAllowed.getBytes();
+        return new byte[0];
     }
 
     @Override
@@ -73,4 +71,3 @@ public class CoffeeController implements Controller {
 
     }
 }
-

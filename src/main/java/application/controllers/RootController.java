@@ -1,7 +1,9 @@
 package application.controllers;
 
+import application.Config;
 import com.rnelson.server.Controller;
 import com.rnelson.server.content.Directory;
+import com.rnelson.server.header.Header;
 import com.rnelson.server.utilities.Response;
 import com.rnelson.server.utilities.SharedUtilities;
 
@@ -12,7 +14,7 @@ public class RootController implements Controller {
 
     @Override
     public byte[] get() {
-        Directory directory = new Directory("public/");
+        Directory directory = new Directory(Config.publicDirectory);
         byte[] body =  directory.getDirectoryLinks().getBytes();
         return SharedUtilities.addByteArrays(Response.twoHundred.getBytes(), body);
     }
@@ -48,6 +50,13 @@ public class RootController implements Controller {
     }
 
     @Override
+    public byte[] redirect() {
+        Header header = new Header(302);
+        header.includeLocation("http://localhost:5000");
+        return header.getResponseHeader();
+    }
+
+    @Override
     public void sendRequestBody(String body) {
 
     }
@@ -59,6 +68,11 @@ public class RootController implements Controller {
 
     @Override
     public void sendFile(File file) {
+
+    }
+
+    @Override
+    public void isAuthorized(Boolean isAuthorized) {
 
     }
 }

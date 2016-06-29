@@ -25,6 +25,15 @@ public class Header {
         this.rows.add(contentTypeHeader);
     }
 
+    public void includeLocation(String location) {
+        String locationHeader = "Location: " + location;
+        this.rows.add(locationHeader);
+    }
+
+    public void includeBasicAuthorization() {
+        this.rows.add("WWW-Authenticate: Basic");
+    }
+
     private String getResponseAsString() {
         StringBuilder response = new StringBuilder();
         response.append(status);
