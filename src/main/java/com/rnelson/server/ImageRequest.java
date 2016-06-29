@@ -1,7 +1,5 @@
-package com.rnelson.server.imageRequest;
+package com.rnelson.server;
 
-import com.rnelson.server.fileHandler.FileHandler;
-import com.rnelson.server.request.RequestHandler;
 import com.rnelson.server.utilities.SharedUtilities;
 
 import java.io.File;

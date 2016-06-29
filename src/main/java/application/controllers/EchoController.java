@@ -1,27 +1,27 @@
 package application.controllers;
 
 import com.rnelson.server.Controller;
-import com.rnelson.server.Header;
-import com.rnelson.server.utilities.SharedUtilities;
+import com.rnelson.server.Response;
 
-public class CoffeeController implements Controller {
+/**
+ * Created by Becca on 6/28/16.
+ */
+public class EchoController implements Controller {
+    String requestBody;
 
     @Override
     public byte[] get() {
-        byte[] body = ("I'm a teapot").getBytes();
-        Header header = new Header(418);
-        byte[] responseHeader = header.getResponseHeader();
-        return SharedUtilities.addByteArrays(responseHeader, body);
+        return Response.twoHundred.getBytes();
     }
 
     @Override
     public byte[] head() {
-        return new byte[0];
+        return Response.methodNotAllowed.getBytes();
     }
 
     @Override
     public byte[] post() {
-        return new byte[0];
+        return (Response.twoHundred + requestBody).getBytes();
     }
 
     @Override
@@ -41,7 +41,6 @@ public class CoffeeController implements Controller {
 
     @Override
     public void sendRequestBody(String body) {
-
+        this.requestBody = body;
     }
 }
-

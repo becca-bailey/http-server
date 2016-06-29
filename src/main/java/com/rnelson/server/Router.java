@@ -1,14 +1,18 @@
-package com.rnelson.server.router;
+package com.rnelson.server;
 
 import application.Config;
-import com.rnelson.server.route.Route;
-import com.rnelson.server.controller.Controller;
+import com.rnelson.server.Controller;
+import com.rnelson.server.Route;
 import com.rnelson.server.utilities.exceptions.RouterException;
+import com.rnelson.server.utilities.http.HttpMethods;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 public class Router {
     Set<Route> routes = new HashSet<Route>();
@@ -36,7 +40,7 @@ public class Router {
                 return existingRoute;
             }
         }
-        throw new RouterException("Route not found. Server is looking for route " + url +".");
+        throw new RouterException("Route not found. Server is looking for uri " + url +".");
     }
 
     public int countRoutes() {
@@ -62,6 +66,18 @@ public class Router {
             System.out.println(e.getMessage());
         }
         throw new RouterException("Controller not found. Server is looking for '/controllers/<This>Controller.java' in the root directory.");
+    }
+
+    public Supplier<byte[]> getControllerAction(Controller controller, String method) {
+        Map<String, Supplier<byte[]>> controllerMethods = new HashMap<>();
+        controllerMethods.put(HttpMethods.get, controller::get);
+        controllerMethods.put(HttpMethods.head, controller::head);
+        controllerMethods.put(HttpMethods.post, controller::post);
+        controllerMethods.put(HttpMethods.put, controller::put);
+        controllerMethods.put(HttpMethods.options, controller::options);
+        controllerMethods.put(HttpMethods.patch, controller::patch);
+
+        return controllerMethods.get(method);
     }
 
     private String getPackageNameFromFileName(String fileName) {

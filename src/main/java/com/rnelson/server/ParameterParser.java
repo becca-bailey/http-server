@@ -1,4 +1,4 @@
-package com.rnelson.server.parameterParser;
+package com.rnelson.server;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;

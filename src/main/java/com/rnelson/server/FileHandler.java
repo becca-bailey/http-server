@@ -1,7 +1,5 @@
-package com.rnelson.server.fileHandler;
+package com.rnelson.server;
 
-import com.rnelson.server.response.BodyContent;
-import com.rnelson.server.response.ResponseHeaders;
 import com.rnelson.server.utilities.SharedUtilities;
 
 import java.io.*;

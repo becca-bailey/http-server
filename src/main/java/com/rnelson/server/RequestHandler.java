@@ -1,10 +1,5 @@
-package com.rnelson.server.request;
+package com.rnelson.server;
 
-import com.rnelson.server.directory.Directory;
-import com.rnelson.server.fileHandler.FileHandler;
-import com.rnelson.server.parameterParser.ParameterParser;
-import com.rnelson.server.response.BodyContent;
-import com.rnelson.server.response.ResponseHeaders;
 import com.rnelson.server.utilities.RouterList;
 import com.rnelson.server.utilities.SharedUtilities;
 

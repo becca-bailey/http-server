@@ -1,7 +1,5 @@
-package com.rnelson.server.directory;
+package com.rnelson.server;
 
-import com.rnelson.server.fileHandler.FileHandler;
-import com.rnelson.server.response.Response;
 import com.rnelson.server.utilities.RouterList;
 
 import java.io.*;

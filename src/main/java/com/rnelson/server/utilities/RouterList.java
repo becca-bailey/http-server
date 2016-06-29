@@ -1,6 +1,6 @@
 package com.rnelson.server.utilities;
 
-import com.rnelson.server.response.Response;
+import com.rnelson.server.Response;
 
 import java.util.*;
 
