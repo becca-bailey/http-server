@@ -1,5 +1,6 @@
 package com.rnelson.server;
 
+import application.Config;
 import com.rnelson.server.content.BodyContent;
 import com.rnelson.server.content.FileHandler;
 import com.rnelson.server.httpClient.HTTPClient;
@@ -17,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import static com.rnelson.server.GlobalHooks.serverRunner;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -106,9 +108,9 @@ public class HTTPRequestsSteps {
     @Then("^the response body has file contents \"([^\"]*)\"$")
     public void theResponseBodyHasFileContents(String filePath) throws Throwable {
         client.connect();
-        String fileContent = new String(Files.readAllBytes(Paths.get("public" + filePath)));
-        String responseContent = new String(client.getResponseBytes());
-        assertEquals(fileContent, responseContent);
+        byte[] fileContent = Files.readAllBytes(Paths.get(Config.rootDirectory + "/" + Config.publicDirectory + filePath));
+        byte[] responseContent = client.getResponseBytes();
+        assertArrayEquals(fileContent, responseContent);
     }
 
     @Then("^the response body should include \"([^\"]*)\"$")

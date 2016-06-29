@@ -1,5 +1,6 @@
 package com.rnelson.server;
 
+import java.io.File;
 import java.util.Set;
 
 public interface Controller {
@@ -24,4 +25,6 @@ public interface Controller {
     void sendRequestBody(String body);
 
     void sendMethodOptions(Set<String> methodOptions);
+
+    void sendFile(File file);
 }

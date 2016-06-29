@@ -3,4 +3,4 @@ http-server.iml
 .idea/
 classes/
 test/
-public/logs
+src/main/java/application/public/logs
