@@ -13,7 +13,7 @@ public class Request {
         body = getRequestBody();
     }
 
-    public String uri() {
+    public String url() {
         return getRequestLine().split(" ")[1];
     }
 

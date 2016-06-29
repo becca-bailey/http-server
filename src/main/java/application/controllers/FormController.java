@@ -3,6 +3,8 @@ package application.controllers;
 import com.rnelson.server.Controller;
 import com.rnelson.server.Response;
 
+import java.util.Set;
+
 public class FormController implements Controller {
 
     @Override
@@ -38,6 +40,11 @@ public class FormController implements Controller {
 
     @Override
     public void sendRequestBody(String body) {
+
+    }
+
+    @Override
+    public void sendMethodOptions(Set<String> methodOptions) {
 
     }
 }

@@ -1,6 +1,11 @@
 package com.rnelson.server;
 
+import java.util.Set;
+
 public interface Controller {
+
+    String body = null;
+    Set<String> methodOptions = null;
 
     byte[] get();
 
@@ -15,4 +20,6 @@ public interface Controller {
     byte[] options();
 
     void sendRequestBody(String body);
+
+    void sendMethodOptions(Set<String> methodOptions);
 }

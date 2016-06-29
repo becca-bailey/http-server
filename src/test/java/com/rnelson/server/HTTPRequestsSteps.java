@@ -120,7 +120,7 @@ public class HTTPRequestsSteps {
 
     @And("^the response header should include \"([^\"]*)\" \"([^\"]*)\"$")
     public void theResponseHeaderShouldInclude(String fieldName, String property) throws Throwable {
-        assertEquals(property, client.getHeaderField(fieldName));
+        assertTrue(client.getHeaderField(fieldName).contains(property));
     }
 
     @And("^the response body should be \"([^\"]*)\"$")

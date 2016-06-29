@@ -5,6 +5,8 @@ import com.rnelson.server.Directory;
 import com.rnelson.server.Response;
 import com.rnelson.server.utilities.SharedUtilities;
 
+import java.util.Set;
+
 public class RootController implements Controller {
 
     @Override
@@ -41,6 +43,11 @@ public class RootController implements Controller {
 
     @Override
     public void sendRequestBody(String body) {
+
+    }
+
+    @Override
+    public void sendMethodOptions(Set<String> methodOptions) {
 
     }
 }

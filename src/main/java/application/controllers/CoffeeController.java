@@ -2,7 +2,10 @@ package application.controllers;
 
 import com.rnelson.server.Controller;
 import com.rnelson.server.Header;
+import com.rnelson.server.Response;
 import com.rnelson.server.utilities.SharedUtilities;
+
+import java.util.Set;
 
 public class CoffeeController implements Controller {
 
@@ -16,31 +19,36 @@ public class CoffeeController implements Controller {
 
     @Override
     public byte[] head() {
-        return new byte[0];
+        return Response.methodNotAllowed.getBytes();
     }
 
     @Override
     public byte[] post() {
-        return new byte[0];
+        return Response.methodNotAllowed.getBytes();
     }
 
     @Override
     public byte[] put() {
-        return new byte[0];
+        return Response.methodNotAllowed.getBytes();
     }
 
     @Override
     public byte[] patch() {
-        return new byte[0];
+        return Response.methodNotAllowed.getBytes();
     }
 
     @Override
     public byte[] options() {
-        return new byte[0];
+        return Response.methodNotAllowed.getBytes();
     }
 
     @Override
     public void sendRequestBody(String body) {
+
+    }
+
+    @Override
+    public void sendMethodOptions(Set<String> methodOptions) {
 
     }
 }

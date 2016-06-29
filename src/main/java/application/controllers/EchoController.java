@@ -3,9 +3,8 @@ package application.controllers;
 import com.rnelson.server.Controller;
 import com.rnelson.server.Response;
 
-/**
- * Created by Becca on 6/28/16.
- */
+import java.util.Set;
+
 public class EchoController implements Controller {
     String requestBody;
 
@@ -26,21 +25,26 @@ public class EchoController implements Controller {
 
     @Override
     public byte[] put() {
-        return new byte[0];
+        return Response.methodNotAllowed.getBytes();
     }
 
     @Override
     public byte[] patch() {
-        return new byte[0];
+        return Response.methodNotAllowed.getBytes();
     }
 
     @Override
     public byte[] options() {
-        return new byte[0];
+        return Response.methodNotAllowed.getBytes();
     }
 
     @Override
     public void sendRequestBody(String body) {
         this.requestBody = body;
+    }
+
+    @Override
+    public void sendMethodOptions(Set<String> methodOptions) {
+
     }
 }
