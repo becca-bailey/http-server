@@ -5,6 +5,7 @@ import com.rnelson.server.content.Directory;
 import com.rnelson.server.utilities.Response;
 import com.rnelson.server.utilities.SharedUtilities;
 
+import java.io.File;
 import java.util.Set;
 
 public class RootController implements Controller {
@@ -53,6 +54,11 @@ public class RootController implements Controller {
 
     @Override
     public void sendMethodOptions(Set<String> methodOptions) {
+
+    }
+
+    @Override
+    public void sendFile(File file) {
 
     }
 }

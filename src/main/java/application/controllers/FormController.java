@@ -79,4 +79,9 @@ public class FormController implements Controller {
     public void sendMethodOptions(Set<String> methodOptions) {
 
     }
+
+    @Override
+    public void sendFile(File file) {
+
+    }
 }

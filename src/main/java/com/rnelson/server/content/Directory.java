@@ -1,25 +1,20 @@
 package com.rnelson.server.content;
 
-import com.rnelson.server.utilities.Response;
-import com.rnelson.server.utilities.RouterList;
+import application.Config;
+import com.rnelson.server.utilities.http.HttpMethods;
 
 import java.io.File;
-import java.util.Arrays;
 
 public class Directory {
-    private String directory = "public";
+    private String directory;
 
     public Directory(String directory) {
         this.directory = directory + "/";
     }
 
-    public void handleAllFiles() {
+    public void addFileRoutes() {
         for (File file : getDirectoryListing()) {
-            RouterList.statusCodesForRequests.put("GET /" + file.getName(), Response.status(200));
-            RouterList.routeOptions.put("/" + file.getName(), Arrays.asList("GET", "PATCH"));
-            FileHandler handler = new FileHandler(file);
-            handler.addFileContentToPageContent();
-            handler.addRequiredHeaderRowsForFile();
+            Config.router.addRoute(HttpMethods.get, "/" + file.getName(), "File");
         }
     }
 
@@ -45,8 +40,9 @@ public class Directory {
         return directoryContents.toString();
     }
 
-    private File[] getDirectoryListing() {
-        File directory = new File("public/");
+    public File[] getDirectoryListing() {
+        String publicDirectory = directory;
+        File directory = new File(publicDirectory);
         return directory.listFiles();
     }
 }

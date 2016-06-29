@@ -2,6 +2,7 @@ package com.rnelson.server.routing;
 
 import com.rnelson.server.utilities.SharedUtilities;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -55,5 +56,9 @@ public class Route {
 
     private Boolean isRootPath(String url) {
         return url.equals("/");
+    }
+
+    public File getFile(String directoryName) {
+        return new File(directoryName + url);
     }
 }

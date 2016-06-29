@@ -1,7 +1,6 @@
 package com.rnelson.server.request;
 
 import com.rnelson.server.content.BodyContent;
-import com.rnelson.server.content.Directory;
 import com.rnelson.server.content.FileHandler;
 import com.rnelson.server.header.ResponseHeaders;
 import com.rnelson.server.utilities.RouterList;
@@ -41,7 +40,7 @@ public class RequestHandler {
         List<String> arguments = getResponseBodyArguments();
         Map<String, String> headerFields = parseHeaders();
         String parameters = parseParameters();
-        preparePageContent();
+//        preparePageContent();
 
         BodyContent bodyContent = new BodyContent(method, route);
         bodyContent.sendRequestBody(body);
@@ -195,12 +194,12 @@ public class RequestHandler {
         return parameterString;
     }
 
-    public void preparePageContent() {
-        BodyContent.pageContent.put("/coffee", ("I'm a teapot").getBytes());
-        String publicDirectory = "public";
-        Directory directory = new Directory(publicDirectory);
-        BodyContent.pageContent.put("/", (directory.getDirectoryLinks()).getBytes());
-        directory.handleAllFiles();
-    }
+//    public void preparePageContent() {
+//        BodyContent.pageContent.put("/coffee", ("I'm a teapot").getBytes());
+//        String publicDirectory = "public";
+//        Directory directory = new Directory(publicDirectory);
+//        BodyContent.pageContent.put("/", (directory.getDirectoryLinks()).getBytes());
+//        directory.handleAllFiles();
+//    }
 
 }

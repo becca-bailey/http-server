@@ -1,17 +1,23 @@
 package application.controllers;
 
 import com.rnelson.server.Controller;
+import com.rnelson.server.content.FileHandler;
+import com.rnelson.server.header.Header;
 import com.rnelson.server.utilities.Response;
+import com.rnelson.server.utilities.SharedUtilities;
 
 import java.io.File;
 import java.util.Set;
 
-public class EchoController implements Controller {
-    String requestBody;
+public class FileController implements Controller {
+    private File file;
 
     @Override
     public byte[] get() {
-        return Response.twoHundred.getBytes();
+        FileHandler handler = new FileHandler(file);
+        Header header = new Header(200);
+        header.includeContentType(handler.fileExtension());
+        return SharedUtilities.addByteArrays(header.getResponseHeader(), handler.getFileContents());
     }
 
     @Override
@@ -21,7 +27,7 @@ public class EchoController implements Controller {
 
     @Override
     public byte[] post() {
-        return (Response.twoHundred + requestBody).getBytes();
+        return Response.methodNotAllowed.getBytes();
     }
 
     @Override
@@ -46,7 +52,7 @@ public class EchoController implements Controller {
 
     @Override
     public void sendRequestBody(String body) {
-        this.requestBody = body;
+
     }
 
     @Override
@@ -56,6 +62,6 @@ public class EchoController implements Controller {
 
     @Override
     public void sendFile(File file) {
-
+        this.file = file;
     }
 }

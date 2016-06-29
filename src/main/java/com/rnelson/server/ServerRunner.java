@@ -50,6 +50,7 @@ class ServerRunner implements Runnable {
             Controller controller = Config.router.getControllerForRoute(route);
             controller.sendRequestBody(body);
             controller.sendMethodOptions(route.getMethods());
+            controller.sendFile(route.getFile(Config.rootDirectory + Config.publicDirectory));
             Supplier<byte[]> controllerAction = Config.router.getControllerAction(controller, method);
             response = getResponse(controllerAction);
         } catch (RouterException e) {

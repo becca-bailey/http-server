@@ -4,6 +4,7 @@ import com.rnelson.server.Controller;
 import com.rnelson.server.header.Header;
 import com.rnelson.server.utilities.Response;
 
+import java.io.File;
 import java.util.Set;
 
 public class TeaController implements Controller {
@@ -51,6 +52,11 @@ public class TeaController implements Controller {
 
     @Override
     public void sendMethodOptions(Set<String> methodOptions) {
+
+    }
+
+    @Override
+    public void sendFile(File file) {
 
     }
 }
