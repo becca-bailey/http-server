@@ -4,6 +4,7 @@ import com.rnelson.server.Controller;
 import com.rnelson.server.utilities.Response;
 
 import java.io.File;
+import java.util.Map;
 import java.util.Set;
 
 public class EchoController implements Controller {
@@ -50,8 +51,9 @@ public class EchoController implements Controller {
     }
 
     @Override
-    public void sendRequestBody(String body) {
-        this.requestBody = body;
+    public void sendRequestData(Map<String, String> data) {
+        this.requestBody = data.get("body");
+
     }
 
     @Override

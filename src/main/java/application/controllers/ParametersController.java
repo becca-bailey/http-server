@@ -1,20 +1,24 @@
 package application.controllers;
 
-import application.Config;
 import com.rnelson.server.Controller;
-import com.rnelson.server.header.Header;
 
 import java.io.File;
 import java.util.Map;
 import java.util.Set;
 
-public class RedirectController implements Controller {
+public class ParametersController implements Controller {
+    private Map<String,String> parameters;
+
     @Override
     public byte[] get() {
-        Config.redirect = true;
-        Header header = new Header(302);
-        header.includeLocation("http://localhost:5000");
-        return header.getResponseHeader();
+        StringBuilder text = new StringBuilder();
+        for (Map.Entry<String, String> entry : parameters.entrySet()) {
+            text.append(entry.getKey());
+            text.append(" = ");
+            text.append(entry.getValue());
+            text.append("\n");
+        }
+        return text.toString().getBytes();
     }
 
     @Override
@@ -54,7 +58,7 @@ public class RedirectController implements Controller {
 
     @Override
     public void sendRequestData(Map<String, String> data) {
-
+        this.parameters = data;
     }
 
     @Override

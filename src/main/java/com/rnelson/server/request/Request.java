@@ -34,6 +34,31 @@ public class Request {
         return SharedUtilities.findMatch("([\\r]*\\n[\\r]*\\n)(.*)", request, 2);
     }
 
+    public Map<String, String> getRequestData() {
+        RequestData data = new RequestData();
+        if (hasParameters()) {
+            Parameters parameters = new Parameters(getParameters());
+            data.addData(parameters.getDecodedParameters());
+        }
+        if (hasBody()) {
+            data.setBody(getRequestBody());
+        }
+        return data.returnAllData();
+    }
+
+    public String getParameters() {
+        return url().split("\\?")[1];
+    }
+
+    public Boolean hasParameters() {
+        return request.contains("?");
+    }
+
+    public Boolean hasBody() {
+        return getRequestBody().length() > 0;
+    }
+
+
     public Map<String, String> parseHeaders() {
         Map<String,String> headerFields = new HashMap<String, String>();
         String[] headerLines = splitHeader();

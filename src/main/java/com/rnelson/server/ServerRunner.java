@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Map;
 import java.util.function.Supplier;
 
 class ServerRunner implements Runnable {
@@ -43,16 +44,17 @@ class ServerRunner implements Runnable {
 
         Request request = new Request(getFullRequest(in));
         request.logRequest();
+
         String url = request.url();
         String method = request.method();
-        String body = request.getRequestBody();
+        Map<String, String> data = request.getRequestData();
         Credentials credentials = request.getCredentials();
 
         try {
             Route route = Config.router.getExistingRoute(url);
             Boolean isAuthorized = Config.router.userIsAuthorized(route, credentials);
             Controller controller = Config.router.getControllerForRoute(route);
-            controller.sendRequestBody(body);
+            controller.sendRequestData(data);
             controller.sendMethodOptions(route.getMethods());
             controller.sendFile(route.getFile(Config.publicDirectory.getPath()));
             controller.isAuthorized(isAuthorized);

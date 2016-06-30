@@ -5,6 +5,7 @@ import com.rnelson.server.header.Header;
 import com.rnelson.server.utilities.Response;
 
 import java.io.File;
+import java.util.Map;
 import java.util.Set;
 
 public class MethodOptionsController implements Controller {
@@ -54,9 +55,8 @@ public class MethodOptionsController implements Controller {
     }
 
     @Override
-    public void sendRequestBody(String body) {
-        this.body = body;
-
+    public void sendRequestData(Map<String, String> data) {
+        this.body = data.get("body");
     }
 
     @Override

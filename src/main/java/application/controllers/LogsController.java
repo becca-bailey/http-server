@@ -7,6 +7,7 @@ import com.rnelson.server.header.Header;
 import com.rnelson.server.utilities.SharedUtilities;
 
 import java.io.File;
+import java.util.Map;
 import java.util.Set;
 
 public class LogsController implements Controller {
@@ -65,7 +66,7 @@ public class LogsController implements Controller {
     }
 
     @Override
-    public void sendRequestBody(String body) {
+    public void sendRequestData(Map<String, String> data) {
 
     }
 

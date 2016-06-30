@@ -27,7 +27,7 @@ public class Config {
         router.addRoute(HttpMethods.get, "/echo");
         router.addRoute(HttpMethods.post, "/echo");
         router.addRoute(HttpMethods.get, "/redirect");
-
+        router.addRoute(HttpMethods.get, "/parameters");
 
         router.addRoute(HttpMethods.get, "/method_options", "MethodOptions");
         router.addRoute(HttpMethods.head, "/method_options", "MethodOptions");
