@@ -12,6 +12,7 @@ import java.util.Set;
 
 public class FileController implements Controller {
     private File file;
+    private Map<String,String> data;
 
     @Override
     public byte[] get() {
@@ -38,7 +39,11 @@ public class FileController implements Controller {
 
     @Override
     public byte[] patch() {
-        return Response.methodNotAllowed.getBytes();
+        String patchedContent = data.get("body");
+        FileHandler handler = new FileHandler(file);
+        handler.updateFileContent(patchedContent);
+        Header header = new Header(204);
+        return header.getResponseHeader();
     }
 
     @Override
@@ -58,7 +63,7 @@ public class FileController implements Controller {
 
     @Override
     public void sendRequestData(Map<String, String> data) {
-
+        this.data = data;
     }
 
     @Override

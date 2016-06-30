@@ -4,6 +4,7 @@ import application.Config;
 import com.rnelson.server.utilities.http.HttpMethods;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 public class Directory {
     private File directory;
@@ -42,5 +43,15 @@ public class Directory {
 
     public File[] getDirectoryListing() {
         return directory.listFiles();
+    }
+
+    public File getFileByFilename(String fileName) throws FileNotFoundException {
+        File[] directoryListing = getDirectoryListing();
+        for (File file : directoryListing) {
+            if (file.getName().equals(fileName)) {
+                return file;
+            }
+        }
+        throw new FileNotFoundException("File not found in directory");
     }
 }

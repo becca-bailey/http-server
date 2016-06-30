@@ -2,6 +2,7 @@ package com.rnelson.server;
 
 import application.Config;
 import com.rnelson.server.content.BodyContent;
+import com.rnelson.server.content.Directory;
 import com.rnelson.server.content.FileHandler;
 import com.rnelson.server.httpClient.HTTPClient;
 import cucumber.api.java.After;
@@ -18,9 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import static com.rnelson.server.GlobalHooks.serverRunner;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class HTTPRequestsSteps {
     private Integer port = 5000;
@@ -52,8 +51,9 @@ public class HTTPRequestsSteps {
 
     @And("^\"([^\"]*)\" has original contents \"([^\"]*)\"$")
     public void hasOriginalContents(String fileName, String contents) throws Throwable {
-        File file = new File("public" + fileName);
-        FileHandler handler = new FileHandler(file);
+        Directory publicDirectory = new Directory(Config.publicDirectory);
+        File originalFile = publicDirectory.getFileByFilename(fileName);
+        FileHandler handler = new FileHandler(originalFile);
         handler.updateFileContent(contents);
     }
 
@@ -177,7 +177,8 @@ public class HTTPRequestsSteps {
 
     @And("^the file content is set back to \"([^\"]*)\"$")
     public void theFileContentIsSetBackTo(String defaultContent) throws Throwable {
-        File patchFile = new File("public/patch-content.txt");
+        Directory publicDirectory = new Directory(Config.publicDirectory);
+        File patchFile = publicDirectory.getFileByFilename("patch-content.txt");
         FileHandler patchHandler = new FileHandler(patchFile);
         assertEquals(defaultContent, new String(patchHandler.getFileContents()));
     }
