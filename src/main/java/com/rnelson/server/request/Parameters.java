@@ -4,11 +4,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.*;
 
-public class ParameterParser {
+public class Parameters {
     private String originalParameters;
     private String[] splitParameters;
 
-    public ParameterParser(String parameters) {
+    public Parameters(String parameters) {
         this.originalParameters = parameters;
         this.splitParameters = splitParameters();
     }
@@ -49,7 +49,7 @@ public class ParameterParser {
 
     public Map getDecodedParameters() {
         Map<String, String> decodedParameters = new HashMap<String, String>();
-        ParameterParser parameters = new ParameterParser(originalParameters);
+        Parameters parameters = new Parameters(originalParameters);
         for (int i = 0; i < parameters.numberOfParameters(); i++) {
             decodedParameters.put(parameters.getKey(i + 1), parameters.decodedValue(i + 1));
         }

@@ -5,10 +5,6 @@ import java.util.Set;
 
 public interface Controller {
 
-    String body = null;
-    Set<String> methodOptions = null;
-    Boolean isAuthorized = null;
-
     byte[] get();
 
     byte[] head();
