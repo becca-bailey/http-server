@@ -1,7 +1,6 @@
 package com.rnelson.server;
 
 import application.Config;
-import com.rnelson.server.content.BodyContent;
 import com.rnelson.server.content.Directory;
 import com.rnelson.server.content.FileHandler;
 import com.rnelson.server.httpClient.HTTPClient;
@@ -43,8 +42,10 @@ public class HTTPRequestsSteps {
 
     @Given("^the page content of \"([^\"]*)\" is empty$")
     public void thePageContentOfIsEmpty(String route) throws Throwable {
-        byte[] emptyContent = new byte[0];
-        BodyContent.pageContent.put(route, emptyContent);
+        Directory rootDirectory = new Directory(Config.rootDirectory);
+        File form = rootDirectory.getFileByFilename("formData");
+        FileHandler handler = new FileHandler(form);
+        handler.updateFileContent("");
     }
 
     // And
@@ -154,7 +155,10 @@ public class HTTPRequestsSteps {
 
     @And("^the body should include partial contents from (\\d+) to (\\d+)$")
     public void theBodyShouldIncludePartialContentsFrom(int rangeStart, int rangeEnd) throws Throwable {
-        String fileContent = new String(Files.readAllBytes(Paths.get("public/partial_content.txt")));
+        Directory publicDirectory = new Directory(Config.publicDirectory);
+        File partialContentFile = publicDirectory.getFileByFilename("partial_content.txt");
+        FileHandler handler = new FileHandler(partialContentFile);
+        String fileContent = new String(handler.getFileContents());
         String partialContent = fileContent.substring(rangeStart, rangeEnd + 1);
         String responseContent = client.getResponseBody();
         assertEquals(partialContent, responseContent);
@@ -180,6 +184,6 @@ public class HTTPRequestsSteps {
         Directory publicDirectory = new Directory(Config.publicDirectory);
         File patchFile = publicDirectory.getFileByFilename("patch-content.txt");
         FileHandler patchHandler = new FileHandler(patchFile);
-        assertEquals(defaultContent, new String(patchHandler.getFileContents()));
+        patchHandler.updateFileContent("");
     }
 }

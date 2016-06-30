@@ -1,11 +1,10 @@
 package application.controllers;
 
 import com.rnelson.server.Controller;
-import com.rnelson.server.header.Header;
+import com.rnelson.server.ResponseData;
+import application.Header;
 import com.rnelson.server.utilities.Response;
 
-import java.io.File;
-import java.util.Map;
 import java.util.Set;
 
 public class MethodOptionsController implements Controller {
@@ -50,27 +49,8 @@ public class MethodOptionsController implements Controller {
     }
 
     @Override
-    public byte[] redirect() {
-        return Response.methodNotAllowed.getBytes();
-    }
-
-    @Override
-    public void sendRequestData(Map<String, String> data) {
-        this.body = data.get("body");
-    }
-
-    @Override
-    public void sendMethodOptions(Set<String> methodOptions) {
-        this.methodOptions = methodOptions;
-    }
-
-    @Override
-    public void sendFile(File file) {
-
-    }
-
-    @Override
-    public void isAuthorized(Boolean isAuthorized) {
-
+    public void sendResponseData(ResponseData responseData) {
+        this.body = responseData.requestBody;
+        this.methodOptions = responseData.methodOptions;
     }
 }

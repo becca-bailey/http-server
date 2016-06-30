@@ -15,7 +15,7 @@ public class Directory {
 
     public void addFileRoutes() {
         for (File file : getDirectoryListing()) {
-            Config.router.addRoute(HttpMethods.get, "/" + file.getName(), "File");
+            Config.router.addRoute(HttpMethods.get, "/" + file.getName(), Config.fileController);
         }
     }
 
