@@ -7,6 +7,7 @@ import com.rnelson.server.utilities.Response;
 import com.rnelson.server.utilities.SharedUtilities;
 
 import java.io.File;
+import java.util.Map;
 import java.util.Set;
 
 public class FileController implements Controller {
@@ -56,7 +57,7 @@ public class FileController implements Controller {
     }
 
     @Override
-    public void sendRequestBody(String body) {
+    public void sendRequestData(Map<String, String> data) {
 
     }
 

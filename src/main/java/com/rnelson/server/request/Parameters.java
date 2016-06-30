@@ -31,9 +31,8 @@ public class Parameters {
     }
 
     public String getValue(int nth) {
-//        int i = nth - 1;
-//        return keyValuePair(i)[1];
-        return "";
+        int i = nth - 1;
+        return keyValuePair(i)[1];
     }
 
     public String decodedValue(int nth) {
@@ -47,24 +46,12 @@ public class Parameters {
         return decoded;
     }
 
-    public Map getDecodedParameters() {
+    public Map<String, String> getDecodedParameters() {
         Map<String, String> decodedParameters = new HashMap<String, String>();
         Parameters parameters = new Parameters(originalParameters);
         for (int i = 0; i < parameters.numberOfParameters(); i++) {
             decodedParameters.put(parameters.getKey(i + 1), parameters.decodedValue(i + 1));
         }
         return decodedParameters;
-    }
-
-    public String convertToBodyText() {
-        Map<String, String> decodedParameters = getDecodedParameters();
-        StringBuilder text = new StringBuilder();
-        for (Map.Entry<String, String> entry : decodedParameters.entrySet()) {
-            text.append(entry.getKey());
-            text.append(" = ");
-            text.append(entry.getValue());
-            text.append("\n");
-        }
-        return text.toString();
     }
 }

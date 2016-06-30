@@ -1,6 +1,7 @@
 package com.rnelson.server;
 
 import java.io.File;
+import java.util.Map;
 import java.util.Set;
 
 public interface Controller {
@@ -21,7 +22,7 @@ public interface Controller {
 
     byte[] redirect();
 
-    void sendRequestBody(String body);
+    void sendRequestData(Map<String,String> data);
 
     void sendMethodOptions(Set<String> methodOptions);
 
