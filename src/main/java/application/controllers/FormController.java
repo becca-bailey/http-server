@@ -2,15 +2,16 @@ package application.controllers;
 
 import application.Config;
 import com.rnelson.server.Controller;
+import com.rnelson.server.ResponseData;
+import com.rnelson.server.content.Directory;
 import com.rnelson.server.content.FileHandler;
-import com.rnelson.server.header.Header;
+import application.Header;
 import com.rnelson.server.utilities.ContentType;
 import com.rnelson.server.utilities.Response;
 import com.rnelson.server.utilities.SharedUtilities;
 
 import java.io.File;
-import java.util.Map;
-import java.util.Set;
+import java.io.FileNotFoundException;
 
 public class FormController implements Controller {
 
@@ -18,8 +19,14 @@ public class FormController implements Controller {
     FileHandler handler;
 
     private FileHandler getHandler() {
-        File form = new File(Config.rootDirectory + "/views/form");
-        return new FileHandler(form);
+        Directory rootDirectory = new Directory(Config.rootDirectory);
+        File formData = null;
+        try {
+            formData = rootDirectory.getFileByFilename("formData");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return new FileHandler(formData);
     }
 
     @Override
@@ -72,27 +79,7 @@ public class FormController implements Controller {
     }
 
     @Override
-    public byte[] redirect() {
-        return Response.methodNotAllowed.getBytes();
-    }
-
-    @Override
-    public void sendRequestData(Map<String, String> data) {
-        this.body = data.get("body");
-    }
-
-    @Override
-    public void sendMethodOptions(Set<String> methodOptions) {
-
-    }
-
-    @Override
-    public void sendFile(File file) {
-
-    }
-
-    @Override
-    public void isAuthorized(Boolean isAuthorized) {
-
+    public void sendResponseData(ResponseData responseData) {
+        this.body = responseData.requestBody;
     }
 }

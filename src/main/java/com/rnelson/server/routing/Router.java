@@ -2,6 +2,7 @@ package com.rnelson.server.routing;
 
 import application.Config;
 import com.rnelson.server.Controller;
+import com.rnelson.server.content.Directory;
 import com.rnelson.server.request.Credentials;
 import com.rnelson.server.utilities.exceptions.RouterException;
 import com.rnelson.server.utilities.http.HttpMethods;
@@ -51,6 +52,11 @@ public class Router {
         return route;
     }
 
+    public void addFileRoutes() {
+        Directory directory = new Directory(Config.publicDirectory);
+        directory.addFileRoutes();
+    }
+
     private Route addOrUpdateRoute(String url, String controllerPrefix) {
         Route route = null;
         try {
@@ -62,6 +68,9 @@ public class Router {
     }
 
     public Route getExistingRoute(String url) throws RouterException {
+        if (url.contains("?")) {
+            url = url.split("\\?")[0];
+        }
         for (Route existingRoute : routes) {
             if (existingRoute.url.equals(url)) {
                 return existingRoute;
@@ -79,15 +88,15 @@ public class Router {
         return controllersDirectory.listFiles();
     }
 
-    public Controller getControllerForRoute(Route route) throws RouterException {
-        String expectedClassName = expectedControllerClass(route);
+    public Controller getControllerForRequest(Route route, Map<String,String> requestHeaders) throws RouterException {
+        String expectedClassName = expectedControllerClass(route, requestHeaders);
         for (File file : listControllers()) {
             String fileName = FilenameUtils.removeExtension(file.getName());
             if (fileName.equals(expectedClassName)) {
                 return controllerInstance(fileName);
             }
         }
-        throw new RouterException("Controller not found. Server is looking for '/controllers/" + route.getClassName() + "Controller.java' in the root directory.");
+        throw new RouterException("Controller not found. Server is looking for '/controllers/" + expectedClassName + ".java' in the root directory.");
     }
 
     public Boolean userIsAuthorized(Route route, Credentials credentials) {
@@ -111,23 +120,21 @@ public class Router {
         controllerMethods.put(HttpMethods.patch, controller::patch);
         controllerMethods.put(HttpMethods.delete, controller::delete);
 
-        if (redirect) {
-            return controller::redirect;
-        } else {
-            return controllerMethods.get(method);
-        }
+        return controllerMethods.get(method);
     }
 
     private String getPackageNameFromFileName(String fileName) {
         return Config.packageName + ".controllers." + FilenameUtils.removeExtension(fileName);
     }
 
-    private String expectedControllerClass(Route route) {
+    private String expectedControllerClass(Route route, Map<String, String> requestHeaders) {
+        String className;
         if (route.controllerPrefix != null) {
-            return route.controllerPrefix + "Controller";
+            className = route.controllerPrefix;
         } else {
-            return route.getClassName() + "Controller";
+            className = route.getClassName();
         }
+        return className + "Controller";
     }
 
     private Controller controllerInstance(String fileName) {

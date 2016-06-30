@@ -1,7 +1,6 @@
 package application;
 
 
-import com.rnelson.server.content.Directory;
 import com.rnelson.server.routing.Router;
 import com.rnelson.server.utilities.http.HttpMethods;
 
@@ -16,6 +15,8 @@ public class Config {
     public static boolean redirect;
     public static String username = "admin";
     public static String password = "hunter2";
+    public static String partialContentController = "PartialContent";
+    public static String fileController = "File";
 
     public static void initializeRoutes() {
         router = new Router(Config.rootDirectory);
@@ -39,8 +40,5 @@ public class Config {
         router.addRoute(HttpMethods.options, "/method_options2", "MethodOptions");
 
         router.addProtectedRoute(HttpMethods.get, "/logs");
-
-        Directory directory = new Directory(Config.publicDirectory);
-        directory.addFileRoutes();
     }
 }

@@ -34,19 +34,16 @@ public class Request {
         return SharedUtilities.findMatch("([\\r]*\\n[\\r]*\\n)(.*)", request, 2);
     }
 
-    public Map<String, String> getRequestData() {
+    public Map<String, String> getDecodedParameters() {
         RequestData data = new RequestData();
         if (hasParameters()) {
-            Parameters parameters = new Parameters(getParameters());
+            Parameters parameters = new Parameters(getEncodedParameters());
             data.addData(parameters.getDecodedParameters());
-        }
-        if (hasBody()) {
-            data.setBody(getRequestBody());
         }
         return data.returnAllData();
     }
 
-    public String getParameters() {
+    public String getEncodedParameters() {
         return url().split("\\?")[1];
     }
 
@@ -94,5 +91,14 @@ public class Request {
         String requestLine = getRequestLine();
         FileHandler logHandler = new FileHandler(Config.logfile);
         logHandler.addFileContent(requestLine + "\n");
+    }
+
+    public String getRange() {
+        Map<String, String> headers = parseHeaders();
+        if (headers.containsKey("Range")) {
+            return headers.get("Range");
+        } else {
+            return "";
+        }
     }
 }

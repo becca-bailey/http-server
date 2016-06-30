@@ -38,6 +38,7 @@ class ServerRunner implements Runnable {
 
     private void respondToRequest (DataOutputStream out, BufferedReader in) throws IOException {
         Config.initializeRoutes();
+        Config.router.addFileRoutes();
         // does this go here?
 
         byte[] response;
@@ -47,17 +48,26 @@ class ServerRunner implements Runnable {
 
         String url = request.url();
         String method = request.method();
-        Map<String, String> data = request.getRequestData();
+        String body = request.getRequestBody();
+        Map<String, String> data = request.getDecodedParameters();
+        Map<String, String> headerFields = request.parseHeaders();
         Credentials credentials = request.getCredentials();
+        String range = request.getRange();
 
         try {
             Route route = Config.router.getExistingRoute(url);
             Boolean isAuthorized = Config.router.userIsAuthorized(route, credentials);
-            Controller controller = Config.router.getControllerForRoute(route);
-            controller.sendRequestData(data);
-            controller.sendMethodOptions(route.getMethods());
-            controller.sendFile(route.getFile(Config.publicDirectory.getPath()));
-            controller.isAuthorized(isAuthorized);
+            Controller controller = Config.router.getControllerForRequest(route, headerFields);
+
+            ResponseData responseData = new ResponseData();
+            responseData.sendRequestBody(request.getRequestBody());
+            responseData.sendParameters(data);
+            responseData.sendMethodOptions(route.getMethods());
+            responseData.sendFile(route.getFile(Config.publicDirectory.getPath()));
+            responseData.requestIsAuthorized(isAuthorized);
+            responseData.setRange(range);
+
+            controller.sendResponseData(responseData);
             Supplier<byte[]> controllerAction = Config.router.getControllerAction(controller, method, Config.redirect);
             Config.redirect = false;
             response = getResponse(controllerAction);
@@ -76,7 +86,6 @@ class ServerRunner implements Runnable {
         } catch (NullPointerException e) {
             System.out.println("Method doesn't exist in Router actions.");
             e.printStackTrace();
-            System.exit(1);
         }
         return response;
     }

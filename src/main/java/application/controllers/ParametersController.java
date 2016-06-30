@@ -1,16 +1,18 @@
 package application.controllers;
 
 import com.rnelson.server.Controller;
+import com.rnelson.server.ResponseData;
+import application.Header;
+import com.rnelson.server.utilities.SharedUtilities;
 
-import java.io.File;
 import java.util.Map;
-import java.util.Set;
 
 public class ParametersController implements Controller {
     private Map<String,String> parameters;
 
     @Override
     public byte[] get() {
+        Header header = new Header(200);
         StringBuilder text = new StringBuilder();
         for (Map.Entry<String, String> entry : parameters.entrySet()) {
             text.append(entry.getKey());
@@ -18,7 +20,8 @@ public class ParametersController implements Controller {
             text.append(entry.getValue());
             text.append("\n");
         }
-        return text.toString().getBytes();
+        byte[] parametersInBody = text.toString().getBytes();
+        return SharedUtilities.addByteArrays(header.getResponseHeader(), parametersInBody);
     }
 
     @Override
@@ -52,27 +55,7 @@ public class ParametersController implements Controller {
     }
 
     @Override
-    public byte[] redirect() {
-        return new byte[0];
-    }
-
-    @Override
-    public void sendRequestData(Map<String, String> data) {
-        this.parameters = data;
-    }
-
-    @Override
-    public void sendMethodOptions(Set<String> methodOptions) {
-
-    }
-
-    @Override
-    public void sendFile(File file) {
-
-    }
-
-    @Override
-    public void isAuthorized(Boolean isAuthorized) {
-
+    public void sendResponseData(ResponseData responseData) {
+        this.parameters = responseData.parameters;
     }
 }

@@ -1,25 +1,34 @@
 package application.controllers;
 
+import application.Range;
 import com.rnelson.server.Controller;
+import com.rnelson.server.ResponseData;
 import com.rnelson.server.content.FileHandler;
-import com.rnelson.server.header.Header;
+import application.Header;
 import com.rnelson.server.utilities.Response;
 import com.rnelson.server.utilities.SharedUtilities;
 
 import java.io.File;
-import java.util.Map;
-import java.util.Set;
 
 public class FileController implements Controller {
     private File file;
-    private Map<String,String> data;
+    private String requestBody;
+    private String requestedRange;
 
     @Override
     public byte[] get() {
         FileHandler handler = new FileHandler(file);
-        Header header = new Header(200);
-        header.includeContentType(handler.fileExtension());
-        return SharedUtilities.addByteArrays(header.getResponseHeader(), handler.getFileContents());
+        if (requestedRange != "") {
+            Range range = new Range(requestedRange);
+            Header header = new Header(206);
+            header.includeContentType(handler.fileExtension());
+            byte[] partialFileContent = range.applyRange(handler.getFileContents());
+            return SharedUtilities.addByteArrays(header.getResponseHeader(), partialFileContent);
+        } else {
+            Header header = new Header(200);
+            header.includeContentType(handler.fileExtension());
+            return SharedUtilities.addByteArrays(header.getResponseHeader(), handler.getFileContents());
+        }
     }
 
     @Override
@@ -39,9 +48,8 @@ public class FileController implements Controller {
 
     @Override
     public byte[] patch() {
-        String patchedContent = data.get("body");
         FileHandler handler = new FileHandler(file);
-        handler.updateFileContent(patchedContent);
+        handler.updateFileContent(requestBody);
         Header header = new Header(204);
         return header.getResponseHeader();
     }
@@ -57,27 +65,9 @@ public class FileController implements Controller {
     }
 
     @Override
-    public byte[] redirect() {
-        return Response.methodNotAllowed.getBytes();
-    }
-
-    @Override
-    public void sendRequestData(Map<String, String> data) {
-        this.data = data;
-    }
-
-    @Override
-    public void sendMethodOptions(Set<String> methodOptions) {
-
-    }
-
-    @Override
-    public void sendFile(File file) {
-        this.file = file;
-    }
-
-    @Override
-    public void isAuthorized(Boolean isAuthorized) {
-
+    public void sendResponseData(ResponseData responseData) {
+        this.requestBody = responseData.requestBody;
+        this.file = responseData.requestedFile;
+        this.requestedRange = responseData.requestedRange;
     }
 }
