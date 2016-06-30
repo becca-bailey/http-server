@@ -3,3 +3,4 @@ http-server.iml
 .idea/
 classes/
 test/
+src/main/java/application/views/logs

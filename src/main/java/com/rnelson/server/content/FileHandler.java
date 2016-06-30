@@ -1,15 +1,13 @@
-package com.rnelson.server.file;
+package com.rnelson.server.content;
 
-import com.rnelson.server.response.BodyContent;
-import com.rnelson.server.response.ResponseHeaders;
 import com.rnelson.server.utilities.SharedUtilities;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 public class FileHandler {
     private File file;
@@ -40,32 +38,6 @@ public class FileHandler {
         return SharedUtilities.findMatch("([.])(\\w*$)", file.getName(), 2);
     }
 
-    public String fileContentTypeHeader() {
-        Map<String, String> fileTypesToContentTypes = new HashMap<String, String>();
-
-        fileTypesToContentTypes.put("jpeg", "image/JPEG");
-        fileTypesToContentTypes.put("gif", "image/GIF");
-        fileTypesToContentTypes.put("png", "image/PNG");
-        fileTypesToContentTypes.put("txt", "text/plain");
-        fileTypesToContentTypes.put(null, "text/plain");
-
-        String contentType = fileTypesToContentTypes.get(fileExtension());
-
-        return "Content-Type: " + fileTypesToContentTypes.get(fileExtension());
-    }
-
-    public String contentLengthHeader() {
-        return "Content-Length: " + ((int)file.length());
-    }
-
-    public void addFileContentToPageContent() {
-        BodyContent.pageContent.put("/" + fileName, getFileContents());
-    }
-
-    public void addRequiredHeaderRowsForFile() {
-        ResponseHeaders.requiredHeaderRows.put("GET /" + fileName, Arrays.asList(fileContentTypeHeader()));
-    }
-
     public void updateFileContent(String newContent) {
         BufferedWriter writer;
         try {
@@ -80,7 +52,7 @@ public class FileHandler {
     public void addFileContent(String newContent) {
         try {
             FileWriter writer = new FileWriter(filePath, true);
-            writer.write(newContent + "\n");
+            writer.write(newContent);
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();

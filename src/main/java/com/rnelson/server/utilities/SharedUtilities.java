@@ -7,14 +7,24 @@ import java.util.regex.*;
 public class SharedUtilities {
     public static List<String> imageExtensions = Arrays.asList("jpg", "jpeg", "png", "svg", "gif", "bmp");
 
-    public static String findMatch(String regex, String request, int group) {
-        String match = null;
+    public static String findMatch(String regex, String line, int group) {
+        String match = "";
         Pattern pattern = Pattern.compile(regex, Pattern.DOTALL);
-        Matcher matcher = pattern.matcher(request);
+        Matcher matcher = pattern.matcher(line);
         if (matcher.find()) {
             match = matcher.group(group).trim();
         }
         return match;
+    }
+
+    public static List<String> findAllMatches(String regex, String line) {
+        List<String> matches = new ArrayList<String>();
+        Pattern pattern = Pattern.compile(regex, Pattern.DOTALL);
+        Matcher matcher = pattern.matcher(line);
+        while (matcher.find()) {
+            matches.add(matcher.group());
+        }
+        return matches;
     }
 
     public static byte[] addByteArrays(byte[] array1, byte[] array2) {
@@ -32,5 +42,9 @@ public class SharedUtilities {
             e.printStackTrace();
         }
         return convertedString;
+    }
+
+    public static String capitalize(String word) {
+        return Character.toUpperCase(word.charAt(0)) + word.substring(1);
     }
 }

@@ -1,7 +1,7 @@
 Feature: PATCH with etag
   Scenario: Server returns original content of text file
     Given the server is running
-    And "/patch-content.txt" has original contents "default content"
+    And "patch-content.txt" has original contents "default content"
     When I request "GET" "/patch-content.txt"
     Then the response status should be 200
     And the response body should include "default content"

@@ -1,7 +1,9 @@
 package com.rnelson.server;
 
-import com.rnelson.server.file.FileHandler;
-import com.rnelson.server.response.BodyContent;
+import application.Config;
+import com.rnelson.server.content.Directory;
+import com.rnelson.server.content.FileHandler;
+import com.rnelson.server.httpClient.HTTPClient;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
@@ -16,8 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import static com.rnelson.server.GlobalHooks.serverRunner;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class HTTPRequestsSteps {
     private Integer port = 5000;
@@ -41,16 +42,19 @@ public class HTTPRequestsSteps {
 
     @Given("^the page content of \"([^\"]*)\" is empty$")
     public void thePageContentOfIsEmpty(String route) throws Throwable {
-        byte[] emptyContent = new byte[0];
-        BodyContent.pageContent.put(route, emptyContent);
+        Directory rootDirectory = new Directory(Config.rootDirectory);
+        File form = rootDirectory.getFileByFilename("formData");
+        FileHandler handler = new FileHandler(form);
+        handler.updateFileContent("");
     }
 
     // And
 
     @And("^\"([^\"]*)\" has original contents \"([^\"]*)\"$")
     public void hasOriginalContents(String fileName, String contents) throws Throwable {
-        File file = new File("public" + fileName);
-        FileHandler handler = new FileHandler(file);
+        Directory publicDirectory = new Directory(Config.publicDirectory);
+        File originalFile = publicDirectory.getFileByFilename(fileName);
+        FileHandler handler = new FileHandler(originalFile);
         handler.updateFileContent(contents);
     }
 
@@ -105,9 +109,9 @@ public class HTTPRequestsSteps {
     @Then("^the response body has file contents \"([^\"]*)\"$")
     public void theResponseBodyHasFileContents(String filePath) throws Throwable {
         client.connect();
-        String fileContent = new String(Files.readAllBytes(Paths.get("public" + filePath)));
-        String responseContent = new String(client.getResponseBytes());
-        assertEquals(fileContent, responseContent);
+        byte[] fileContent = Files.readAllBytes(Paths.get(Config.publicDirectory.getPath() + filePath));
+        byte[] responseContent = client.getResponseBytes();
+        assertArrayEquals(fileContent, responseContent);
     }
 
     @Then("^the response body should include \"([^\"]*)\"$")
@@ -121,7 +125,7 @@ public class HTTPRequestsSteps {
 
     @And("^the response header should include \"([^\"]*)\" \"([^\"]*)\"$")
     public void theResponseHeaderShouldInclude(String fieldName, String property) throws Throwable {
-        assertEquals(property, client.getHeaderField(fieldName));
+        assertTrue(client.getHeaderField(fieldName).contains(property));
     }
 
     @And("^the response body should be \"([^\"]*)\"$")
@@ -151,7 +155,10 @@ public class HTTPRequestsSteps {
 
     @And("^the body should include partial contents from (\\d+) to (\\d+)$")
     public void theBodyShouldIncludePartialContentsFrom(int rangeStart, int rangeEnd) throws Throwable {
-        String fileContent = new String(Files.readAllBytes(Paths.get("public/partial_content.txt")));
+        Directory publicDirectory = new Directory(Config.publicDirectory);
+        File partialContentFile = publicDirectory.getFileByFilename("partial_content.txt");
+        FileHandler handler = new FileHandler(partialContentFile);
+        String fileContent = new String(handler.getFileContents());
         String partialContent = fileContent.substring(rangeStart, rangeEnd + 1);
         String responseContent = client.getResponseBody();
         assertEquals(partialContent, responseContent);
@@ -174,8 +181,9 @@ public class HTTPRequestsSteps {
 
     @And("^the file content is set back to \"([^\"]*)\"$")
     public void theFileContentIsSetBackTo(String defaultContent) throws Throwable {
-        File patchFile = new File("public/patch-content.txt");
+        Directory publicDirectory = new Directory(Config.publicDirectory);
+        File patchFile = publicDirectory.getFileByFilename("patch-content.txt");
         FileHandler patchHandler = new FileHandler(patchFile);
-        assertEquals(defaultContent, new String(patchHandler.getFileContents()));
+        patchHandler.updateFileContent("");
     }
 }

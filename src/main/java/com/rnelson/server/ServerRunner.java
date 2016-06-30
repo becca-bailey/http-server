@@ -1,13 +1,26 @@
 package com.rnelson.server;
 
-import com.rnelson.server.request.RequestHandler;
+import application.Config;
+import com.rnelson.server.request.Credentials;
+import com.rnelson.server.request.Request;
+import com.rnelson.server.routing.Route;
+import com.rnelson.server.routing.Router;
+import com.rnelson.server.utilities.Response;
+import com.rnelson.server.utilities.exceptions.RouterException;
 
-import java.io.*;
-import java.net.*;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Map;
+import java.util.function.Supplier;
 
 class ServerRunner implements Runnable {
     private final int serverPort;
     private Boolean running = true;
+    private Router router = Config.router;
 
     ServerRunner(int port) {
         this.serverPort = port;
@@ -24,11 +37,57 @@ class ServerRunner implements Runnable {
     }
 
     private void respondToRequest (DataOutputStream out, BufferedReader in) throws IOException {
-        String request = getFullRequest(in);
-        RequestHandler handler = new RequestHandler(request);
-        byte[] response = handler.getResponse();
+        Config.initializeRoutes();
+        Config.router.addFileRoutes();
+        // does this go here?
+
+        byte[] response;
+
+        Request request = new Request(getFullRequest(in));
+        request.logRequest();
+
+        String url = request.url();
+        String method = request.method();
+        String body = request.getRequestBody();
+        Map<String, String> data = request.getDecodedParameters();
+        Map<String, String> headerFields = request.parseHeaders();
+        Credentials credentials = request.getCredentials();
+        String range = request.getRange();
+
+        try {
+            Route route = Config.router.getExistingRoute(url);
+            Boolean isAuthorized = Config.router.userIsAuthorized(route, credentials);
+            Controller controller = Config.router.getControllerForRequest(route, headerFields);
+
+            ResponseData responseData = new ResponseData();
+            responseData.sendRequestBody(request.getRequestBody());
+            responseData.sendParameters(data);
+            responseData.sendMethodOptions(route.getMethods());
+            responseData.sendFile(route.getFile(Config.publicDirectory.getPath()));
+            responseData.requestIsAuthorized(isAuthorized);
+            responseData.setRange(range);
+
+            controller.sendResponseData(responseData);
+            Supplier<byte[]> controllerAction = Config.router.getControllerAction(controller, method, Config.redirect);
+            Config.redirect = false;
+            response = getResponse(controllerAction);
+        } catch (RouterException e) {
+            System.out.println(e.getMessage());
+            response = Response.notFound.getBytes();
+        }
         out.write(response);
         out.close();
+    }
+
+    private byte[] getResponse(Supplier<byte[]> supplier) {
+        byte[] response = new byte[0];
+        try {
+            response = supplier.get();
+        } catch (NullPointerException e) {
+            System.out.println("Method doesn't exist in Router actions.");
+            e.printStackTrace();
+        }
+        return response;
     }
 
     public void stop() {
