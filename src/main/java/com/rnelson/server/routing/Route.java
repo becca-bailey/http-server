@@ -9,7 +9,7 @@ import java.util.Set;
 
 public class Route {
     final String url;
-    String controllerPrefix;
+    public String controllerPrefix;
     Boolean isProtected = false;
     private String rootName = "Root";
     private final Set<String> methods = new HashSet<>();

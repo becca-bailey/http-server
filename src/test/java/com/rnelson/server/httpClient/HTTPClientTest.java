@@ -11,7 +11,7 @@ public class HTTPClientTest {
     @Before
     public void setDefaultVariables() {
         testClient.sendRequestHeader("GET", "/");
-        testClient.sendRequestBody("applicationTests");
+        testClient.sendRequestBody("test body");
         testClient.setResponseVariables("HTTP/1.1 200 OK\r\nContent-Length: 4\r\n\r\ntest content");
     }
 
@@ -24,7 +24,7 @@ public class HTTPClientTest {
 
     @Test
     public void sendBodySetsBodyText() throws Throwable {
-        assertEquals("applicationTests", testClient.body);
+        assertEquals("test body", testClient.body);
     }
 
     @Test

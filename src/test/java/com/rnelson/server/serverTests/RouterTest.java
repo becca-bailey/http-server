@@ -1,29 +1,54 @@
 package com.rnelson.server.serverTests;
 
-import com.rnelson.server.routing.Router;
-import com.rnelson.server.utilities.http.HttpMethods;
+import application.Config;
+import application.controllers.RootController;
+import com.rnelson.server.Controller;
 import com.rnelson.server.routing.Route;
+import com.rnelson.server.routing.Router;
 import com.rnelson.server.utilities.exceptions.RouterException;
+import com.rnelson.server.utilities.http.HttpMethods;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
 
 public class RouterTest {
-    private final File rootDirectory = new File("src/main/java/com/rnelson/server/");
+    private final File rootDirectory = Config.rootDirectory;
     private final Router testRouter = new Router(rootDirectory);
-
-    private final File testDirectory = new File("applicationTests-directory/");
-    private final Router rootRouter = new Router(testDirectory);
     private final String root = "/";
+    private Map<String,String> headerFields = new HashMap<>();
+
+
 
     @Test
     public void addRouteAddsNewRouteToCollection() throws Throwable {
         assertEquals(0, testRouter.countRoutes());
         testRouter.addRoute(HttpMethods.get, root);
         assertEquals(1, testRouter.countRoutes());
+    }
+
+    @Test
+    public void addRouteAllowsSpecifiedControllerPrefix() throws Throwable {
+        testRouter.addRoute(HttpMethods.get, "/kitty", "Cat");
+        Route kitty = testRouter.getExistingRoute("/kitty");
+        assertEquals("Cat", kitty.controllerPrefix);
+    }
+
+    @Test
+    public void expectedControllerClassReturnsDefaultOrSpecifiedClassName() throws Throwable {
+        testRouter.addRoute(HttpMethods.post, "/coffee");
+        Route coffee = testRouter.getExistingRoute("/coffee");
+        String controllerName = testRouter.expectedControllerClass(coffee);
+        assertEquals("CoffeeController", controllerName);
+
+        testRouter.addRoute(HttpMethods.post, "/coffee2", "Tea");
+        Route coffee2 = testRouter.getExistingRoute("/coffee2");
+        String myControllerName= testRouter.expectedControllerClass(coffee2);
+        assertEquals("TeaController", myControllerName);
     }
 
     @Test
@@ -37,18 +62,21 @@ public class RouterTest {
         assertTrue(route.hasMethod(HttpMethods.head));
     }
 
-//    @Test
-//    public void listControllersReturnsListOfControllersInGivenDirectory() throws Throwable {
-//        File firstController = rootRouter.listControllers()[0];
-//        assertEquals("RootController.java", firstController.getName());
-//    }
+    @Test
+    public void listControllersReturnsListOfControllersInGivenDirectory() throws Throwable {
+        File[] controllers = testRouter.listControllers();
+        for (File controller : controllers) {
+            assertTrue(controller.getName().contains("Controller"));
+        }
+    }
 
-//    @Test
-//    public void getControllerForRouteReturnsNewControllerInstance() throws Throwable {
-//        testRouter.addRoute("GET", "/");
-//        Controller controller = testRouter.getControllerForRoute("/");
-//        assertEquals(RootController.class, controller.getClass());
-//    }
+    @Test
+    public void getControllerForRouteReturnsNewControllerInstance() throws Throwable {
+        testRouter.addRoute("GET", "/");
+        Route route = testRouter.getExistingRoute("/");
+        Controller controller = testRouter.getControllerForRequest(route, headerFields);
+        assertEquals(RootController.class, controller.getClass());
+    }
 
     @Test
     public void getExistingRouteReturnsRoute() throws Throwable {
@@ -67,14 +95,15 @@ public class RouterTest {
         assertTrue(routerException);
     }
 
-//    @Test
-//    public void getControllerForRouteThrowsControllerException() throws Throwable {
-//        Boolean routerException = false;
-//        try {
-//            testRouter.getControllerForRoute("/foobar");
-//        } catch (RouterException e) {
-//            routerException = true;
-//        }
-//        assertTrue(routerException);
-//    }
+    @Test
+    public void getControllerForRouteThrowsControllerException() throws Throwable {
+        Boolean routerException = false;
+        Route invalid = new Route("/foobar");
+        try {
+            testRouter.getControllerForRequest(invalid, headerFields);
+        } catch (RouterException e) {
+            routerException = true;
+        }
+        assertTrue(routerException);
+    }
 }
