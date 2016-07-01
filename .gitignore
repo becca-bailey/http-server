@@ -2,4 +2,3 @@ target/
 http-server.iml
 .idea/
 classes/
-src/main/java/application/views/logs
