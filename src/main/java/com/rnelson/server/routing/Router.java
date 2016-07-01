@@ -3,10 +3,11 @@ package com.rnelson.server.routing;
 import application.Config;
 import com.rnelson.server.Controller;
 import com.rnelson.server.content.Directory;
+import com.rnelson.server.content.FileHandler;
 import com.rnelson.server.request.Credentials;
+import com.rnelson.server.utilities.SharedUtilities;
 import com.rnelson.server.utilities.exceptions.RouterException;
 import com.rnelson.server.utilities.http.HttpMethods;
-import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.util.HashMap;
@@ -91,7 +92,8 @@ public class Router {
     public Controller getControllerForRequest(Route route, Map<String,String> requestHeaders) throws RouterException {
         String expectedClassName = expectedControllerClass(route, requestHeaders);
         for (File file : listControllers()) {
-            String fileName = FilenameUtils.removeExtension(file.getName());
+            FileHandler handler = new FileHandler(file);
+            String fileName = handler.removeExtension();
             if (fileName.equals(expectedClassName)) {
                 return controllerInstance(fileName);
             }
@@ -124,7 +126,7 @@ public class Router {
     }
 
     private String getPackageNameFromFileName(String fileName) {
-        return Config.packageName + ".controllers." + FilenameUtils.removeExtension(fileName);
+        return Config.packageName + ".controllers." + SharedUtilities.findMatch("^\\w+", fileName, 0);
     }
 
     private String expectedControllerClass(Route route, Map<String, String> requestHeaders) {

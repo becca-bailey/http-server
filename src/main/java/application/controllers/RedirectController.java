@@ -4,45 +4,40 @@ import application.Config;
 import com.rnelson.server.Controller;
 import com.rnelson.server.ResponseData;
 import application.Header;
+import com.rnelson.server.utilities.Response;
 
 public class RedirectController implements Controller {
     @Override
     public byte[] get() {
         Config.redirect = true;
         Header header = new Header(302);
-        header.includeLocation("http://localhost:5000");
+        header.includeLocation("http://localhost:5000/");
         return header.getResponseHeader();
     }
 
     @Override
     public byte[] head() {
-        return new byte[0];
-    }
+        return Response.methodNotAllowed.getBytes();   }
 
     @Override
     public byte[] post() {
-        return new byte[0];
-    }
+        return Response.methodNotAllowed.getBytes();    }
 
     @Override
     public byte[] put() {
-        return new byte[0];
-    }
+        return Response.methodNotAllowed.getBytes();    }
 
     @Override
     public byte[] patch() {
-        return new byte[0];
-    }
+        return Response.methodNotAllowed.getBytes();    }
 
     @Override
     public byte[] options() {
-        return new byte[0];
-    }
+        return Response.methodNotAllowed.getBytes();    }
 
     @Override
     public byte[] delete() {
-        return new byte[0];
-    }
+        return Response.methodNotAllowed.getBytes();    }
 
     @Override
     public void sendResponseData(ResponseData responseData) {

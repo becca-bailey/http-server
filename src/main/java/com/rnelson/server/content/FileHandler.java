@@ -58,4 +58,12 @@ public class FileHandler {
             e.printStackTrace();
         }
     }
+
+    public String removeExtension() {
+        return SharedUtilities.findMatch("(^\\w+)([.])", file.getName(), 1);
+    }
+
+    public static String removeExtension(String fileName) {
+        return SharedUtilities.findMatch("(^\\w+)([.])", fileName, 1);
+    }
 }

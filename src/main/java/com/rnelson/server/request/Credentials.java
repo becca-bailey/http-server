@@ -2,7 +2,7 @@ package com.rnelson.server.request;
 
 import com.rnelson.server.utilities.SharedUtilities;
 
-import static org.apache.commons.codec.binary.Base64.decodeBase64;
+import java.util.Base64;
 
 public class Credentials {
     String encodedCredentials;
@@ -13,7 +13,7 @@ public class Credentials {
 
     private byte[] decodeToBytes() {
         String encoding = SharedUtilities.findMatch("\\S+$", encodedCredentials, 0);
-        return decodeBase64(encoding);
+        return Base64.getDecoder().decode(encoding);
     }
 
     private String[] splitDecodedString() {
