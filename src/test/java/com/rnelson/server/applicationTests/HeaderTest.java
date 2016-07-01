@@ -1,4 +1,4 @@
-package com.rnelson.server.serverTests;
+package com.rnelson.server.applicationTests;
 
 import application.Header;
 import com.rnelson.server.utilities.Response;
