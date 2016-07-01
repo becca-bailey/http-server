@@ -3,6 +3,7 @@ package application.controllers;
 import com.rnelson.server.Controller;
 import com.rnelson.server.ResponseData;
 import application.Header;
+import com.rnelson.server.utilities.Response;
 import com.rnelson.server.utilities.SharedUtilities;
 
 import java.util.Map;
@@ -26,32 +27,32 @@ public class ParametersController implements Controller {
 
     @Override
     public byte[] head() {
-        return new byte[0];
+        return Response.methodNotAllowed.getBytes();
     }
 
     @Override
     public byte[] post() {
-        return new byte[0];
+        return Response.methodNotAllowed.getBytes();
     }
 
     @Override
     public byte[] put() {
-        return new byte[0];
+        return Response.methodNotAllowed.getBytes();
     }
 
     @Override
     public byte[] patch() {
-        return new byte[0];
+        return Response.methodNotAllowed.getBytes();
     }
 
     @Override
     public byte[] options() {
-        return new byte[0];
+        return Response.methodNotAllowed.getBytes();
     }
 
     @Override
     public byte[] delete() {
-        return new byte[0];
+        return Response.methodNotAllowed.getBytes();
     }
 
     @Override
