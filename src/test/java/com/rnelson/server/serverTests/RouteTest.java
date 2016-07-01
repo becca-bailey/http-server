@@ -1,7 +1,7 @@
 package com.rnelson.server.serverTests;
 
-import com.rnelson.server.routing.Route;
 import com.rnelson.server.utilities.http.HttpMethods;
+import com.rnelson.server.routing.Route;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class RouteTest {
-    Route root = new Route("/form");
+    private final Route root = new Route("/form");
 
     @Test
     public void aRouteCanBeInstantiatedWithAString() throws Throwable {

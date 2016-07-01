@@ -1,4 +1,4 @@
-package com.rnelson.server.unitTests;
+package com.rnelson.server.serverTests;
 
 import com.rnelson.server.request.Parameters;
 import org.junit.Test;
@@ -6,11 +6,10 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 public class ParametersTest {
-    Parameters parameters = new Parameters("variable_1=Operators%20%3C%2C%20%3E%2C%20%3D%2C%20!%3D%3B%20%2B%2C%20-%2C%20*%2C%20%26%2C%20%40%2C%20%23%2C%20%24%2C%20%5B%2C%20%5D%3A%20%22is%20that%20all%22%3F&variable_2=stuff");
+    private final Parameters parameters = new Parameters("variable_1=Operators%20%3C%2C%20%3E%2C%20%3D%2C%20!%3D%3B%20%2B%2C%20-%2C%20*%2C%20%26%2C%20%40%2C%20%23%2C%20%24%2C%20%5B%2C%20%5D%3A%20%22is%20that%20all%22%3F&variable_2=stuff");
 
     @Test
     public void splitParametersReturnsParametersArray() throws Throwable {
@@ -47,7 +46,7 @@ public class ParametersTest {
 
     @Test
     public void getDecodedParametersReturnsKeyValuePairs() throws Throwable {
-        Map<String, String> parameterKeysAndValues = new HashMap<String, String>();
+        Map<String, String> parameterKeysAndValues = new HashMap<>();
         parameterKeysAndValues.put("variable_1", "Operators <, >, =, !=; +, -, *, &, @, #, $, [, ]: \"is that all\"?");
         parameterKeysAndValues.put("variable_2", "stuff");
         assertEquals(parameterKeysAndValues, parameters.getDecodedParameters());

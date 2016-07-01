@@ -5,8 +5,8 @@ import java.net.URLDecoder;
 import java.util.*;
 
 public class Parameters {
-    private String originalParameters;
-    private String[] splitParameters;
+    private final String originalParameters;
+    private final String[] splitParameters;
 
     public Parameters(String parameters) {
         this.originalParameters = parameters;
@@ -47,7 +47,7 @@ public class Parameters {
     }
 
     public Map<String, String> getDecodedParameters() {
-        Map<String, String> decodedParameters = new HashMap<String, String>();
+        Map<String, String> decodedParameters = new HashMap<>();
         Parameters parameters = new Parameters(originalParameters);
         for (int i = 0; i < parameters.numberOfParameters(); i++) {
             decodedParameters.put(parameters.getKey(i + 1), parameters.decodedValue(i + 1));

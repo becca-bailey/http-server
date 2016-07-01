@@ -2,14 +2,14 @@ package com.rnelson.server.applicationTests;
 
 import application.Config;
 import application.controllers.RootController;
-import com.rnelson.server.content.Directory;
 import com.rnelson.server.utilities.Response;
+import com.rnelson.server.content.Directory;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
 
 public class RootControllerTest {
-    RootController controller = new RootController();
+    private final RootController controller = new RootController();
 
     @Test
     public void getReturnsDirectoryContents() throws Throwable {

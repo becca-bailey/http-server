@@ -10,8 +10,8 @@ import java.util.Map;
 import static org.junit.Assert.assertTrue;
 
 public class ParametersControllerTest {
-    ParametersController controller = new ParametersController();
-    Map<String,String> parameters = new HashMap<>();
+    private final ParametersController controller = new ParametersController();
+    private final Map<String,String> parameters = new HashMap<>();
 
     @Test
     public void getReturnsParametersAsString() throws Throwable {

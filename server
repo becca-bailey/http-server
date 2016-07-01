@@ -1,1 +1,1 @@
-mvn exec:java -Dexec.mainClass="com.rnelson.server.Server" -Dexec.args="-p 8000"
+mvn exec:java -Dexec.mainClass="Server" -Dexec.args="-p 8000"

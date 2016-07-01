@@ -2,15 +2,17 @@ package application;
 
 import com.rnelson.server.utilities.SharedUtilities;
 
+import java.util.Objects;
+
 public class Range {
-    String requestedRange;
+    private final String requestedRange;
 
     public Range(String requestedRange) {
         this.requestedRange = requestedRange;
     }
 
     public byte[] applyRange(byte[] content) {
-        byte[] contentInRange = content;
+        byte[] contentInRange;
         int minRange = getMinRange(content.length);
         int maxRange = getMaxRange(content.length);
         byte[] partialContent = new byte[(maxRange - minRange) + 1];
@@ -21,36 +23,34 @@ public class Range {
 
     public static Boolean excludesMin(String byteRange) {
         String match = SharedUtilities.findMatch("^[-]\\d*", byteRange, 0);
-        return match != "";
+        return !Objects.equals(match, "");
     }
 
     public static Boolean excludesMax(String byteRange) {
         String match = SharedUtilities.findMatch("\\d*-$", byteRange, 0);
-        return match != "";
+        return !Objects.equals(match, "");
     }
 
     public int[] minAndMaxInRange(String range, Integer contentLength) {
-        int highestIndex = contentLength - 1;
+        int maxIndex = contentLength - 1;
         if (excludesMin(range)) {
-            return finalMinMax(range, highestIndex);
+            return finalMinMax(range, maxIndex);
         } else if (excludesMax(range)) {
-            return minMaxToEnd(range, highestIndex);
+            return minMaxToEnd(range, maxIndex);
         } else {
             return givenMinAndMax(range);
         }
     }
 
-    private int[] finalMinMax(String range, int highestIndex) {
+    private int[] finalMinMax(String range, int maxIndex) {
         int difference = Integer.parseInt(SharedUtilities.findMatch("\\d+", range, 0)) - 1;
-        int min = highestIndex - difference;
-        int max = highestIndex;
-        return toIntArray(min, max);
+        int min = maxIndex - difference;
+        return toIntArray(min, maxIndex);
     }
 
-    private int[] minMaxToEnd(String range, int highestIndex) {
+    private int[] minMaxToEnd(String range, int maxIndex) {
         int min = Integer.parseInt(SharedUtilities.findMatch("\\d*", range, 0));
-        int max = highestIndex;
-        return toIntArray(min, max);
+        return toIntArray(min, maxIndex);
     }
 
     private int[] givenMinAndMax(String range) {

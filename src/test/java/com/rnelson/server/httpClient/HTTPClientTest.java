@@ -6,7 +6,7 @@ import org.junit.Test;
 import static junit.framework.TestCase.assertEquals;
 
 public class HTTPClientTest {
-    HTTPClient testClient = new HTTPClient("localhost", 5000);
+    private final HTTPClient testClient = new HTTPClient("localhost", 5000);
 
     @Before
     public void setDefaultVariables() {

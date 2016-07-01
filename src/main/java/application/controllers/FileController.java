@@ -9,6 +9,7 @@ import com.rnelson.server.utilities.Response;
 import com.rnelson.server.utilities.SharedUtilities;
 
 import java.io.File;
+import java.util.Objects;
 
 public class FileController implements Controller {
     private File file;
@@ -18,7 +19,7 @@ public class FileController implements Controller {
     @Override
     public byte[] get() {
         FileHandler handler = new FileHandler(file);
-        if (requestedRange != "") {
+        if (!Objects.equals(requestedRange, "")) {
             Range range = new Range(requestedRange);
             Header header = new Header(206);
             header.includeContentType(handler.fileExtension());

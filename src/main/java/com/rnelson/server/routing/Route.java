@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Set;
 
 public class Route {
-    String url;
-    public String controllerPrefix;
-    public Boolean isProtected = false;
+    final String url;
+    String controllerPrefix;
+    Boolean isProtected = false;
     private String rootName = "Root";
-    private Set<String> methods = new HashSet<String>();
+    private final Set<String> methods = new HashSet<>();
 
     public Route(String url) {
         this.url = url;

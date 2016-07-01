@@ -8,7 +8,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 
 public class EchoControllerTest {
-    EchoController controller = new EchoController();
+    private final EchoController controller = new EchoController();
 
     @Test
     public void getEchoReturns200() throws Throwable {

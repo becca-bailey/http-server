@@ -9,12 +9,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class FileHandlerTest {
-    private FileHandler file1 = new FileHandler(new File("src/main/java/application/public/file1"));
-    private FileHandler jpeg = new FileHandler(new File("src/main/java/application/public/image.jpeg"));
-    private FileHandler gif = new FileHandler(new File("src/main/java/application/public/image.gif"));
-    private FileHandler png = new FileHandler(new File("src/main/java/application/public/image.png"));
-    private FileHandler text = new FileHandler(new File("src/main/java/application/public/text-file.txt"));
-    private FileHandler test = new FileHandler(new File("src/test/java/com/rnelson/server/serverTests/testFile"));
+    private final FileHandler file1 = new FileHandler(new File("src/main/java/application/public/file1"));
+    private final FileHandler jpeg = new FileHandler(new File("src/main/java/application/public/image.jpeg"));
+    private final FileHandler gif = new FileHandler(new File("src/main/java/application/public/image.gif"));
+    private final FileHandler png = new FileHandler(new File("src/main/java/application/public/image.png"));
+    private final FileHandler text = new FileHandler(new File("src/main/java/application/public/text-file.txt"));
+    private final FileHandler test = new FileHandler(new File("src/test/java/com/rnelson/server/serverTests/testFile"));
 
     @Test
     public void getFileContentsReturnsContentsOfFile() throws Throwable {

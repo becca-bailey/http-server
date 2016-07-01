@@ -4,11 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Response {
-    private static Map<Integer, String> statusCodes = new HashMap<Integer, String>();
-    private static String crlf = "\r\n";
-    public static String notFound = status(404) + crlf + crlf;
-    public static String methodNotAllowed = status(405) + crlf + crlf;
-    public static String twoHundred = Response.status(200) + crlf + crlf;
+    private final static Map<Integer, String> statusCodes = new HashMap<>();
+    private final static String crlf = "\r\n";
+    public final static String notFound = status(404) + crlf + crlf;
+    public final static String methodNotAllowed = status(405) + crlf + crlf;
+    public final static String twoHundred = Response.status(200) + crlf + crlf;
 
 
     private static String http(String responseStatus) {

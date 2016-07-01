@@ -9,7 +9,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 
 public class MethodOptionsTest {
-    MethodOptionsController controller = new MethodOptionsController();
+    private final MethodOptionsController controller = new MethodOptionsController();
 
     @Test
     public void optionsReturnsOptionsForRoute() throws Throwable {

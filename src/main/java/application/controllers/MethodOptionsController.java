@@ -8,7 +8,6 @@ import com.rnelson.server.utilities.Response;
 import java.util.Set;
 
 public class MethodOptionsController implements Controller {
-    private String body;
     private Set<String> methodOptions;
 
     @Override
@@ -50,7 +49,6 @@ public class MethodOptionsController implements Controller {
 
     @Override
     public void sendResponseData(ResponseData responseData) {
-        this.body = responseData.requestBody;
         this.methodOptions = responseData.methodOptions;
     }
 }

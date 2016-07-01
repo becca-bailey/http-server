@@ -11,7 +11,7 @@ import com.rnelson.server.utilities.SharedUtilities;
 import java.io.File;
 
 public class LogsController implements Controller {
-    Boolean isAuthorized;
+    private Boolean isAuthorized;
 
     @Override
     public byte[] get() {

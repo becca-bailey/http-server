@@ -7,7 +7,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class HeaderTest {
-    private Header testHeader = new Header(200);
+    private final Header testHeader = new Header(200);
 
     @Test
     public void getResponseHeaderReturnsFullHeader() {

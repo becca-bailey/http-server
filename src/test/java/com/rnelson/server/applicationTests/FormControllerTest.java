@@ -8,8 +8,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class FormControllerTest {
-    FormController controller = new FormController();
-    ResponseData responseData = new ResponseData()
+    private final FormController controller = new FormController();
+    private final ResponseData responseData = new ResponseData()
 ;
     private String getData() {
         return new String(controller.get());

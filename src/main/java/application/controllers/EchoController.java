@@ -5,7 +5,7 @@ import com.rnelson.server.ResponseData;
 import com.rnelson.server.utilities.Response;
 
 public class EchoController implements Controller {
-    String requestBody;
+    private String requestBody;
 
     @Override
     public byte[] get() {
