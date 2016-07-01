@@ -19,7 +19,7 @@ public class FileController implements Controller {
     @Override
     public byte[] get() {
         FileHandler handler = new FileHandler(file);
-        if (!Objects.equals(requestedRange, "")) {
+        if (!Objects.equals(requestedRange, null) && !Objects.equals(requestedRange, "")) {
             Range range = new Range(requestedRange);
             Header header = new Header(206);
             header.includeContentType(handler.fileExtension());
