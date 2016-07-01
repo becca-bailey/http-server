@@ -48,7 +48,6 @@ class ServerRunner implements Runnable {
 
         String url = request.url();
         String method = request.method();
-        String body = request.getRequestBody();
         Map<String, String> data = request.getDecodedParameters();
         Map<String, String> headerFields = request.parseHeaders();
         Credentials credentials = request.getCredentials();

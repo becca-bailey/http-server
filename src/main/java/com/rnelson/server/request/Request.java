@@ -8,14 +8,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Request {
-    private String request;
-    private String header;
-    private String body;
+    private final String request;
+    private final String header;
 
     public Request(String fullRequestFromServer) {
         this.request = fullRequestFromServer;
         header = getRequestHeader();
-        body = getRequestBody();
     }
 
     public String url() {
@@ -57,7 +55,7 @@ public class Request {
 
 
     public Map<String, String> parseHeaders() {
-        Map<String,String> headerFields = new HashMap<String, String>();
+        Map<String,String> headerFields = new HashMap<>();
         String[] headerLines = splitHeader();
         for (int i = 1; i < headerLines.length; i++) {
             String[] fields = headerLines[i].split(":");

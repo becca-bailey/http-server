@@ -2,6 +2,7 @@ package com.rnelson.server.serverTests;
 
 import com.rnelson.server.request.Request;
 import com.rnelson.server.utilities.http.HttpMethods;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -11,15 +12,15 @@ import static org.junit.Assert.*;
 
 
 public class RequestTest {
-    private String crlf = "\r\n";
-    private String http = "HTTP/1.1";
+    private final String crlf = "\r\n";
+    private final String http = "HTTP/1.1";
 
-    private Request HEAD200 = new Request(requestBuilder("HEAD /"));
-    private Request simpleGET = new Request(requestBuilder("GET /"));
-    private Request fullRoute = new Request(requestBuilder("GET /this/url"));
-    private Request requestBody = new Request(requestBuilder("GET /body", "this is body text"));
-    private Request POSTEcho = new Request(requestBuilder("POST /echo", "Content-Length: 5", "hello"));
-    private Request parameters = new Request(requestBuilder("GET /parameters?my=parameters"));
+    private final Request HEAD200 = new Request(requestBuilder("HEAD /"));
+    private final Request simpleGET = new Request(requestBuilder("GET /"));
+    private final Request fullRoute = new Request(requestBuilder("GET /this/url"));
+    private final Request requestBody = new Request(requestBuilder("GET /body", "this is body text"));
+    private final Request POSTEcho = new Request(requestBuilder("POST /echo", "Content-Length: 5", "hello"));
+    private final Request parameters = new Request(requestBuilder("GET /parameters?my=parameters"));
 
     private String requestBuilder(String methodAndRoute) {
         return methodAndRoute + " " + http + crlf + crlf;
@@ -35,7 +36,7 @@ public class RequestTest {
 
     @Test
     public void methodReturnsRequestMethod() throws Throwable {
-        assertEquals(HttpMethods.get, simpleGET.method());
+        Assert.assertEquals(HttpMethods.get, simpleGET.method());
         assertEquals(HttpMethods.head, HEAD200.method());
     }
 
@@ -89,7 +90,7 @@ public class RequestTest {
 
     @Test
     public void getDecodedParametersReturnsParameters() throws Throwable {
-        Map<String, String> data = new HashMap<String,String>();
+        Map<String, String> data = new HashMap<>();
         data.put("my", "parameters");
         assertEquals(data, parameters.getDecodedParameters());
     }

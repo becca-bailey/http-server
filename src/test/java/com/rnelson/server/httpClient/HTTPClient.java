@@ -1,7 +1,7 @@
 package com.rnelson.server.httpClient;
 
-import com.rnelson.server.request.Request;
 import com.rnelson.server.utilities.SharedUtilities;
+import com.rnelson.server.request.Request;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
@@ -13,33 +13,26 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 
 public class HTTPClient {
-    public String hostName;
-    public Integer portNumber;
-    private String url;
+    final String hostName;
+    final Integer portNumber;
+    private final String url;
     private CloseableHttpClient httpclient;
     private CloseableHttpResponse response;
 
-    public String requestLine = "";
+    String requestLine = "";
     public String body = "";
 
-    public String username;
-    public String password;
+    private String username;
+    private String password;
 
-    private String responseAsString;
     private String statusLine;
-    private String[] headerLines;
     private byte[] responseBody = new byte[0];
     private String method;
     private String requestUrl;
-    private HashMap<String, CloseableHttpResponse> methods;
     private Boolean isRange = false;
     private Boolean hasCredentials = false;
-    private Boolean isEtag = false;
     private String requestedRange;
     private String etag;
 
@@ -64,13 +57,13 @@ public class HTTPClient {
         this.body = body;
     }
 
-    public void setRange(String range) throws IOException {
+    public void setRange(String range) {
         isRange = true;
         requestedRange = "bytes=" + range;
         httpclient = HttpClients.custom().build();
     }
 
-    public void setEtag(String etag) throws IOException {
+    public void setEtag(String etag) {
         this.etag = etag;
     }
 
@@ -90,32 +83,35 @@ public class HTTPClient {
         }
     }
 
-    private void sendRequestToServer() throws IOException {
+    private void sendRequestToServer() {
         response = getResponseForMethod();
-    }
-
-    public String fullRequest() {
-        List<String> requestLines = Arrays.asList(requestLine);
-        return String.join("\r\n", requestLines) + "\r\n\r\n" + body;
     }
 
     private CloseableHttpResponse getResponseForMethod() {
         CloseableHttpResponse response = null;
         try {
-            if (method.equals("POST")) {
-                response = post();
-            } else if (method.equals("OPTIONS")) {
-                response = options();
-            } else if (method.equals("HEAD")) {
-                response = head();
-            } else if (method.equals("PUT")) {
-                response = put();
-            } else if (method.equals("DELETE")) {
-                response = delete();
-            } else if (method.equals("PATCH")) {
-                response = patch();
-            } else {
-                response = get();
+            switch (method) {
+                case "POST":
+                    response = post();
+                    break;
+                case "OPTIONS":
+                    response = options();
+                    break;
+                case "HEAD":
+                    response = head();
+                    break;
+                case "PUT":
+                    response = put();
+                    break;
+                case "DELETE":
+                    response = delete();
+                    break;
+                case "PATCH":
+                    response = patch();
+                    break;
+                default:
+                    response = get();
+                    break;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -174,8 +170,7 @@ public class HTTPClient {
         return httpclient.execute(httppatch);
     }
 
-    public void setResponseVariables(String response) {
-        this.responseAsString = response;
+    void setResponseVariables(String response) {
         String[] responseLines = response.split("\r\n");
         this.statusLine = responseLines[0];
     }
@@ -188,8 +183,7 @@ public class HTTPClient {
         }
     }
 
-    public String getResponseBody() throws IOException {
-        String response = new String(responseBody);
+    public String getResponseBody() {
         return new String(responseBody);
     }
 
@@ -197,7 +191,7 @@ public class HTTPClient {
         return Integer.parseInt(SharedUtilities.findMatch("\\d{3}", statusLine, 0));
     }
 
-    public String getResponseHeader() {
+    private String getResponseHeader() {
         StringBuilder responseLines = new StringBuilder();
         responseLines.append(response.getStatusLine());
         for (Header header : response.getAllHeaders()) {
@@ -208,15 +202,11 @@ public class HTTPClient {
         return responseLines.toString();
     }
 
-    public String getStatusLine() {
-        return response.getStatusLine().toString();
-    }
-
     public byte[] getResponseBytes() {
         return responseBody;
     }
 
-    public String[] splitHeader() {
+    private String[] splitHeader() {
         String header = getResponseHeader();
         return header.split("\r\n");
     }

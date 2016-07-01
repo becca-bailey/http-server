@@ -15,8 +15,8 @@ import java.io.FileNotFoundException;
 
 public class FormController implements Controller {
 
-    String body;
-    FileHandler handler;
+    private String body;
+    private FileHandler handler;
 
     private FileHandler getHandler() {
         Directory rootDirectory = new Directory(Config.rootDirectory);

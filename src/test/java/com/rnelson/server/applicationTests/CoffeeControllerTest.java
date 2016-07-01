@@ -7,7 +7,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 
 public class CoffeeControllerTest {
-    CoffeeController controller = new CoffeeController();
+    private CoffeeController controller = new CoffeeController();
 
     @Test
     public void getReturns418() throws Throwable {

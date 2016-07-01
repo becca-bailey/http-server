@@ -7,9 +7,8 @@ import java.util.List;
 import java.util.Set;
 
 public class Header {
-    String status;
-    String crlf = "\r\n";
-    List<String> rows = new ArrayList<String>();
+    private final String status;
+    private final List<String> rows = new ArrayList<>();
 
     public Header(int status) {
         this.status = Response.status(status);
@@ -37,6 +36,7 @@ public class Header {
     private String getResponseAsString() {
         StringBuilder response = new StringBuilder();
         response.append(status);
+        String crlf = "\r\n";
         if (rows.size() > 0) {
             response.append(crlf);
             response.append(String.join(",", rows));

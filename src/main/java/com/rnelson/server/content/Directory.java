@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 public class Directory {
-    private File directory;
+    private final File directory;
 
     public Directory(File directory) {
         this.directory = directory;
@@ -41,7 +41,7 @@ public class Directory {
         return directoryContents.toString();
     }
 
-    public File[] getDirectoryListing() {
+    private File[] getDirectoryListing() {
         return directory.listFiles();
     }
 

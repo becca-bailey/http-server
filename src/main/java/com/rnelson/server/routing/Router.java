@@ -2,12 +2,12 @@ package com.rnelson.server.routing;
 
 import application.Config;
 import com.rnelson.server.Controller;
-import com.rnelson.server.content.Directory;
 import com.rnelson.server.content.FileHandler;
 import com.rnelson.server.request.Credentials;
 import com.rnelson.server.utilities.SharedUtilities;
-import com.rnelson.server.utilities.exceptions.RouterException;
 import com.rnelson.server.utilities.http.HttpMethods;
+import com.rnelson.server.content.Directory;
+import com.rnelson.server.utilities.exceptions.RouterException;
 
 import java.io.File;
 import java.util.HashMap;
@@ -17,8 +17,8 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 public class Router {
-    Set<Route> routes = new HashSet<Route>();
-    File rootDirectory;
+    private final Set<Route> routes = new HashSet<>();
+    private final File rootDirectory;
 
     public Router (File rootDirectory) {
         this.rootDirectory = rootDirectory;
@@ -44,7 +44,7 @@ public class Router {
     }
 
     private Route addOrUpdateRoute(String url) {
-        Route route = null;
+        Route route;
         try {
             route = getExistingRoute(url);
         } catch (RouterException notFound) {
@@ -59,7 +59,7 @@ public class Router {
     }
 
     private Route addOrUpdateRoute(String url, String controllerPrefix) {
-        Route route = null;
+        Route route;
         try {
             route = getExistingRoute(url);
         } catch (RouterException notFound) {
@@ -90,7 +90,7 @@ public class Router {
     }
 
     public Controller getControllerForRequest(Route route, Map<String,String> requestHeaders) throws RouterException {
-        String expectedClassName = expectedControllerClass(route, requestHeaders);
+        String expectedClassName = expectedControllerClass(route);
         for (File file : listControllers()) {
             FileHandler handler = new FileHandler(file);
             String fileName = handler.removeExtension();
@@ -129,7 +129,7 @@ public class Router {
         return Config.packageName + ".controllers." + SharedUtilities.findMatch("^\\w+", fileName, 0);
     }
 
-    private String expectedControllerClass(Route route, Map<String, String> requestHeaders) {
+    private String expectedControllerClass(Route route){
         String className;
         if (route.controllerPrefix != null) {
             className = route.controllerPrefix;

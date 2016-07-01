@@ -12,18 +12,13 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 import java.io.File;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static com.rnelson.server.GlobalHooks.serverRunner;
 import static org.junit.Assert.*;
 
 public class HTTPRequestsSteps {
-    private Integer port = 5000;
-    private HttpURLConnection connection;
-    private OutputStream out;
+    private final Integer port = 5000;
     private HTTPClient client;
 
     // Before
@@ -37,7 +32,7 @@ public class HTTPRequestsSteps {
 
     @Given("^the server is running")
     public void theServerIsRunning() throws Throwable {
-        assertTrue(serverRunner.isRunning());
+        assertTrue(GlobalHooks.serverRunner.isRunning());
     }
 
     @Given("^the page content of \"([^\"]*)\" is empty$")

@@ -9,7 +9,7 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 
 public class RequestDataTest {
-    RequestData data = new RequestData();
+    private final RequestData data = new RequestData();
 
     @Test
     public void setBodyAddsBodyDataToMap() throws Throwable {

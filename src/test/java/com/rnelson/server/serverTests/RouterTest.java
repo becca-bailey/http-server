@@ -1,9 +1,9 @@
 package com.rnelson.server.serverTests;
 
-import com.rnelson.server.routing.Route;
 import com.rnelson.server.routing.Router;
-import com.rnelson.server.utilities.exceptions.RouterException;
 import com.rnelson.server.utilities.http.HttpMethods;
+import com.rnelson.server.routing.Route;
+import com.rnelson.server.utilities.exceptions.RouterException;
 import org.junit.Test;
 
 import java.io.File;
@@ -12,12 +12,12 @@ import static org.junit.Assert.*;
 
 
 public class RouterTest {
-    File rootDirectory = new File("src/main/java/com/rnelson/server/");
-    Router testRouter = new Router(rootDirectory);
+    private final File rootDirectory = new File("src/main/java/com/rnelson/server/");
+    private final Router testRouter = new Router(rootDirectory);
 
-    File testDirectory = new File("applicationTests-directory/");
-    Router rootRouter = new Router(testDirectory);
-    String root = "/";
+    private final File testDirectory = new File("applicationTests-directory/");
+    private final Router rootRouter = new Router(testDirectory);
+    private final String root = "/";
 
     @Test
     public void addRouteAddsNewRouteToCollection() throws Throwable {

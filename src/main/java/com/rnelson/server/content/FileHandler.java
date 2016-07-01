@@ -10,13 +10,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class FileHandler {
-    private File file;
-    private String fileName;
-    private String filePath;
+    private final File file;
+    private final String filePath;
 
     public FileHandler(File file) {
         this.file = file;
-        this.fileName = file.getName();
         this.filePath = file.getPath();
     }
 

@@ -1,12 +1,12 @@
 package com.rnelson.server.utilities.http;
 
 public class HttpMethods {
-    public static String get = "GET";
-    public static String post = "POST";
-    public static String put = "PUT";
-    public static String head = "HEAD";
-    public static String options = "OPTIONS";
-    public static String patch = "PATCH";
-    public static String delete = "DELETE";
+    public final static String get = "GET";
+    public final static String post = "POST";
+    public final static String put = "PUT";
+    public final static String head = "HEAD";
+    public final static String options = "OPTIONS";
+    public final static String patch = "PATCH";
+    public final static String delete = "DELETE";
 }
 
