@@ -129,7 +129,7 @@ public class Router {
         return Config.packageName + ".controllers." + SharedUtilities.findMatch("^\\w+", fileName, 0);
     }
 
-    private String expectedControllerClass(Route route){
+    public String expectedControllerClass(Route route){
         String className;
         if (route.controllerPrefix != null) {
             className = route.controllerPrefix;
