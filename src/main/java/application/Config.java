@@ -7,18 +7,18 @@ import com.rnelson.server.utilities.http.HttpMethods;
 import java.io.File;
 
 public class Config {
-    public final static String packageName = "application";
-    public final static File rootDirectory = new File("src/main/java/application/");
-    public final static File publicDirectory = new File("src/main/java/application/public");
-    public final static File logfile = new File("src/main/java/application/views/logs");
+    public static String packageName = "application";
+    public static File rootDirectory = new File("src/main/java/application/");
+    public static File publicDirectory = new File("src/main/java/application/public");
+    public static File logfile = new File("src/main/java/application/views/logs");
     public static Router router;
     public static boolean redirect;
-    public final static String username = "admin";
-    public final static String password = "hunter2";
-    public final static String fileController = "File";
+    public static String username = "admin";
+    public static String password = "hunter2";
+    public static String fileController = "File";
 
     public static void initializeRoutes() {
-        router = new Router(Config.rootDirectory);
+        router = new Router(rootDirectory);
         router.addRoute(HttpMethods.get, "/");
         router.addRoute(HttpMethods.head, "/");
         router.addRoute(HttpMethods.get, "/coffee");

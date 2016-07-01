@@ -39,7 +39,6 @@ class ServerRunner implements Runnable {
     private void respondToRequest (DataOutputStream out, BufferedReader in) throws IOException {
         Config.initializeRoutes();
         Config.router.addFileRoutes();
-        // does this go here?
 
         byte[] response;
 

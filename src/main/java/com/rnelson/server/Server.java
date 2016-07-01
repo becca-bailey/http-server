@@ -1,5 +1,9 @@
 package com.rnelson.server;
 
+import application.Config;
+
+import java.io.File;
+
 public class Server {
 
     public static Boolean isPortParameter(String parameter) {
@@ -32,6 +36,13 @@ public class Server {
     }
 
     public static void main(String[] args) throws Exception {
+        Config.packageName = "application";
+        Config.rootDirectory = new File("src/main/java/application/");
+        Config.publicDirectory = new File("src/main/java/application/public");
+        Config.logfile = new File("src/main/java/application/views/logs");
+        Config.username = "admin";
+        Config.password = "hunter2";
+        Config.fileController = "File";
         int portNumber = getPortNumber(args);
         try {
             ServerRunner runner = new ServerRunner(portNumber);
