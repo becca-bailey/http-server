@@ -4,6 +4,7 @@ import application.Config;
 import application.controllers.MethodOptionsController;
 import com.rnelson.server.ResponseData;
 import com.rnelson.server.routing.Route;
+import com.rnelson.server.routing.RouteInitializer;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -14,7 +15,9 @@ public class MethodOptionsTest {
     @Test
     public void optionsReturnsOptionsForRoute() throws Throwable {
         try {
-            Config.initializeRoutes();
+            RouteInitializer initializer = new RouteInitializer();
+            initializer.initializeRoutes();
+
             Route options1 = Config.router.getExistingRoute("/method_options");
             Route options2 = Config.router.getExistingRoute("/method_options2");
             ResponseData responseData = new ResponseData();

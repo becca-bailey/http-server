@@ -3,6 +3,7 @@ package com.rnelson.server;
 import application.Config;
 import com.rnelson.server.request.Request;
 import com.rnelson.server.routing.Route;
+import com.rnelson.server.routing.RouteInitializer;
 import com.rnelson.server.routing.Router;
 import com.rnelson.server.utilities.Response;
 import com.rnelson.server.utilities.exceptions.RouterException;
@@ -35,8 +36,9 @@ class ServerRunner implements Runnable {
     }
 
     private void respondToRequest (DataOutputStream out, BufferedReader in) throws IOException {
-        Config.initializeRoutes();
-        Config.router.addFileRoutes();
+        RouteInitializer initializer = new RouteInitializer();
+        initializer.initializeRoutes();
+
         byte[] response;
         Request request = new Request(getFullRequest(in));
         try {
