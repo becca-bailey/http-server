@@ -8,10 +8,7 @@ import com.rnelson.server.routing.Router;
 import com.rnelson.server.utilities.Response;
 import com.rnelson.server.utilities.exceptions.RouterException;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.function.Supplier;
@@ -20,9 +17,11 @@ class ServerRunner implements Runnable {
     private final int serverPort;
     private Boolean running = true;
     private Router router = Config.router;
+    private File rootDirectory;
 
-    ServerRunner(int port) {
+    ServerRunner(int port, File rootDirectory) {
         this.serverPort = port;
+        this.rootDirectory = rootDirectory;
     }
 
     private String getFullRequest(BufferedReader in) throws IOException {

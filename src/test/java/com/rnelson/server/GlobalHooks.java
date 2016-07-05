@@ -2,6 +2,8 @@ package com.rnelson.server;
 
 import cucumber.api.java.Before;
 
+import java.io.File;
+
 public class GlobalHooks {
     private static boolean serverIsRunning = false;
     static ServerRunner serverRunner;
@@ -16,7 +18,8 @@ public class GlobalHooks {
                 }
             });
             try {
-                serverRunner = new ServerRunner(5000);
+                File rootDirectory = new File("src/main/java/application");
+                serverRunner = new ServerRunner(5000, rootDirectory);
                 Thread server = new Thread(serverRunner);
                 server.start();
                 serverIsRunning = true;
