@@ -1,6 +1,9 @@
 package com.rnelson.server;
 
+import application.Config;
+import com.rnelson.server.request.Credentials;
 import com.rnelson.server.request.Request;
+import com.rnelson.server.routing.Route;
 
 import java.io.File;
 import java.util.Map;
@@ -19,10 +22,15 @@ public class ResponseData {
 
     }
 
-    public ResponseData(Request request) {
+    public ResponseData(Request request, Route route) {
+        Credentials credentials = request.getCredentials();
+        Boolean isAuthorized = Config.router.userIsAuthorized(route, credentials);
         sendRequestBody(request.getRequestBody());
         sendParameters(request.getDecodedParameters());
+        sendMethodOptions(route.getMethods());
+        sendFile(route.getFile(Config.publicDirectory.getPath()));
         setRange(request.getRange());
+        requestIsAuthorized(isAuthorized);
     }
 
     public void sendRequestBody(String body) {

@@ -1,7 +1,6 @@
 package com.rnelson.server;
 
 import application.Config;
-import com.rnelson.server.request.Credentials;
 import com.rnelson.server.request.Request;
 import com.rnelson.server.routing.Route;
 import com.rnelson.server.routing.Router;
@@ -47,17 +46,11 @@ class ServerRunner implements Runnable {
         String url = request.url();
         String method = request.method();
         Map<String, String> headerFields = request.parseHeaders();
-        Credentials credentials = request.getCredentials();
 
         try {
             Route route = Config.router.getExistingRoute(url);
-            Boolean isAuthorized = Config.router.userIsAuthorized(route, credentials);
             Controller controller = Config.router.getControllerForRequest(route, headerFields);
-
-            ResponseData responseData = new ResponseData(request);
-            responseData.sendMethodOptions(route.getMethods());
-            responseData.sendFile(route.getFile(Config.publicDirectory.getPath()));
-            responseData.requestIsAuthorized(isAuthorized);
+            ResponseData responseData = new ResponseData(request, route);
 
             controller.sendResponseData(responseData);
             Supplier<byte[]> controllerAction = Config.router.getControllerAction(controller, method);
