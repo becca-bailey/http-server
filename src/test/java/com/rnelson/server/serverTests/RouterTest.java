@@ -10,8 +10,6 @@ import com.rnelson.server.utilities.http.HttpMethods;
 import org.junit.Test;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -20,9 +18,6 @@ public class RouterTest {
     private final File rootDirectory = Config.rootDirectory;
     private final Router testRouter = new Router(rootDirectory);
     private final String root = "/";
-    private Map<String,String> headerFields = new HashMap<>();
-
-
 
     @Test
     public void addRouteAddsNewRouteToCollection() throws Throwable {
@@ -74,7 +69,7 @@ public class RouterTest {
     public void getControllerForRouteReturnsNewControllerInstance() throws Throwable {
         testRouter.addRoute("GET", "/");
         Route route = testRouter.getExistingRoute("/");
-        Controller controller = testRouter.getControllerForRequest(route, headerFields);
+        Controller controller = testRouter.getControllerForRequest(route);
         assertEquals(RootController.class, controller.getClass());
     }
 
@@ -100,7 +95,7 @@ public class RouterTest {
         Boolean routerException = false;
         Route invalid = new Route("/foobar");
         try {
-            testRouter.getControllerForRequest(invalid, headerFields);
+            testRouter.getControllerForRequest(invalid);
         } catch (RouterException e) {
             routerException = true;
         }

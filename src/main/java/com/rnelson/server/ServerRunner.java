@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Map;
 import java.util.function.Supplier;
 
 class ServerRunner implements Runnable {
@@ -38,22 +37,14 @@ class ServerRunner implements Runnable {
     private void respondToRequest (DataOutputStream out, BufferedReader in) throws IOException {
         Config.initializeRoutes();
         Config.router.addFileRoutes();
-
         byte[] response;
-
         Request request = new Request(getFullRequest(in));
-
-        String url = request.url();
-        String method = request.method();
-        Map<String, String> headerFields = request.parseHeaders();
-
         try {
-            Route route = Config.router.getExistingRoute(url);
-            Controller controller = Config.router.getControllerForRequest(route, headerFields);
+            Route route = Config.router.getExistingRoute(request.url());
+            Controller controller = Config.router.getControllerForRequest(route);
             ResponseData responseData = new ResponseData(request, route);
-
             controller.sendResponseData(responseData);
-            Supplier<byte[]> controllerAction = Config.router.getControllerAction(controller, method);
+            Supplier<byte[]> controllerAction = Config.router.getControllerAction(controller, request.method());
             response = getResponse(controllerAction);
         } catch (RouterException e) {
             System.out.println(e.getMessage());

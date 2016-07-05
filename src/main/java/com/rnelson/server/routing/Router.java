@@ -89,7 +89,7 @@ public class Router {
         return controllersDirectory.listFiles();
     }
 
-    public Controller getControllerForRequest(Route route, Map<String,String> requestHeaders) throws RouterException {
+    public Controller getControllerForRequest(Route route) throws RouterException {
         String expectedClassName = expectedControllerClass(route);
         for (File file : listControllers()) {
             FileHandler handler = new FileHandler(file);
