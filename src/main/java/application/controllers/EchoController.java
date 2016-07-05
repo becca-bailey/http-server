@@ -1,10 +1,9 @@
 package application.controllers;
 
-import com.rnelson.server.Controller;
 import com.rnelson.server.ResponseData;
 import com.rnelson.server.utilities.Response;
 
-public class EchoController implements Controller {
+public class EchoController extends AbstractController {
     private String requestBody;
 
     @Override
@@ -13,33 +12,8 @@ public class EchoController implements Controller {
     }
 
     @Override
-    public byte[] head() {
-        return Response.methodNotAllowed.getBytes();
-    }
-
-    @Override
     public byte[] post() {
         return (Response.twoHundred + requestBody).getBytes();
-    }
-
-    @Override
-    public byte[] put() {
-        return Response.methodNotAllowed.getBytes();
-    }
-
-    @Override
-    public byte[] patch() {
-        return Response.methodNotAllowed.getBytes();
-    }
-
-    @Override
-    public byte[] options() {
-        return Response.methodNotAllowed.getBytes();
-    }
-
-    @Override
-    public byte[] delete() {
-        return Response.methodNotAllowed.getBytes();
     }
 
     @Override

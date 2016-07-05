@@ -1,14 +1,13 @@
 package application.controllers;
 
 import application.Config;
-import com.rnelson.server.Controller;
+import application.Header;
 import com.rnelson.server.ResponseData;
 import com.rnelson.server.content.Directory;
-import application.Header;
 import com.rnelson.server.utilities.Response;
 import com.rnelson.server.utilities.SharedUtilities;
 
-public class RootController implements Controller {
+public class RootController extends AbstractController {
 
     @Override
     public byte[] get() {
@@ -22,30 +21,6 @@ public class RootController implements Controller {
         return Response.twoHundred.getBytes();
     }
 
-    @Override
-    public byte[] post() {
-        return Response.methodNotAllowed.getBytes();
-    }
-
-    @Override
-    public byte[] put() {
-        return Response.methodNotAllowed.getBytes();
-    }
-
-    @Override
-    public byte[] patch() {
-        return Response.methodNotAllowed.getBytes();
-    }
-
-    @Override
-    public byte[] options() {
-        return Response.methodNotAllowed.getBytes();
-    }
-
-    @Override
-    public byte[] delete() {
-        return Response.methodNotAllowed.getBytes();
-    }
 
     @Override
     public void sendResponseData(ResponseData responseData) {

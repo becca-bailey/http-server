@@ -1,17 +1,15 @@
 package application.controllers;
 
+import application.Header;
 import application.Range;
-import com.rnelson.server.Controller;
 import com.rnelson.server.ResponseData;
 import com.rnelson.server.content.FileHandler;
-import application.Header;
-import com.rnelson.server.utilities.Response;
 import com.rnelson.server.utilities.SharedUtilities;
 
 import java.io.File;
 import java.util.Objects;
 
-public class FileController implements Controller {
+public class FileController extends AbstractController {
     private File file;
     private String requestBody;
     private String requestedRange;
@@ -33,36 +31,11 @@ public class FileController implements Controller {
     }
 
     @Override
-    public byte[] head() {
-        return Response.methodNotAllowed.getBytes();
-    }
-
-    @Override
-    public byte[] post() {
-        return Response.methodNotAllowed.getBytes();
-    }
-
-    @Override
-    public byte[] put() {
-        return Response.methodNotAllowed.getBytes();
-    }
-
-    @Override
     public byte[] patch() {
         FileHandler handler = new FileHandler(file);
         handler.updateFileContent(requestBody);
         Header header = new Header(204);
         return header.getResponseHeader();
-    }
-
-    @Override
-    public byte[] options() {
-        return Response.methodNotAllowed.getBytes();
-    }
-
-    @Override
-    public byte[] delete() {
-        return Response.methodNotAllowed.getBytes();
     }
 
     @Override

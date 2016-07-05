@@ -1,6 +1,7 @@
 package application.controllers;
 
 import com.rnelson.server.Controller;
+import com.rnelson.server.ResponseData;
 import com.rnelson.server.utilities.Response;
 
 public abstract class AbstractController implements Controller {
@@ -31,5 +32,9 @@ public abstract class AbstractController implements Controller {
 
     public byte[] delete() {
         return Response.methodNotAllowed.getBytes();
+    }
+
+    public void sendResponseData(ResponseData responseData) {
+
     }
 }

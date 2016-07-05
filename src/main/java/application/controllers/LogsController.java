@@ -1,16 +1,14 @@
 package application.controllers;
 
 import application.Config;
-import com.rnelson.server.Controller;
+import application.Header;
 import com.rnelson.server.ResponseData;
 import com.rnelson.server.content.FileHandler;
-import application.Header;
-import com.rnelson.server.utilities.Response;
 import com.rnelson.server.utilities.SharedUtilities;
 
 import java.io.File;
 
-public class LogsController implements Controller {
+public class LogsController extends AbstractController {
     private Boolean isAuthorized;
 
     @Override
@@ -28,36 +26,6 @@ public class LogsController implements Controller {
             header.includeBasicAuthorization();
             return header.getResponseHeader();
         }
-    }
-
-    @Override
-    public byte[] head() {
-        return Response.methodNotAllowed.getBytes();
-    }
-
-    @Override
-    public byte[] post() {
-        return Response.methodNotAllowed.getBytes();
-    }
-
-    @Override
-    public byte[] put() {
-        return Response.methodNotAllowed.getBytes();
-    }
-
-    @Override
-    public byte[] patch() {
-        return Response.methodNotAllowed.getBytes();
-    }
-
-    @Override
-    public byte[] options() {
-        return Response.methodNotAllowed.getBytes();
-    }
-
-    @Override
-    public byte[] delete() {
-        return Response.methodNotAllowed.getBytes();
     }
 
     @Override

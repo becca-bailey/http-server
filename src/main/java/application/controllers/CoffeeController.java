@@ -1,7 +1,6 @@
 package application.controllers;
 
 import application.Header;
-import com.rnelson.server.ResponseData;
 import com.rnelson.server.utilities.SharedUtilities;
 
 public class CoffeeController extends AbstractController {
@@ -14,9 +13,5 @@ public class CoffeeController extends AbstractController {
         return SharedUtilities.addByteArrays(responseHeader, body);
     }
 
-    @Override
-    public void sendResponseData(ResponseData responseData) {
-
-    }
 }
 

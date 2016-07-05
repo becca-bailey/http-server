@@ -1,11 +1,10 @@
 package application.controllers;
 
 import application.Config;
-import com.rnelson.server.Controller;
+import application.Header;
 import com.rnelson.server.ResponseData;
 import com.rnelson.server.content.Directory;
 import com.rnelson.server.content.FileHandler;
-import application.Header;
 import com.rnelson.server.utilities.ContentType;
 import com.rnelson.server.utilities.Response;
 import com.rnelson.server.utilities.SharedUtilities;
@@ -13,7 +12,7 @@ import com.rnelson.server.utilities.SharedUtilities;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-public class FormController implements Controller {
+public class FormController extends AbstractController {
 
     private String body;
     private FileHandler handler;
@@ -39,11 +38,6 @@ public class FormController implements Controller {
     }
 
     @Override
-    public byte[] head() {
-        return Response.methodNotAllowed.getBytes();
-    }
-
-    @Override
     public byte[] post() {
         handler = getHandler();
         handler.addFileContent(body);
@@ -59,16 +53,6 @@ public class FormController implements Controller {
         Header header = new Header(200);
         header.includeContentType(ContentType.text);
         return header.getResponseHeader();
-    }
-
-    @Override
-    public byte[] patch() {
-        return Response.methodNotAllowed.getBytes();
-    }
-
-    @Override
-    public byte[] options() {
-        return Response.methodNotAllowed.getBytes();
     }
 
     @Override
