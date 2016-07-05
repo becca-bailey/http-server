@@ -12,7 +12,6 @@ public class Config {
     public final static File publicDirectory = new File("src/main/java/application/public");
     public final static File logfile = new File("src/main/java/application/views/logs");
     public static Router router;
-    public static boolean redirect;
     public final static String username = "admin";
     public final static String password = "hunter2";
     public final static String fileController = "File";

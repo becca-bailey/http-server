@@ -112,7 +112,7 @@ public class Router {
         return credentials.isUsername(Config.username) && credentials.isPassword(Config.password);
     }
 
-    public Supplier<byte[]> getControllerAction(Controller controller, String method, Boolean redirect) {
+    public Supplier<byte[]> getControllerAction(Controller controller, String method) {
         Map<String, Supplier<byte[]>> controllerMethods = new HashMap<>();
         controllerMethods.put(HttpMethods.get, controller::get);
         controllerMethods.put(HttpMethods.head, controller::head);

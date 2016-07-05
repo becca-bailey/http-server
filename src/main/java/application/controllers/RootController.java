@@ -1,7 +1,6 @@
 package application.controllers;
 
 import application.Config;
-import application.Header;
 import com.rnelson.server.ResponseData;
 import com.rnelson.server.content.Directory;
 import com.rnelson.server.utilities.Response;
@@ -25,11 +24,5 @@ public class RootController extends AbstractController {
     @Override
     public void sendResponseData(ResponseData responseData) {
 
-    }
-
-    public byte[] redirect() {
-        Header header = new Header(302);
-        header.includeLocation("http://localhost:5000");
-        return header.getResponseHeader();
     }
 }

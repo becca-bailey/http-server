@@ -67,8 +67,7 @@ class ServerRunner implements Runnable {
             responseData.setRange(range);
 
             controller.sendResponseData(responseData);
-            Supplier<byte[]> controllerAction = Config.router.getControllerAction(controller, method, Config.redirect);
-            Config.redirect = false;
+            Supplier<byte[]> controllerAction = Config.router.getControllerAction(controller, method);
             response = getResponse(controllerAction);
         } catch (RouterException e) {
             System.out.println(e.getMessage());
