@@ -16,6 +16,7 @@ public class Request {
     public Request(String fullRequestFromServer) {
         this.request = fullRequestFromServer;
         header = getRequestHeader();
+        logRequest();
     }
 
     public String url() {

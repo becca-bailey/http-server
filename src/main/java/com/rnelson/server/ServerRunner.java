@@ -39,32 +39,25 @@ class ServerRunner implements Runnable {
     private void respondToRequest (DataOutputStream out, BufferedReader in) throws IOException {
         Config.initializeRoutes();
         Config.router.addFileRoutes();
-        // does this go here?
 
         byte[] response;
 
         Request request = new Request(getFullRequest(in));
-        request.logRequest();
 
         String url = request.url();
         String method = request.method();
-        Map<String, String> data = request.getDecodedParameters();
         Map<String, String> headerFields = request.parseHeaders();
         Credentials credentials = request.getCredentials();
-        String range = request.getRange();
 
         try {
             Route route = Config.router.getExistingRoute(url);
             Boolean isAuthorized = Config.router.userIsAuthorized(route, credentials);
             Controller controller = Config.router.getControllerForRequest(route, headerFields);
 
-            ResponseData responseData = new ResponseData();
-            responseData.sendRequestBody(request.getRequestBody());
-            responseData.sendParameters(data);
+            ResponseData responseData = new ResponseData(request);
             responseData.sendMethodOptions(route.getMethods());
             responseData.sendFile(route.getFile(Config.publicDirectory.getPath()));
             responseData.requestIsAuthorized(isAuthorized);
-            responseData.setRange(range);
 
             controller.sendResponseData(responseData);
             Supplier<byte[]> controllerAction = Config.router.getControllerAction(controller, method);
@@ -105,6 +98,7 @@ class ServerRunner implements Runnable {
                     DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
                     BufferedReader in =
                             new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                    System.out.println("Server is running on port " + serverPort);
 
                     respondToRequest(out, in);
                     clientSocket.close();
