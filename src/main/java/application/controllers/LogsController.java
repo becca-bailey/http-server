@@ -17,7 +17,7 @@ public class LogsController extends AbstractController {
         if (isAuthorized) {
             header = new Header(200);
             byte[] responseHeader = header.getResponseHeader();
-            File logs = new File(Config.rootDirectory + "/views/logs");
+            File logs = new File(Config.logfilePath);
             FileHandler handler = new FileHandler(logs);
             byte[] content = handler.getFileContents();
             return SharedUtilities.addByteArrays(responseHeader, content);

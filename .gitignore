@@ -2,3 +2,4 @@ target/
 http-server.iml
 .idea/
 classes/
+logs

@@ -4,6 +4,8 @@ import application.Config;
 import com.rnelson.server.content.FileHandler;
 import com.rnelson.server.utilities.SharedUtilities;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -86,8 +88,15 @@ public class Request {
     }
 
     public void logRequest() {
+        Boolean logfileCreated = false;
         String requestLine = getRequestLine();
-        FileHandler logHandler = new FileHandler(Config.logfile);
+        File logs = new File(Config.logfilePath);
+        try {
+            logfileCreated = logs.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        FileHandler logHandler = new FileHandler(logs);
         logHandler.addFileContent(requestLine + "\n");
     }
 

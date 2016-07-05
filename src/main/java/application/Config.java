@@ -10,7 +10,7 @@ public class Config {
     public final static String packageName = "application";
     public final static File rootDirectory = new File("src/main/java/application/");
     public final static File publicDirectory = new File("src/main/java/application/public");
-    public final static File logfile = new File("src/main/java/application/views/logs");
+    public final static String logfilePath = "src/main/java/application/logs";
     public static Router router;
     public final static String username = "admin";
     public final static String password = "hunter2";
