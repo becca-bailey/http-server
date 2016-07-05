@@ -41,7 +41,7 @@ public class Directory {
         return directoryContents.toString();
     }
 
-    private File[] getDirectoryListing() {
+    public File[] getDirectoryListing() {
         return directory.listFiles();
     }
 

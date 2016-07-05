@@ -1,12 +1,14 @@
 package com.rnelson.server;
 
 import application.Config;
+import com.rnelson.server.content.Directory;
 import com.rnelson.server.request.Request;
 import com.rnelson.server.routing.Route;
 import com.rnelson.server.routing.RouteInitializer;
 import com.rnelson.server.routing.Router;
 import com.rnelson.server.utilities.Response;
 import com.rnelson.server.utilities.exceptions.RouterException;
+import com.rnelson.server.utilities.exceptions.ServerException;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -41,18 +43,36 @@ class ServerRunner implements Runnable {
         byte[] response;
         Request request = new Request(getFullRequest(in));
         try {
-            Route route = Config.router.getExistingRoute(request.url());
-            Controller controller = Config.router.getControllerForRequest(route);
+            Config applicationConfig = instantiateConfig();
+            ServerConfig.router = Config.router;
+            Route route = ServerConfig.router.getExistingRoute(request.url());
+            Controller controller = ServerConfig.router.getControllerForRequest(route);
             ResponseData responseData = new ResponseData(request, route);
             controller.sendResponseData(responseData);
-            Supplier<byte[]> controllerAction = Config.router.getControllerAction(controller, request.method());
+            Supplier<byte[]> controllerAction = ServerConfig.router.getControllerAction(controller, request.method());
             response = getResponse(controllerAction);
-        } catch (RouterException e) {
+        } catch (RouterException | ServerException e) {
             System.out.println(e.getMessage());
             response = Response.notFound.getBytes();
         }
         out.write(response);
         out.close();
+    }
+
+    private Config instantiateConfig() throws ServerException {
+        Directory root = new Directory(rootDirectory);
+        Config config = null;
+        try {
+            for (File file : root.getDirectoryListing()) {
+                if (file.getName().equals("Config.java")) {
+                    Class configClass = Class.forName("application.Config");
+                    config = (Config) configClass.newInstance();
+                }
+            }
+        } catch (Exception e) {
+            throw new ServerException("Root directory must include application/Config.java");
+        }
+        return config;
     }
 
     private byte[] getResponse(Supplier<byte[]> supplier) {
