@@ -52,7 +52,7 @@ class ServerRunner implements Runnable {
             Supplier<byte[]> controllerAction = ServerConfig.router.getControllerAction(controller, request.method());
             response = getResponse(controllerAction);
         } catch (RouterException | ServerException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
             response = Response.notFound.getBytes();
         }
         out.write(response);
@@ -70,7 +70,7 @@ class ServerRunner implements Runnable {
                 }
             }
         } catch (Exception e) {
-            throw new ServerException("Root directory must include application/Config.java");
+            throw new ServerException("Root directory must include application/Config.java\n");
         }
         return config;
     }
@@ -80,7 +80,7 @@ class ServerRunner implements Runnable {
         try {
             response = supplier.get();
         } catch (NullPointerException e) {
-            System.out.println("Method doesn't exist in Router actions.");
+            System.err.println("Method doesn't exist in Router actions.\n");
             return Response.methodNotAllowed.getBytes();
         }
         return response;
@@ -103,7 +103,7 @@ class ServerRunner implements Runnable {
                     DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
                     BufferedReader in =
                             new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                    System.out.println("Server is running on port " + serverPort);
+                    System.out.println("Server is running on port " + serverPort + "\n");
 
                     respondToRequest(out, in);
                     clientSocket.close();
