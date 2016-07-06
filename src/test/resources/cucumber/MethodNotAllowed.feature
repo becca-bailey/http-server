@@ -10,10 +10,10 @@ Feature: Method Not Allowed
     When I request "PUT" "/file1"
     Then the response status should be 405
 
-#  Scenario: Bogus Request
-#    Given the server is running
-#    When I request "SOMETHING" "/file1"
-#    Then the response status should be 405
+  Scenario: Invalid Request
+    Given the server is running
+    When I request "SOMETHING" "/file1"
+    Then the response status should be 405
 
   Scenario: GET /text-file.txt
     Given the server is running

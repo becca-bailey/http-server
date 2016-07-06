@@ -81,7 +81,7 @@ class ServerRunner implements Runnable {
             response = supplier.get();
         } catch (NullPointerException e) {
             System.out.println("Method doesn't exist in Router actions.");
-            e.printStackTrace();
+            return Response.methodNotAllowed.getBytes();
         }
         return response;
     }

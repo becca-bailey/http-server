@@ -18,8 +18,7 @@ public class HTTPClientTest {
     @Test
     public void HTTPClientCanBeInitializedWithHostnameAndPort() throws Throwable {
         assertEquals("localhost", testClient.hostName);
-        Integer port = 5000;
-        assertEquals(port, testClient.portNumber);
+        assertEquals(5000, testClient.portNumber);
     }
 
     @Test
@@ -30,11 +29,5 @@ public class HTTPClientTest {
     @Test
     public void sendHeaderSetsHeader() throws Throwable {
         assertEquals("GET / HTTP/1.1", testClient.requestLine);
-    }
-
-    @Test
-    public void getResponseCodeReturnsIntegerCode() throws Throwable {
-        Integer status = 200;
-        assertEquals(status, testClient.getResponseCode());
     }
 }

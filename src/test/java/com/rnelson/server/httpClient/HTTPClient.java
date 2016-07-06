@@ -1,7 +1,7 @@
 package com.rnelson.server.httpClient;
 
-import com.rnelson.server.utilities.SharedUtilities;
 import com.rnelson.server.request.Request;
+import com.rnelson.server.utilities.SharedUtilities;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
@@ -10,13 +10,15 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 public class HTTPClient {
     final String hostName;
-    final Integer portNumber;
+    final int portNumber;
     private final String url;
     private CloseableHttpClient httpclient;
     private CloseableHttpResponse response;
@@ -28,6 +30,7 @@ public class HTTPClient {
     private String password;
 
     private String statusLine;
+    private int statusCode;
     private byte[] responseBody = new byte[0];
     private String method;
     private String requestUrl;
@@ -40,7 +43,7 @@ public class HTTPClient {
         this.hostName = hostName;
         this.portNumber = portNumber;
         this.url = "http://" + hostName + ":" + portNumber;
-        httpclient = HttpClients.createDefault();
+        httpclient = HttpClientBuilder.create().disableRedirectHandling().build();
     }
 
     public void sendRequestHeader(String method, String route) {
@@ -109,31 +112,43 @@ public class HTTPClient {
                 case "PATCH":
                     response = patch();
                     break;
-                default:
+                case "GET":
                     response = get();
+                    break;
+                default:
+                    response = makeInvalidRequest();
                     break;
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (URISyntaxException ignored) {
         }
         return response;
     }
 
     private CloseableHttpResponse get() throws IOException {
         if (hasCredentials) {
-            String credentials = username + ":" + password;
-            String encodedCredentials = "Basic " + base64Encode(credentials);
-            HttpUriRequest request = RequestBuilder.get().setUri(requestUrl).setHeader(HttpHeaders.AUTHORIZATION, encodedCredentials).build();
-            return httpclient.execute(request);
+            return getWithCredentials();
         }
         if (isRange) {
-            HttpUriRequest request = RequestBuilder.get().setUri(requestUrl).setHeader(HttpHeaders.RANGE, requestedRange).build();
-            return httpclient.execute(request);
+            return getRange();
         }
         else {
             HttpGet httpget = new HttpGet(requestUrl);
             return httpclient.execute(httpget);
         }
+    }
+
+    private CloseableHttpResponse getWithCredentials() throws IOException {
+        String credentials = username + ":" + password;
+        String encodedCredentials = "Basic " + base64Encode(credentials);
+        HttpUriRequest request = RequestBuilder.get().setUri(requestUrl).setHeader(HttpHeaders.AUTHORIZATION, encodedCredentials).build();
+        return httpclient.execute(request);
+    }
+
+    private CloseableHttpResponse getRange() throws IOException {
+        HttpUriRequest request = RequestBuilder.get().setUri(requestUrl).setHeader(HttpHeaders.RANGE, requestedRange).build();
+        return httpclient.execute(request);
     }
 
     private CloseableHttpResponse post() throws IOException {
@@ -170,6 +185,11 @@ public class HTTPClient {
         return httpclient.execute(httppatch);
     }
 
+    private CloseableHttpResponse makeInvalidRequest() throws URISyntaxException, IOException {
+        InvalidRequest invalid = new InvalidRequest(method, requestUrl);
+        return httpclient.execute(invalid);
+    }
+
     void setResponseVariables(String response) {
         String[] responseLines = response.split("\r\n");
         this.statusLine = responseLines[0];
@@ -177,6 +197,7 @@ public class HTTPClient {
 
     private void getResponseFromServer() throws IOException {
         this.statusLine = response.getStatusLine().toString();
+        this.statusCode = response.getStatusLine().getStatusCode();
         HttpEntity entity = response.getEntity();
         if (entity != null) {
             responseBody = IOUtils.toByteArray(entity.getContent());
@@ -187,8 +208,8 @@ public class HTTPClient {
         return new String(responseBody);
     }
 
-    public Integer getResponseCode() {
-        return Integer.parseInt(SharedUtilities.findMatch("\\d{3}", statusLine, 0));
+    public int getResponseCode() {
+        return statusCode;
     }
 
     private String getResponseHeader() {
