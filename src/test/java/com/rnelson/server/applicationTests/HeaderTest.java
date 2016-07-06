@@ -20,7 +20,7 @@ public class HeaderTest {
 
     @Test
     public void includeOptionsAddsOptionsRow() throws Throwable {
-        Set<String> methodOptions = new HashSet<String>();
+        Set<String> methodOptions = new HashSet<>();
         methodOptions.add("GET");
         methodOptions.add("POST");
         testHeader.includeOptions(methodOptions);

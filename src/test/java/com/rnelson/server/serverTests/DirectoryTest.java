@@ -11,8 +11,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class DirectoryTest {
-    File publicDir = Config.publicDirectory;
-    Directory directory = new Directory(publicDir);
+    private final File publicDir = Config.publicDirectory;
+    private final Directory directory = new Directory(publicDir);
 
     @Test
     public void directoryCanBeInstantiatedWithAFile() throws Throwable {

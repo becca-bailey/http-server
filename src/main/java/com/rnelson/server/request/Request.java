@@ -99,6 +99,9 @@ public class Request {
         }
         FileHandler logHandler = new FileHandler(logs);
         logHandler.addFileContent(requestLine + "\n");
+        if (logfileCreated) {
+            System.out.println("New logfile created at " + Config.logfilePath);
+        }
     }
 
     public String getRange() {

@@ -7,12 +7,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ServerArguments {
-    private String[] args;
-    private Map<String,String> arguments;
+    private final String[] args;
+    private final Map<String,String> arguments;
 
     public ServerArguments(String[] args) {
         this.args = args;
-        arguments = new HashMap<String,String>();
+        arguments = new HashMap<>();
         try {
             addArgumentsToMap();
         } catch (ServerException e) {
@@ -31,10 +31,10 @@ public class ServerArguments {
     private void addArgumentsToMap() throws ServerException {
         try {
             for (int i = 0; i < args.length; i++) {
-                if (args[i].equals("-p")) {
+                if (isPortParameter(args[i])) {
                     arguments.put("port", args[i + 1]);
                 }
-                if (args[i].equals("-r")) {
+                if (isRootParameter(args[i])) {
                     arguments.put("rootDirectory", args[i + 1]);
                 }
             }

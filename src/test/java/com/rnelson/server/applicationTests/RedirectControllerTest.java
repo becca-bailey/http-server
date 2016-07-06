@@ -7,8 +7,8 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 
 public class RedirectControllerTest {
-    RedirectController controller = new RedirectController();
-    String redirectResponse = new String(controller.get());
+    private final RedirectController controller = new RedirectController();
+    private final String redirectResponse = new String(controller.get());
 
     @Test
     public void getReturns302Response() {

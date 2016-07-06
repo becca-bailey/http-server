@@ -49,11 +49,11 @@ public class ResponseData {
         this.requestedFile = file;
     }
 
-    public void requestIsAuthorized(Boolean isAuthorized) {
+    private void requestIsAuthorized(Boolean isAuthorized) {
         this.isAuthorized = isAuthorized;
     }
 
-    public void setRange(String requestedRange) {
+    private void setRange(String requestedRange) {
         this.requestedRange = requestedRange;
     }
 }

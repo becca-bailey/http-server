@@ -1,7 +1,6 @@
 package application.controllers;
 
 import application.Config;
-import com.rnelson.server.ResponseData;
 import com.rnelson.server.content.Directory;
 import com.rnelson.server.utilities.Response;
 import com.rnelson.server.utilities.SharedUtilities;
@@ -18,11 +17,5 @@ public class RootController extends AbstractController {
     @Override
     public byte[] head() {
         return Response.twoHundred.getBytes();
-    }
-
-
-    @Override
-    public void sendResponseData(ResponseData responseData) {
-
     }
 }

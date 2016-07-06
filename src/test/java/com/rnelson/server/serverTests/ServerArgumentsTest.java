@@ -10,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class ServerArgumentsTest {
-    private String root = "src/main/java/application";
+    private final String root = "src/main/java/application";
 
     @Test
     public void rootDirectoryIsARequiredArgument() throws Throwable {

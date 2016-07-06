@@ -19,7 +19,7 @@ class ServerRunner implements Runnable {
     private final int serverPort;
     private Boolean running = true;
     private Router router = Config.router;
-    private File rootDirectory;
+    private final File rootDirectory;
 
     ServerRunner(int port, File rootDirectory) {
         this.serverPort = port;
@@ -76,7 +76,7 @@ class ServerRunner implements Runnable {
     }
 
     private byte[] getResponse(Supplier<byte[]> supplier) {
-        byte[] response = new byte[0];
+        byte[] response;
         try {
             response = supplier.get();
         } catch (NullPointerException e) {

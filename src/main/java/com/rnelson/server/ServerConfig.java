@@ -4,7 +4,7 @@ import com.rnelson.server.routing.Router;
 
 import java.io.File;
 
-public class ServerConfig {
+class ServerConfig {
     public static String packageName;
     public static File rootDirectory;
     public static File publicDirectory;

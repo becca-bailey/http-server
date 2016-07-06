@@ -18,13 +18,13 @@ import java.nio.file.Paths;
 import static org.junit.Assert.*;
 
 public class HTTPRequestsSteps {
-    private final Integer port = 5000;
     private HTTPClient client;
 
     // Before
 
     @Before
     public void connectClient(){
+        int port = 5000;
         client = new HTTPClient("localhost", port);
     }
 

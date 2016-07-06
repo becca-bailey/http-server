@@ -17,9 +17,9 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
 
 public class FileControllerTest {
-    FileController controller = new FileController();
-    private ResponseData responseData = new ResponseData();
-    private Directory directory = new Directory(Config.publicDirectory);
+    private final FileController controller = new FileController();
+    private final ResponseData responseData = new ResponseData();
+    private final Directory directory = new Directory(Config.publicDirectory);
 
     @Test
     public void getReturnsFileContentsAsByteArray() {
@@ -43,7 +43,6 @@ public class FileControllerTest {
     public void patchReturns204Response() throws Throwable {
         try {
             File text = directory.getFileByFilename("patch-content.txt");
-            FileHandler handler = new FileHandler(text);
             responseData.sendFile(text);
             responseData.sendRequestBody("patch content");
             controller.sendResponseData(responseData);

@@ -5,7 +5,7 @@ import com.rnelson.server.utilities.SharedUtilities;
 import java.util.Base64;
 
 public class Credentials {
-    private String encodedCredentials;
+    private final String encodedCredentials;
 
     Credentials(String encodedCredentials) {
         this.encodedCredentials = encodedCredentials;
