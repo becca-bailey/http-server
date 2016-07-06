@@ -49,7 +49,7 @@ public class ResponseData {
         this.requestedFile = file;
     }
 
-    private void requestIsAuthorized(Boolean isAuthorized) {
+    public void requestIsAuthorized(Boolean isAuthorized) {
         this.isAuthorized = isAuthorized;
     }
 

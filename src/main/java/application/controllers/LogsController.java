@@ -9,7 +9,7 @@ import com.rnelson.server.utilities.SharedUtilities;
 import java.io.File;
 
 public class LogsController extends AbstractController {
-    private Boolean isAuthorized;
+    private Boolean isAuthorized = false;
 
     @Override
     public byte[] get() {
