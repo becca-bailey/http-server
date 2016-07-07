@@ -39,13 +39,13 @@ class ServerRunner implements Runnable {
         Request request = new Request(getFullRequest(in));
         try {
             loadProperties();
-            ServerConfig.router = new Router(ServerConfig.rootDirectory);
-            addRoutes(ServerConfig.router);
-            Route route = ServerConfig.router.getExistingRoute(request.url());
-            Controller controller = ServerConfig.router.getControllerForRequest(route);
+            addRoutes();
+
+            Route route = routeForUrl(request.url());
+            Controller controller =controllerForRoute(route);
             ResponseData responseData = new ResponseData(request, route);
             controller.sendResponseData(responseData);
-            Supplier<byte[]> controllerAction = ServerConfig.router.getControllerAction(controller, request.method());
+            Supplier<byte[]> controllerAction = getControllerActionForRequest(controller, request.method());
             response = getResponse(controllerAction);
         } catch (RouterException e) {
             System.err.println(e.getMessage());
@@ -57,10 +57,23 @@ class ServerRunner implements Runnable {
         out.close();
     }
 
-    private void addRoutes(Router router) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+    private Route routeForUrl(String url) throws RouterException {
+        return ServerConfig.router.getExistingRoute(url);
+    }
+
+    private Controller controllerForRoute(Route route) throws RouterException {
+        return ServerConfig.router.getControllerForRequest(route);
+    }
+
+    private Supplier<byte[]> getControllerActionForRequest(Controller controller, String method) {
+        return ServerConfig.router.getControllerAction(controller, method);
+    }
+
+    private void addRoutes() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+        ServerConfig.router = new Router(ServerConfig.rootDirectory);
         Class initializerClass = Class.forName(ServerConfig.routesClass);
         RouteInitializer initializer = (RouteInitializer) initializerClass.newInstance();
-        initializer.initializeRoutes(router);
+        initializer.initializeRoutes(ServerConfig.router);
     }
 
     private void loadProperties() throws IOException {
