@@ -10,4 +10,5 @@ public class ServerConfig {
     public static Router router;
     public static String fileController = "File";
     public static File publicDirectory = new File("src/main/java/application/public");
+    public static String routesClass;
 }
