@@ -4,13 +4,10 @@ import com.rnelson.server.routing.Router;
 
 import java.io.File;
 
-class ServerConfig {
-    public static String packageName;
+public class ServerConfig {
     public static File rootDirectory;
-    public static File publicDirectory;
-    public static String logfilePath;
+    public static String packageName;
     public static Router router;
-    public static String username;
-    public static String password;
-    public static String fileController;
+    public static String fileController = "File";
+    public static File publicDirectory = new File("src/main/java/application/public");
 }

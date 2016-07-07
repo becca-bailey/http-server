@@ -1,6 +1,6 @@
 package com.rnelson.server.content;
 
-import application.Config;
+import com.rnelson.server.ServerConfig;
 import com.rnelson.server.utilities.http.HttpMethods;
 
 import java.io.File;
@@ -15,7 +15,7 @@ public class Directory {
 
     public void addFileRoutes() {
         for (File file : getDirectoryListing()) {
-            Config.router.addRoute(HttpMethods.get, "/" + file.getName(), Config.fileController);
+            ServerConfig.router.addRoute(HttpMethods.get, "/" + file.getName(), ServerConfig.fileController);
         }
     }
 

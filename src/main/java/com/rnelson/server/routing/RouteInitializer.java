@@ -1,13 +1,13 @@
 package com.rnelson.server.routing;
 
-import application.Config;
+import com.rnelson.server.ServerConfig;
 import com.rnelson.server.utilities.http.HttpMethods;
 
 public class RouteInitializer {
 
     public void initializeRoutes() {
-        Router router = new Router(Config.rootDirectory);
-        Config.router = router;
+        Router router = new Router(ServerConfig.rootDirectory);
+        ServerConfig.router = router;
 
         router.addRoute(HttpMethods.get, "/");
         router.addRoute(HttpMethods.head, "/");

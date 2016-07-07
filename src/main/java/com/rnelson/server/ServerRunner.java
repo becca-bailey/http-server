@@ -1,24 +1,20 @@
 package com.rnelson.server;
 
-import application.Config;
-import com.rnelson.server.content.Directory;
 import com.rnelson.server.request.Request;
 import com.rnelson.server.routing.Route;
 import com.rnelson.server.routing.RouteInitializer;
-import com.rnelson.server.routing.Router;
 import com.rnelson.server.utilities.Response;
 import com.rnelson.server.utilities.exceptions.RouterException;
-import com.rnelson.server.utilities.exceptions.ServerException;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Properties;
 import java.util.function.Supplier;
 
 class ServerRunner implements Runnable {
     private final int serverPort;
     private Boolean running = true;
-    private Router router = Config.router;
     private final File rootDirectory;
 
     ServerRunner(int port, File rootDirectory) {
@@ -37,21 +33,21 @@ class ServerRunner implements Runnable {
     }
 
     private void respondToRequest (DataOutputStream out, BufferedReader in) throws IOException {
+        ServerConfig.rootDirectory = rootDirectory;
         RouteInitializer initializer = new RouteInitializer();
         initializer.initializeRoutes();
-
+        // this initializes the router
         byte[] response;
         Request request = new Request(getFullRequest(in));
         try {
-            Config applicationConfig = instantiateConfig();
-            ServerConfig.router = Config.router;
+            loadProperties();
             Route route = ServerConfig.router.getExistingRoute(request.url());
             Controller controller = ServerConfig.router.getControllerForRequest(route);
             ResponseData responseData = new ResponseData(request, route);
             controller.sendResponseData(responseData);
             Supplier<byte[]> controllerAction = ServerConfig.router.getControllerAction(controller, request.method());
             response = getResponse(controllerAction);
-        } catch (RouterException | ServerException e) {
+        } catch (RouterException e) {
             System.err.println(e.getMessage());
             response = Response.notFound.getBytes();
         }
@@ -59,20 +55,18 @@ class ServerRunner implements Runnable {
         out.close();
     }
 
-    private Config instantiateConfig() throws ServerException {
-        Directory root = new Directory(rootDirectory);
-        Config config = null;
-        try {
-            for (File file : root.getDirectoryListing()) {
-                if (file.getName().equals("Config.java")) {
-                    Class configClass = Class.forName("application.Config");
-                    config = (Config) configClass.newInstance();
-                }
-            }
-        } catch (Exception e) {
-            throw new ServerException("Root directory must include application/Config.java\n");
+    private void loadProperties() throws IOException {
+        Properties config = new Properties();
+        String filename = "config.properties";
+        InputStream input = new FileInputStream("src/main/java/com/rnelson/server" + "/config.properties");
+        if (input != null) {
+            config.load(input);
+            System.out.println(config.getProperty("packageName"));
+            ServerConfig.packageName = config.getProperty("packageName");
+            input.close();
+        } else {
+            System.err.println("Properties not found");
         }
-        return config;
     }
 
     private byte[] getResponse(Supplier<byte[]> supplier) {
